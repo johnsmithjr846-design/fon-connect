@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ConditionsUtilisationRouteImport } from './routes/conditions-utilisation'
+import { Route as PolitiqueConfidentialiteRouteImport } from './routes/politique-confidentialite'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,42 @@ const ConditionsUtilisationRoute = ConditionsUtilisationRouteImport.update({
   path: '/conditions-utilisation',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PolitiqueConfidentialiteRoute =
+  PolitiqueConfidentialiteRouteImport.update({
+    id: '/politique-confidentialite',
+    path: '/politique-confidentialite',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
+  '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
+  '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
+  '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/conditions-utilisation'
+  fullPaths: '/' | '/conditions-utilisation' | '/politique-confidentialite'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/conditions-utilisation'
-  id: '__root__' | '/' | '/conditions-utilisation'
+  to: '/' | '/conditions-utilisation' | '/politique-confidentialite'
+  id:
+    '__root__' | '/' | '/conditions-utilisation' | '/politique-confidentialite'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ConditionsUtilisationRoute: typeof ConditionsUtilisationRoute
+  PolitiqueConfidentialiteRoute: typeof PolitiqueConfidentialiteRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +77,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConditionsUtilisationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/politique-confidentialite': {
+      id: '/politique-confidentialite'
+      path: '/politique-confidentialite'
+      fullPath: '/politique-confidentialite'
+      preLoaderRoute: typeof PolitiqueConfidentialiteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ConditionsUtilisationRoute: ConditionsUtilisationRoute,
+  PolitiqueConfidentialiteRoute: PolitiqueConfidentialiteRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
