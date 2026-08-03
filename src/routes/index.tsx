@@ -34,7 +34,7 @@ const FEATURES = [
 function Index() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <div className="h-1.5 w-full bg-gradient-to-r from-primary via-[var(--brand-yellow)] to-destructive" />
+      <SiteHeader />
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-5 py-14">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Bénin · Fon</p>
@@ -45,6 +45,21 @@ function Index() {
           Supprimez la barrière de la langue : traduisez instantanément entre le français et le fon,
           et apprenez la langue de façon simple, interactive et immersive.
         </p>
+
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link
+            to="/traducteur"
+            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          >
+            Ouvrir le traducteur
+          </Link>
+          <Link
+            to="/assistant"
+            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+          >
+            Parler à l'assistant IA
+          </Link>
+        </div>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
           {FEATURES.map((f) => (

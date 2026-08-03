@@ -10,15 +10,22 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as ConditionsUtilisationRouteImport } from './routes/conditions-utilisation'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as PolitiqueConfidentialiteRouteImport } from './routes/politique-confidentialite'
+import { Route as TraducteurRouteImport } from './routes/traducteur'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AssistantRoute = AssistantRouteImport.update({
+  id: '/assistant',
+  path: '/assistant',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConditionsUtilisationRoute = ConditionsUtilisationRouteImport.update({
@@ -42,6 +49,11 @@ const PolitiqueConfidentialiteRoute =
     path: '/politique-confidentialite',
     getParentRoute: () => rootRouteImport,
   } as any)
+const TraducteurRoute = TraducteurRouteImport.update({
+  id: '/traducteur',
+  path: '/traducteur',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
@@ -50,62 +62,76 @@ const ApiChatRoute = ApiChatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/assistant': typeof AssistantRoute
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
+  '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/assistant': typeof AssistantRoute
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
+  '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/assistant': typeof AssistantRoute
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
+  '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/assistant'
     | '/conditions-utilisation'
     | '/cookies'
     | '/mentions-legales'
     | '/politique-confidentialite'
+    | '/traducteur'
     | '/api/chat'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/assistant'
     | '/conditions-utilisation'
     | '/cookies'
     | '/mentions-legales'
     | '/politique-confidentialite'
+    | '/traducteur'
     | '/api/chat'
   id:
     | '__root__'
     | '/'
+    | '/assistant'
     | '/conditions-utilisation'
     | '/cookies'
     | '/mentions-legales'
     | '/politique-confidentialite'
+    | '/traducteur'
     | '/api/chat'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AssistantRoute: typeof AssistantRoute
   ConditionsUtilisationRoute: typeof ConditionsUtilisationRoute
   CookiesRoute: typeof CookiesRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   PolitiqueConfidentialiteRoute: typeof PolitiqueConfidentialiteRoute
+  TraducteurRoute: typeof TraducteurRoute
   ApiChatRoute: typeof ApiChatRoute
 }
 
@@ -116,6 +142,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/assistant': {
+      id: '/assistant'
+      path: '/assistant'
+      fullPath: '/assistant'
+      preLoaderRoute: typeof AssistantRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/conditions-utilisation': {
@@ -146,6 +179,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PolitiqueConfidentialiteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/traducteur': {
+      id: '/traducteur'
+      path: '/traducteur'
+      fullPath: '/traducteur'
+      preLoaderRoute: typeof TraducteurRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
@@ -158,10 +198,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AssistantRoute: AssistantRoute,
   ConditionsUtilisationRoute: ConditionsUtilisationRoute,
   CookiesRoute: CookiesRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
   PolitiqueConfidentialiteRoute: PolitiqueConfidentialiteRoute,
+  TraducteurRoute: TraducteurRoute,
   ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport
