@@ -161,11 +161,23 @@ function AssistantPage() {
                   {isUser ? (
                     <p className="whitespace-pre-wrap">{text}</p>
                   ) : (
-                    <div className="prose prose-sm max-w-none dark:prose-invert [&_p]:my-1.5 [&_ul]:my-1.5">
-                      <ReactMarkdown>{text}</ReactMarkdown>
-                    </div>
+                    <>
+                      <div className="prose prose-sm max-w-none dark:prose-invert [&_p]:my-1.5 [&_ul]:my-1.5">
+                        <ReactMarkdown>{text}</ReactMarkdown>
+                      </div>
+                      {text.trim() && (
+                        <div className="mt-1 flex justify-end">
+                          <SpeakButton
+                            speaking={speech.speakingId === message.id}
+                            onSpeak={() => void speech.speak(message.id, text, "fr")}
+                            onStop={speech.stop}
+                          />
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
+
               </div>
             );
           })}
