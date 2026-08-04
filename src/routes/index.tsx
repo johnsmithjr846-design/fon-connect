@@ -12,10 +12,10 @@ export const Route = createFileRoute("/")({
         content:
           "FonConnect supprime la barrière de la langue : traduction instantanée français ↔ fon, assistant IA, leçons et guide de conversation.",
       },
-      { property: "og:title", content: "FonConnect — Traduire et apprendre le fon" },
+      { property: "og:title", content: "FonConnect — Traduire et apprendre le fon du Bénin" },
       {
         property: "og:description",
-        content: "Traduction instantanée français ↔ fon, assistant IA, leçons et phrasebook.",
+        content: "FonConnect supprime la barrière de la langue : traduction instantanée français ↔ fon, assistant IA, leçons et guide de conversation.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/" },
