@@ -193,6 +193,11 @@ function AssistantPage() {
               La discussion a échoué. Vérifiez votre connexion et réessayez.
             </p>
           )}
+          {(recorder.error || speech.error) && (
+            <p className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+              {recorder.error ?? speech.error}
+            </p>
+          )}
           <div ref={bottomRef} />
         </div>
 
@@ -203,6 +208,12 @@ function AssistantPage() {
             submit(input);
           }}
         >
+          <MicButton
+            status={recorder.status}
+            onStart={() => void recorder.start()}
+            onStop={() => void onMicStop()}
+            disabled={isLoading}
+          />
           <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -213,13 +224,20 @@ function AssistantPage() {
               }
             }}
             rows={2}
-            placeholder="Écrivez votre message…"
+            placeholder={
+              recorder.status === "recording"
+                ? "Enregistrement en cours…"
+                : recorder.status === "transcribing"
+                  ? "Transcription…"
+                  : "Écrivez ou dictez votre message…"
+            }
             className="resize-none"
           />
           <Button type="submit" size="icon" disabled={!input.trim() || isLoading}>
             <Send className="size-4" />
           </Button>
         </form>
+
       </main>
     </div>
   );
