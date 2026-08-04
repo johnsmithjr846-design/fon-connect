@@ -5,8 +5,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Loader2, Send } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { SiteHeader } from "@/components/SiteHeader";
+import { MicButton } from "@/components/voice/MicButton";
+import { SpeakButton } from "@/components/voice/SpeakButton";
+import { useSpeech } from "@/hooks/useSpeech";
+import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+
 
 export const Route = createFileRoute("/assistant")({
   component: AssistantPage,
@@ -36,17 +41,42 @@ const SUGGESTIONS = [
   "Que dire en cas d'urgence médicale ?",
 ];
 
+const HANDS_FREE_KEY = "fonconnect:hands-free";
+
+function messageText(message: { parts: { type: string; text?: string }[] }) {
+  return message.parts.map((part) => (part.type === "text" ? (part.text ?? "") : "")).join("");
+}
+
 function AssistantPage() {
   const transport = useMemo(() => new DefaultChatTransport({ api: "/api/chat" }), []);
   const { messages, sendMessage, status, error } = useChat({ transport });
   const [input, setInput] = useState("");
+  const [handsFree, setHandsFree] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const spokenRef = useRef<string | null>(null);
+
+  const recorder = useVoiceRecorder({ language: "fr" });
+  const speech = useSpeech();
 
   const isLoading = status === "submitted" || status === "streaming";
 
   useEffect(() => {
+    setHandsFree(window.localStorage.getItem(HANDS_FREE_KEY) === "1");
+  }, []);
+
+  useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, status]);
+
+  useEffect(() => {
+    if (!handsFree || status !== "ready") return;
+    const last = messages[messages.length - 1];
+    if (!last || last.role !== "assistant" || spokenRef.current === last.id) return;
+    const text = messageText(last);
+    if (!text.trim()) return;
+    spokenRef.current = last.id;
+    void speech.speak(last.id, text, "fr");
+  }, [handsFree, messages, speech, status]);
 
   const submit = (value: string) => {
     const text = value.trim();
@@ -54,6 +84,21 @@ function AssistantPage() {
     setInput("");
     void sendMessage({ text });
   };
+
+  const onMicStop = async () => {
+    const transcript = await recorder.stopAndTranscribe();
+    if (transcript) setInput((current) => (current ? `${current} ${transcript}` : transcript));
+  };
+
+  const toggleHandsFree = () => {
+    setHandsFree((current) => {
+      const next = !current;
+      window.localStorage.setItem(HANDS_FREE_KEY, next ? "1" : "0");
+      if (!next) speech.stop();
+      return next;
+    });
+  };
+
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -66,6 +111,22 @@ function AssistantPage() {
           Posez vos questions sur la langue et la culture du Bénin, pratiquez la conversation et
           faites corriger votre prononciation.
         </p>
+
+        <div className="mt-4 flex items-center gap-3">
+          <Button
+            type="button"
+            variant={handsFree ? "default" : "outline"}
+            size="sm"
+            aria-pressed={handsFree}
+            onClick={toggleHandsFree}
+          >
+            {handsFree ? "Mains libres activé" : "Mains libres"}
+          </Button>
+          <span className="text-xs text-muted-foreground">
+            Lecture automatique des réponses d'Ayi.
+          </span>
+        </div>
+
 
         <div className="mt-6 flex-1 space-y-4">
           {messages.length === 0 && (
@@ -100,11 +161,23 @@ function AssistantPage() {
                   {isUser ? (
                     <p className="whitespace-pre-wrap">{text}</p>
                   ) : (
-                    <div className="prose prose-sm max-w-none dark:prose-invert [&_p]:my-1.5 [&_ul]:my-1.5">
-                      <ReactMarkdown>{text}</ReactMarkdown>
-                    </div>
+                    <>
+                      <div className="prose prose-sm max-w-none dark:prose-invert [&_p]:my-1.5 [&_ul]:my-1.5">
+                        <ReactMarkdown>{text}</ReactMarkdown>
+                      </div>
+                      {text.trim() && (
+                        <div className="mt-1 flex justify-end">
+                          <SpeakButton
+                            speaking={speech.speakingId === message.id}
+                            onSpeak={() => void speech.speak(message.id, text, "fr")}
+                            onStop={speech.stop}
+                          />
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
+
               </div>
             );
           })}
@@ -120,6 +193,11 @@ function AssistantPage() {
               La discussion a échoué. Vérifiez votre connexion et réessayez.
             </p>
           )}
+          {(recorder.error || speech.error) && (
+            <p className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+              {recorder.error ?? speech.error}
+            </p>
+          )}
           <div ref={bottomRef} />
         </div>
 
@@ -130,6 +208,12 @@ function AssistantPage() {
             submit(input);
           }}
         >
+          <MicButton
+            status={recorder.status}
+            onStart={() => void recorder.start()}
+            onStop={() => void onMicStop()}
+            disabled={isLoading}
+          />
           <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -140,13 +224,20 @@ function AssistantPage() {
               }
             }}
             rows={2}
-            placeholder="Écrivez votre message…"
+            placeholder={
+              recorder.status === "recording"
+                ? "Enregistrement en cours…"
+                : recorder.status === "transcribing"
+                  ? "Transcription…"
+                  : "Écrivez ou dictez votre message…"
+            }
             className="resize-none"
           />
           <Button type="submit" size="icon" disabled={!input.trim() || isLoading}>
             <Send className="size-4" />
           </Button>
         </form>
+
       </main>
     </div>
   );

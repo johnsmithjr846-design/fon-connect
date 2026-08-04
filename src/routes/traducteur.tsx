@@ -4,9 +4,14 @@ import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { ArrowLeftRight, Copy, Check, Loader2 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
+import { MicButton } from "@/components/voice/MicButton";
+import { SpeakButton } from "@/components/voice/SpeakButton";
+import { useSpeech } from "@/hooks/useSpeech";
+import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { translateText, type TranslationDirection } from "@/lib/translate.functions";
+
 
 export const Route = createFileRoute("/traducteur")({
   component: TraducteurPage,
@@ -43,8 +48,27 @@ function TraducteurPage() {
       translate({ data: input }),
   });
 
+  const recorder = useVoiceRecorder({ language: direction === "fr-fon" ? "fr" : undefined });
+  const speech = useSpeech();
+
   const sourceLabel = direction === "fr-fon" ? "Français" : "Fon";
   const targetLabel = direction === "fr-fon" ? "Fon" : "Français";
+  const targetIsFon = direction === "fr-fon";
+
+  const onMicStop = async () => {
+    const transcript = await recorder.stopAndTranscribe();
+    if (!transcript) return;
+    const value = transcript.slice(0, MAX);
+    setText(value);
+    mutation.mutate({ text: value, direction });
+  };
+
+  const onSpeakResult = () => {
+    const data = mutation.data;
+    if (!data) return;
+    const spoken = targetIsFon ? data.phonetic || data.translation : data.translation;
+    void speech.speak("result", spoken, targetIsFon ? "fon" : "fr");
+  };
 
   const onCopy = async () => {
     if (!mutation.data?.translation) return;
@@ -52,6 +76,7 @@ function TraducteurPage() {
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
+
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -107,15 +132,34 @@ function TraducteurPage() {
             className="resize-y text-base"
           />
           <div className="flex items-center justify-between gap-3">
-            <span className="text-xs text-muted-foreground">
-              {text.length}/{MAX}
-            </span>
+            <div className="flex items-center gap-2">
+              <MicButton
+                status={recorder.status}
+                onStart={() => void recorder.start()}
+                onStop={() => void onMicStop()}
+                disabled={mutation.isPending}
+              />
+              <span className="text-xs text-muted-foreground">
+                {recorder.status === "recording"
+                  ? "Enregistrement…"
+                  : recorder.status === "transcribing"
+                    ? "Transcription…"
+                    : `${text.length}/${MAX}`}
+              </span>
+            </div>
             <Button type="submit" disabled={!text.trim() || mutation.isPending}>
               {mutation.isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
               Traduire
             </Button>
           </div>
         </form>
+
+        {(recorder.error || speech.error) && (
+          <p className="mt-4 rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            {recorder.error ?? speech.error}
+          </p>
+        )}
+
 
         {mutation.isError && (
           <p className="mt-6 rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
@@ -131,10 +175,21 @@ function TraducteurPage() {
               <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
                 {targetLabel}
               </h2>
-              <Button type="button" variant="ghost" size="sm" onClick={onCopy}>
-                {copied ? <Check className="mr-1.5 size-4" /> : <Copy className="mr-1.5 size-4" />}
-                {copied ? "Copié" : "Copier"}
-              </Button>
+              <div className="flex items-center gap-1">
+                <SpeakButton
+                  speaking={speech.speakingId === "result"}
+                  onSpeak={onSpeakResult}
+                  onStop={speech.stop}
+                />
+                <Button type="button" variant="ghost" size="sm" onClick={onCopy}>
+                  {copied ? (
+                    <Check className="mr-1.5 size-4" />
+                  ) : (
+                    <Copy className="mr-1.5 size-4" />
+                  )}
+                  {copied ? "Copié" : "Copier"}
+                </Button>
+              </div>
             </div>
             <p className="mt-2 whitespace-pre-wrap text-lg leading-relaxed text-card-foreground">
               {mutation.data.translation}
@@ -144,6 +199,13 @@ function TraducteurPage() {
                 Prononciation : {mutation.data.phonetic}
               </p>
             )}
+            {targetIsFon && (
+              <p className="mt-3 text-xs text-muted-foreground">
+                Lecture audio approximative : aucune voix de synthèse n'existe encore pour le fon.
+                Des enregistrements de locuteurs natifs arriveront prochainement.
+              </p>
+            )}
+
             {mutation.data.notes.length > 0 && (
               <ul className="mt-4 space-y-1.5 border-t border-border pt-4 text-sm text-muted-foreground">
                 {mutation.data.notes.map((note) => (
