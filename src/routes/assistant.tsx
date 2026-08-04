@@ -5,8 +5,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Loader2, Send } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { SiteHeader } from "@/components/SiteHeader";
+import { MicButton } from "@/components/voice/MicButton";
+import { SpeakButton } from "@/components/voice/SpeakButton";
+import { useSpeech } from "@/hooks/useSpeech";
+import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+
 
 export const Route = createFileRoute("/assistant")({
   component: AssistantPage,
