@@ -132,15 +132,34 @@ function TraducteurPage() {
             className="resize-y text-base"
           />
           <div className="flex items-center justify-between gap-3">
-            <span className="text-xs text-muted-foreground">
-              {text.length}/{MAX}
-            </span>
+            <div className="flex items-center gap-2">
+              <MicButton
+                status={recorder.status}
+                onStart={() => void recorder.start()}
+                onStop={() => void onMicStop()}
+                disabled={mutation.isPending}
+              />
+              <span className="text-xs text-muted-foreground">
+                {recorder.status === "recording"
+                  ? "Enregistrement…"
+                  : recorder.status === "transcribing"
+                    ? "Transcription…"
+                    : `${text.length}/${MAX}`}
+              </span>
+            </div>
             <Button type="submit" disabled={!text.trim() || mutation.isPending}>
               {mutation.isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
               Traduire
             </Button>
           </div>
         </form>
+
+        {(recorder.error || speech.error) && (
+          <p className="mt-4 rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            {recorder.error ?? speech.error}
+          </p>
+        )}
+
 
         {mutation.isError && (
           <p className="mt-6 rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
