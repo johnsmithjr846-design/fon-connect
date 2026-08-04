@@ -112,6 +112,22 @@ function AssistantPage() {
           faites corriger votre prononciation.
         </p>
 
+        <div className="mt-4 flex items-center gap-3">
+          <Button
+            type="button"
+            variant={handsFree ? "default" : "outline"}
+            size="sm"
+            aria-pressed={handsFree}
+            onClick={toggleHandsFree}
+          >
+            {handsFree ? "Mains libres activé" : "Mains libres"}
+          </Button>
+          <span className="text-xs text-muted-foreground">
+            Lecture automatique des réponses d'Ayi.
+          </span>
+        </div>
+
+
         <div className="mt-6 flex-1 space-y-4">
           {messages.length === 0 && (
             <div className="flex flex-wrap gap-2">
