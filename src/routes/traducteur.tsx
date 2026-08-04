@@ -4,9 +4,14 @@ import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { ArrowLeftRight, Copy, Check, Loader2 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
+import { MicButton } from "@/components/voice/MicButton";
+import { SpeakButton } from "@/components/voice/SpeakButton";
+import { useSpeech } from "@/hooks/useSpeech";
+import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { translateText, type TranslationDirection } from "@/lib/translate.functions";
+
 
 export const Route = createFileRoute("/traducteur")({
   component: TraducteurPage,
