@@ -48,8 +48,27 @@ function TraducteurPage() {
       translate({ data: input }),
   });
 
+  const recorder = useVoiceRecorder({ language: direction === "fr-fon" ? "fr" : undefined });
+  const speech = useSpeech();
+
   const sourceLabel = direction === "fr-fon" ? "Français" : "Fon";
   const targetLabel = direction === "fr-fon" ? "Fon" : "Français";
+  const targetIsFon = direction === "fr-fon";
+
+  const onMicStop = async () => {
+    const transcript = await recorder.stopAndTranscribe();
+    if (!transcript) return;
+    const value = transcript.slice(0, MAX);
+    setText(value);
+    mutation.mutate({ text: value, direction });
+  };
+
+  const onSpeakResult = () => {
+    const data = mutation.data;
+    if (!data) return;
+    const spoken = targetIsFon ? data.phonetic || data.translation : data.translation;
+    void speech.speak("result", spoken, targetIsFon ? "fon" : "fr");
+  };
 
   const onCopy = async () => {
     if (!mutation.data?.translation) return;
@@ -57,6 +76,7 @@ function TraducteurPage() {
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
+
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
