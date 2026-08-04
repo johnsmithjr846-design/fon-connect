@@ -41,17 +41,42 @@ const SUGGESTIONS = [
   "Que dire en cas d'urgence médicale ?",
 ];
 
+const HANDS_FREE_KEY = "fonconnect:hands-free";
+
+function messageText(message: { parts: { type: string; text?: string }[] }) {
+  return message.parts.map((part) => (part.type === "text" ? (part.text ?? "") : "")).join("");
+}
+
 function AssistantPage() {
   const transport = useMemo(() => new DefaultChatTransport({ api: "/api/chat" }), []);
   const { messages, sendMessage, status, error } = useChat({ transport });
   const [input, setInput] = useState("");
+  const [handsFree, setHandsFree] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const spokenRef = useRef<string | null>(null);
+
+  const recorder = useVoiceRecorder({ language: "fr" });
+  const speech = useSpeech();
 
   const isLoading = status === "submitted" || status === "streaming";
 
   useEffect(() => {
+    setHandsFree(window.localStorage.getItem(HANDS_FREE_KEY) === "1");
+  }, []);
+
+  useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, status]);
+
+  useEffect(() => {
+    if (!handsFree || status !== "ready") return;
+    const last = messages[messages.length - 1];
+    if (!last || last.role !== "assistant" || spokenRef.current === last.id) return;
+    const text = messageText(last);
+    if (!text.trim()) return;
+    spokenRef.current = last.id;
+    void speech.speak(last.id, text, "fr");
+  }, [handsFree, messages, speech, status]);
 
   const submit = (value: string) => {
     const text = value.trim();
@@ -59,6 +84,21 @@ function AssistantPage() {
     setInput("");
     void sendMessage({ text });
   };
+
+  const onMicStop = async () => {
+    const transcript = await recorder.stopAndTranscribe();
+    if (transcript) setInput((current) => (current ? `${current} ${transcript}` : transcript));
+  };
+
+  const toggleHandsFree = () => {
+    setHandsFree((current) => {
+      const next = !current;
+      window.localStorage.setItem(HANDS_FREE_KEY, next ? "1" : "0");
+      if (!next) speech.stop();
+      return next;
+    });
+  };
+
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
