@@ -175,10 +175,21 @@ function TraducteurPage() {
               <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
                 {targetLabel}
               </h2>
-              <Button type="button" variant="ghost" size="sm" onClick={onCopy}>
-                {copied ? <Check className="mr-1.5 size-4" /> : <Copy className="mr-1.5 size-4" />}
-                {copied ? "Copié" : "Copier"}
-              </Button>
+              <div className="flex items-center gap-1">
+                <SpeakButton
+                  speaking={speech.speakingId === "result"}
+                  onSpeak={onSpeakResult}
+                  onStop={speech.stop}
+                />
+                <Button type="button" variant="ghost" size="sm" onClick={onCopy}>
+                  {copied ? (
+                    <Check className="mr-1.5 size-4" />
+                  ) : (
+                    <Copy className="mr-1.5 size-4" />
+                  )}
+                  {copied ? "Copié" : "Copier"}
+                </Button>
+              </div>
             </div>
             <p className="mt-2 whitespace-pre-wrap text-lg leading-relaxed text-card-foreground">
               {mutation.data.translation}
@@ -188,6 +199,13 @@ function TraducteurPage() {
                 Prononciation : {mutation.data.phonetic}
               </p>
             )}
+            {targetIsFon && (
+              <p className="mt-3 text-xs text-muted-foreground">
+                Lecture audio approximative : aucune voix de synthèse n'existe encore pour le fon.
+                Des enregistrements de locuteurs natifs arriveront prochainement.
+              </p>
+            )}
+
             {mutation.data.notes.length > 0 && (
               <ul className="mt-4 space-y-1.5 border-t border-border pt-4 text-sm text-muted-foreground">
                 {mutation.data.notes.map((note) => (
