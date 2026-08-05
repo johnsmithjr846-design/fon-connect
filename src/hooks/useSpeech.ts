@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 
-type SpeakLang = "fr" | "fon";
+type SpeakLang = "fr" | "en" | "fon";
 
 function chunkText(text: string, maxWords = 250): string[] {
   const sentences = text.match(/[^.!?\n]+[.!?\n]*\s*/g) ?? [text];

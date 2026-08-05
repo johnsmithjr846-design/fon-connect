@@ -14,6 +14,7 @@ import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as ConditionsUtilisationRouteImport } from './routes/conditions-utilisation'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
+import { Route as PhrasebookRouteImport } from './routes/phrasebook'
 import { Route as PolitiqueConfidentialiteRouteImport } from './routes/politique-confidentialite'
 import { Route as TraducteurRouteImport } from './routes/traducteur'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
@@ -43,6 +44,11 @@ const CookiesRoute = CookiesRouteImport.update({
 const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
   id: '/mentions-legales',
   path: '/mentions-legales',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PhrasebookRoute = PhrasebookRouteImport.update({
+  id: '/phrasebook',
+  path: '/phrasebook',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PolitiqueConfidentialiteRoute =
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/phrasebook': typeof PhrasebookRoute
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/phrasebook': typeof PhrasebookRoute
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/phrasebook': typeof PhrasebookRoute
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/conditions-utilisation'
     | '/cookies'
     | '/mentions-legales'
+    | '/phrasebook'
     | '/politique-confidentialite'
     | '/traducteur'
     | '/api/chat'
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/conditions-utilisation'
     | '/cookies'
     | '/mentions-legales'
+    | '/phrasebook'
     | '/politique-confidentialite'
     | '/traducteur'
     | '/api/chat'
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/conditions-utilisation'
     | '/cookies'
     | '/mentions-legales'
+    | '/phrasebook'
     | '/politique-confidentialite'
     | '/traducteur'
     | '/api/chat'
@@ -154,6 +166,7 @@ export interface RootRouteChildren {
   ConditionsUtilisationRoute: typeof ConditionsUtilisationRoute
   CookiesRoute: typeof CookiesRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
+  PhrasebookRoute: typeof PhrasebookRoute
   PolitiqueConfidentialiteRoute: typeof PolitiqueConfidentialiteRoute
   TraducteurRoute: typeof TraducteurRoute
   ApiChatRoute: typeof ApiChatRoute
@@ -196,6 +209,13 @@ declare module '@tanstack/react-router' {
       path: '/mentions-legales'
       fullPath: '/mentions-legales'
       preLoaderRoute: typeof MentionsLegalesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/phrasebook': {
+      id: '/phrasebook'
+      path: '/phrasebook'
+      fullPath: '/phrasebook'
+      preLoaderRoute: typeof PhrasebookRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/politique-confidentialite': {
@@ -242,6 +262,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConditionsUtilisationRoute: ConditionsUtilisationRoute,
   CookiesRoute: CookiesRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
+  PhrasebookRoute: PhrasebookRoute,
   PolitiqueConfidentialiteRoute: PolitiqueConfidentialiteRoute,
   TraducteurRoute: TraducteurRoute,
   ApiChatRoute: ApiChatRoute,
