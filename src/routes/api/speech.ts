@@ -5,6 +5,7 @@ type SpeechBody = { text?: unknown; lang?: unknown };
 const FON_INSTRUCTIONS =
   "Lis ce texte lentement et distinctement, comme une transcription phonétique destinée à un francophone. Articule chaque syllabe, sans accent anglais.";
 const FR_INSTRUCTIONS = "Lis ce texte en français, d'une voix chaleureuse, claire et posée.";
+const EN_INSTRUCTIONS = "Read this text in clear, warm, natural English at a calm pace.";
 
 export const Route = createFileRoute("/api/speech")({
   server: {
@@ -19,6 +20,12 @@ export const Route = createFileRoute("/api/speech")({
         }
         const input = text.trim().slice(0, 2000);
         const isFon = lang === "fon";
+        const instructions = isFon
+          ? FON_INSTRUCTIONS
+          : lang === "en"
+            ? EN_INSTRUCTIONS
+            : FR_INSTRUCTIONS;
+
 
         const response = await fetch("https://ai.gateway.lovable.dev/v1/audio/speech", {
           method: "POST",
@@ -30,7 +37,7 @@ export const Route = createFileRoute("/api/speech")({
             model: "openai/gpt-4o-mini-tts",
             input,
             voice: "alloy",
-            instructions: isFon ? FON_INSTRUCTIONS : FR_INSTRUCTIONS,
+            instructions,
             speed: isFon ? 0.9 : 1,
             stream_format: "sse",
             response_format: "pcm",

@@ -28,10 +28,18 @@ export const Route = createFileRoute("/")({
 type Feature = { title: string; desc: string; to?: `/${string}` };
 
 const FEATURES: Feature[] = [
-  { title: "Traduction instantanée", desc: "Français ↔ fon, en un instant.", to: "/traducteur" },
+  {
+    title: "Traduction instantanée",
+    desc: "Fon ↔ français ↔ anglais, en un instant.",
+    to: "/traducteur",
+  },
   { title: "Assistant IA", desc: "Posez vos questions et pratiquez la conversation.", to: "/assistant" },
   { title: "Leçons", desc: "Apprenez pas à pas, de manière interactive." },
-  { title: "Phrasebook", desc: "Les phrases essentielles du quotidien au Bénin." },
+  {
+    title: "Phrasebook",
+    desc: "Les phrases essentielles du quotidien au Bénin, en français et en anglais.",
+    to: "/phrasebook",
+  },
 ];
 
 function Index() {
@@ -45,8 +53,8 @@ function Index() {
           Fon<span className="text-primary">Connect</span>
         </h1>
         <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-          Supprimez la barrière de la langue : traduisez instantanément entre le français et le fon,
-          et apprenez la langue de façon simple, interactive et immersive.
+          Supprimez la barrière de la langue : traduisez instantanément entre le fon, le français et
+          l'anglais, et apprenez la langue de façon simple, interactive et immersive.
         </p>
 
         <div className="mt-6 flex flex-wrap gap-3">

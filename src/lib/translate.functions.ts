@@ -1,8 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { generateText, NoObjectGeneratedError, Output } from "ai";
 import { z } from "zod";
+import { LANG_NATIVE, type Lang } from "@/lib/languages";
 
-export type TranslationDirection = "fr-fon" | "fon-fr";
+export type { Lang };
 
 export type TranslationResult = {
   translation: string;
@@ -12,7 +13,8 @@ export type TranslationResult = {
 
 const InputSchema = z.object({
   text: z.string().min(1).max(1500),
-  direction: z.enum(["fr-fon", "fon-fr"]),
+  source: z.enum(["fr", "en", "fon"]),
+  target: z.enum(["fr", "en", "fon"]),
 });
 
 const OutputSchema = z.object({
@@ -33,16 +35,23 @@ export const translateText = createServerFn({ method: "POST" })
     const gateway = createLovableAiGatewayProvider(key);
     const model = gateway("google/gemini-3.6-flash");
 
-    const from = data.direction === "fr-fon" ? "français" : "fon (fongbe)";
-    const to = data.direction === "fr-fon" ? "fon (fongbe)" : "français";
+    const from = LANG_NATIVE[data.source];
+    const to = LANG_NATIVE[data.target];
+    const targetIsFon = data.target === "fon";
 
     const prompt = `${FON_SYSTEM_CONTEXT}
+
+Tu traduis aussi entre le français et l'anglais, et entre l'anglais et le fon, avec la même exigence de naturel.
 
 Traduis le texte suivant du ${from} vers le ${to}.
 
 Réponds avec :
 - translation : la traduction en ${to}, sans guillemets ni commentaire.
-- phonetic : une transcription phonétique simplifiée, lisible par un francophone (chaîne vide si la cible est le français).
+- phonetic : ${
+      targetIsFon
+        ? "une transcription phonétique simplifiée du fon, lisible par un francophone"
+        : "une chaîne vide"
+    }.
 - notes : entre 0 et 3 notes courtes (une phrase chacune, en français) sur le registre, une variante fréquente ou le contexte culturel.
 
 Texte à traduire :
