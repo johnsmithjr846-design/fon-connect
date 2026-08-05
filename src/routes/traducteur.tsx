@@ -10,24 +10,24 @@ import { useSpeech } from "@/hooks/useSpeech";
 import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { translateText, type TranslationDirection } from "@/lib/translate.functions";
+import { translateText } from "@/lib/translate.functions";
+import { LANGS, LANG_LABEL, type Lang } from "@/lib/languages";
 import { translateFromLocalCorpus } from "@/lib/local-corpus";
-
 
 export const Route = createFileRoute("/traducteur")({
   component: TraducteurPage,
   head: () => ({
     meta: [
-      { title: "Traducteur français ↔ fon — FonConnect" },
+      { title: "Traducteur français, anglais et fon — FonConnect" },
       {
         name: "description",
         content:
-          "Traduisez instantanément du français vers le fon et du fon vers le français, avec prononciation simplifiée et notes d'usage béninoises.",
+          "Traduisez entre le fon, le français et l'anglais : prononciation simplifiée, notes d'usage béninoises et corpus local instantané.",
       },
-      { property: "og:title", content: "Traducteur français ↔ fon — FonConnect" },
+      { property: "og:title", content: "Traducteur français, anglais et fon — FonConnect" },
       {
         property: "og:description",
-        content: "Traduction IA français ↔ fon avec prononciation et notes culturelles.",
+        content: "Traduction IA fon ↔ français ↔ anglais avec prononciation et notes culturelles.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -38,39 +38,65 @@ export const Route = createFileRoute("/traducteur")({
 
 const MAX = 1500;
 
+function LangSelect({
+  value,
+  exclude,
+  onChange,
+  label,
+}: {
+  value: Lang;
+  exclude: Lang;
+  onChange: (lang: Lang) => void;
+  label: string;
+}) {
+  return (
+    <select
+      aria-label={label}
+      value={value}
+      onChange={(e) => onChange(e.target.value as Lang)}
+      className="rounded-md border border-input bg-secondary px-3 py-1.5 text-sm font-medium text-secondary-foreground"
+    >
+      {LANGS.filter((l) => l.code !== exclude).map((l) => (
+        <option key={l.code} value={l.code}>
+          {l.label}
+        </option>
+      ))}
+    </select>
+  );
+}
+
 function TraducteurPage() {
-  const [direction, setDirection] = useState<TranslationDirection>("fr-fon");
+  const [source, setSource] = useState<Lang>("fr");
+  const [target, setTarget] = useState<Lang>("fon");
   const [text, setText] = useState("");
   const [copied, setCopied] = useState(false);
 
   const translate = useServerFn(translateText);
   const mutation = useMutation({
-    mutationFn: (input: { text: string; direction: TranslationDirection }) => {
-      const local = translateFromLocalCorpus(input.text, input.direction);
+    mutationFn: (input: { text: string; source: Lang; target: Lang }) => {
+      const local = translateFromLocalCorpus(input.text, input.source, input.target);
       return local ? Promise.resolve(local) : translate({ data: input });
     },
   });
 
-  const recorder = useVoiceRecorder({ language: direction === "fr-fon" ? "fr" : undefined });
+  const recorder = useVoiceRecorder({ language: source === "fon" ? undefined : source });
   const speech = useSpeech();
 
-  const sourceLabel = direction === "fr-fon" ? "Français" : "Fon";
-  const targetLabel = direction === "fr-fon" ? "Fon" : "Français";
-  const targetIsFon = direction === "fr-fon";
+  const targetIsFon = target === "fon";
 
   const onMicStop = async () => {
     const transcript = await recorder.stopAndTranscribe();
     if (!transcript) return;
     const value = transcript.slice(0, MAX);
     setText(value);
-    mutation.mutate({ text: value, direction });
+    mutation.mutate({ text: value, source, target });
   };
 
   const onSpeakResult = () => {
     const data = mutation.data;
     if (!data) return;
     const spoken = targetIsFon ? data.phonetic || data.translation : data.translation;
-    void speech.speak("result", spoken, targetIsFon ? "fon" : "fr");
+    void speech.speak("result", spoken, targetIsFon ? "fon" : target === "en" ? "en" : "fr");
   };
 
   const onCopy = async () => {
@@ -80,38 +106,59 @@ function TraducteurPage() {
     setTimeout(() => setCopied(false), 1500);
   };
 
+  const swap = () => {
+    setSource(target);
+    setTarget(source);
+    mutation.reset();
+  };
+
+  const placeholder =
+    source === "fr"
+      ? "Bonjour, comment allez-vous ?"
+      : source === "en"
+        ? "Hello, how are you?"
+        : "A fɔ́n gánjí à ?";
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <SiteHeader />
       <main className="mx-auto w-full max-w-3xl flex-1 px-5 py-10">
         <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-          Traducteur français ↔ fon
+          Traducteur fon · français · anglais
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Le fon n'est pas pris en charge par les traducteurs génériques : FonConnect utilise sa
-          son corpus local prioritaire, puis son IA linguistique pour les phrases inconnues.
+          Le fon n'est pas pris en charge par les traducteurs génériques : FonConnect utilise son
+          corpus local prioritaire, puis son IA linguistique pour les phrases inconnues.
         </p>
 
-        <div className="mt-6 flex items-center justify-center gap-3 text-sm font-medium">
-          <span className="rounded-md bg-secondary px-3 py-1.5 text-secondary-foreground">
-            {sourceLabel}
-          </span>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm">
+          <LangSelect
+            value={source}
+            exclude={target}
+            onChange={(l) => {
+              setSource(l);
+              mutation.reset();
+            }}
+            label="Langue source"
+          />
           <Button
             type="button"
             variant="outline"
             size="icon"
             aria-label="Inverser le sens de traduction"
-            onClick={() => {
-              setDirection((d) => (d === "fr-fon" ? "fon-fr" : "fr-fon"));
-              mutation.reset();
-            }}
+            onClick={swap}
           >
             <ArrowLeftRight className="size-4" />
           </Button>
-          <span className="rounded-md bg-secondary px-3 py-1.5 text-secondary-foreground">
-            {targetLabel}
-          </span>
+          <LangSelect
+            value={target}
+            exclude={source}
+            onChange={(l) => {
+              setTarget(l);
+              mutation.reset();
+            }}
+            label="Langue cible"
+          />
         </div>
 
         <form
@@ -120,18 +167,14 @@ function TraducteurPage() {
             e.preventDefault();
             const value = text.trim();
             if (!value) return;
-            mutation.mutate({ text: value.slice(0, MAX), direction });
+            mutation.mutate({ text: value.slice(0, MAX), source, target });
           }}
         >
           <Textarea
             value={text}
             onChange={(e) => setText(e.target.value.slice(0, MAX))}
             rows={5}
-            placeholder={
-              direction === "fr-fon"
-                ? "Bonjour, comment allez-vous ?"
-                : "Kudó, a fɔ́n gánjí à ?"
-            }
+            placeholder={placeholder}
             className="resize-y text-base"
           />
           <div className="flex items-center justify-between gap-3">
@@ -163,7 +206,6 @@ function TraducteurPage() {
           </p>
         )}
 
-
         {mutation.isError && (
           <p className="mt-6 rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
             {mutation.error instanceof Error
@@ -176,7 +218,7 @@ function TraducteurPage() {
           <section className="mt-6 rounded-xl border border-border bg-card p-5">
             <div className="flex items-start justify-between gap-4">
               <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-                {targetLabel}
+                {LANG_LABEL[target]}
               </h2>
               <div className="flex items-center gap-1">
                 <SpeakButton
