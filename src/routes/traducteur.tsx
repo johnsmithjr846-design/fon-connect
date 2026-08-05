@@ -11,6 +11,7 @@ import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { translateText, type TranslationDirection } from "@/lib/translate.functions";
+import { translateFromLocalCorpus } from "@/lib/local-corpus";
 
 
 export const Route = createFileRoute("/traducteur")({
@@ -44,8 +45,10 @@ function TraducteurPage() {
 
   const translate = useServerFn(translateText);
   const mutation = useMutation({
-    mutationFn: (input: { text: string; direction: TranslationDirection }) =>
-      translate({ data: input }),
+    mutationFn: (input: { text: string; direction: TranslationDirection }) => {
+      const local = translateFromLocalCorpus(input.text, input.direction);
+      return local ? Promise.resolve(local) : translate({ data: input });
+    },
   });
 
   const recorder = useVoiceRecorder({ language: direction === "fr-fon" ? "fr" : undefined });
@@ -87,7 +90,7 @@ function TraducteurPage() {
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Le fon n'est pas pris en charge par les traducteurs génériques : FonConnect utilise sa
-          propre IA linguistique, entraînée sur les usages du quotidien au Bénin.
+          son corpus local prioritaire, puis son IA linguistique pour les phrases inconnues.
         </p>
 
         <div className="mt-6 flex items-center justify-center gap-3 text-sm font-medium">

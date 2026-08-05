@@ -23,7 +23,7 @@ export const Route = createFileRoute("/api/speech")({
         const response = await fetch("https://ai.gateway.lovable.dev/v1/audio/speech", {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${key}`,
+            "Lovable-API-Key": key,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
