@@ -26,11 +26,11 @@ export const Route = createFileRoute("/")({
 });
 
 const FEATURES = [
-  { title: "Traduction instantanée", desc: "Français ↔ fon, en un instant." },
-  { title: "Assistant IA", desc: "Posez vos questions et pratiquez la conversation." },
+  { title: "Traduction instantanée", desc: "Français ↔ fon, en un instant.", to: "/traducteur" },
+  { title: "Assistant IA", desc: "Posez vos questions et pratiquez la conversation.", to: "/assistant" },
   { title: "Leçons", desc: "Apprenez pas à pas, de manière interactive." },
   { title: "Phrasebook", desc: "Les phrases essentielles du quotidien au Bénin." },
-];
+] as const;
 
 function Index() {
   return (
