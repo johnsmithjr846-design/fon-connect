@@ -63,12 +63,27 @@ function Index() {
         </div>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
-          {FEATURES.map((f) => (
-            <div key={f.title} className="rounded-xl border border-border bg-card p-5">
-              <h2 className="text-base font-semibold text-card-foreground">{f.title}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{f.desc}</p>
-            </div>
-          ))}
+          {FEATURES.map((f) => {
+            const body = (
+              <>
+                <h2 className="text-base font-semibold text-card-foreground">{f.title}</h2>
+                <p className="mt-1 text-sm text-muted-foreground">{f.desc}</p>
+              </>
+            );
+            return f.to ? (
+              <Link
+                key={f.title}
+                to={f.to}
+                className="rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/50 hover:bg-accent"
+              >
+                {body}
+              </Link>
+            ) : (
+              <div key={f.title} className="rounded-xl border border-border bg-card p-5">
+                {body}
+              </div>
+            );
+          })}
         </div>
       </main>
 
