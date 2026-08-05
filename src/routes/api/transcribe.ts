@@ -38,7 +38,7 @@ export const Route = createFileRoute("/api/transcribe")({
 
         const response = await fetch("https://ai.gateway.lovable.dev/v1/audio/transcriptions", {
           method: "POST",
-          headers: { Authorization: `Bearer ${key}` },
+          headers: { "Lovable-API-Key": key },
           body: upstream,
         });
 

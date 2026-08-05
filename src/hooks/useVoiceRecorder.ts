@@ -91,10 +91,21 @@ export function useVoiceRecorder(options?: { language?: string }) {
       sourceRef.current = source;
       nodeRef.current = node;
       setStatus("recording");
-    } catch {
+    } catch (cause) {
       cleanup();
       setStatus("idle");
-      setError("Micro indisponible. Autorisez l'accès au microphone puis réessayez.");
+      const insecure = !window.isSecureContext;
+      const unsupported = !navigator.mediaDevices?.getUserMedia;
+      const denied = cause instanceof DOMException && cause.name === "NotAllowedError";
+      setError(
+        insecure
+          ? "Le micro exige une connexion HTTPS sécurisée."
+          : unsupported
+            ? "Cette application APK n'expose pas le micro à la page web. Activez l'autorisation microphone dans AppGeyser et dans les réglages Android."
+            : denied
+              ? "Accès au micro refusé. Autorisez le microphone pour l'application dans les réglages Android."
+              : "Micro indisponible. Fermez les autres applications utilisant le micro puis réessayez.",
+      );
     }
   }, [cleanup]);
 
