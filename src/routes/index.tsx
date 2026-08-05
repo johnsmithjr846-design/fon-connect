@@ -53,8 +53,8 @@ function Index() {
           Fon<span className="text-primary">Connect</span>
         </h1>
         <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-          Supprimez la barrière de la langue : traduisez instantanément entre le français et le fon,
-          et apprenez la langue de façon simple, interactive et immersive.
+          Supprimez la barrière de la langue : traduisez instantanément entre le fon, le français et
+          l'anglais, et apprenez la langue de façon simple, interactive et immersive.
         </p>
 
         <div className="mt-6 flex flex-wrap gap-3">
