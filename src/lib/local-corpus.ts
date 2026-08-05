@@ -1,15 +1,6 @@
-import type { TranslationDirection, TranslationResult } from "@/lib/translate.functions";
-
-type CorpusEntry = {
-  fon: string;
-  fr: string;
-  en?: string;
-  phonetic?: string;
-};
-
-// Corpus local embarqué : enrichi dès que le fichier JSON/CSV contenant les
-// 219 entrées réelles est fourni. Les fichiers actuels ne contiennent que son index.
-const CORPUS: CorpusEntry[] = [{ fon: "Un ɖo mɔ", fr: "Je vais bien", en: "I'm fine" }];
+import type { Lang } from "@/lib/languages";
+import type { TranslationResult } from "@/lib/translate.functions";
+import { PHRASEBOOK_ENTRIES, type PhraseEntry } from "@/lib/phrasebook-data";
 
 function normalize(value: string) {
   return value
@@ -20,19 +11,23 @@ function normalize(value: string) {
     .replace(/\s+/g, " ");
 }
 
+function valueFor(entry: PhraseEntry, lang: Lang) {
+  return lang === "fon" ? entry.fon : lang === "en" ? entry.en : entry.fr;
+}
+
 export function translateFromLocalCorpus(
   text: string,
-  direction: TranslationDirection,
+  source: Lang,
+  target: Lang,
 ): TranslationResult | null {
+  if (source === target) return null;
   const query = normalize(text);
-  const entry = CORPUS.find((item) =>
-    normalize(direction === "fr-fon" ? item.fr : item.fon) === query,
-  );
+  const entry = PHRASEBOOK_ENTRIES.find((item) => normalize(valueFor(item, source)) === query);
   if (!entry) return null;
 
   return {
-    translation: direction === "fr-fon" ? entry.fon : entry.fr,
-    phonetic: direction === "fr-fon" ? (entry.phonetic ?? "") : "",
-    notes: ["Traduction vérifiée issue du corpus local FonConnect."],
+    translation: valueFor(entry, target),
+    phonetic: target === "fon" ? (entry.phonetic ?? "") : "",
+    notes: ["Traduction vérifiée issue du corpus local FonConnect (hors ligne, instantanée)."],
   };
 }
