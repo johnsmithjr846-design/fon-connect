@@ -11,15 +11,22 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AssistantRouteImport } from './routes/assistant'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ConditionsUtilisationRouteImport } from './routes/conditions-utilisation'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
+import { Route as MotDePasseOublieRouteImport } from './routes/mot-de-passe-oublie'
 import { Route as PhrasebookRouteImport } from './routes/phrasebook'
 import { Route as PolitiqueConfidentialiteRouteImport } from './routes/politique-confidentialite'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TraducteurRouteImport } from './routes/traducteur'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiSpeechRouteImport } from './routes/api/speech'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
+import { Route as LeconsIndexRouteImport } from './routes/lecons.index'
+import { Route as LeconsModuleIdIndexRouteImport } from './routes/lecons.$moduleId.index'
+import { Route as LeconsModuleIdLessonIdRouteImport } from './routes/lecons.$moduleId.$lessonId'
+import { Route as LeconsModuleIdQuizRouteImport } from './routes/lecons.$moduleId.quiz'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -29,6 +36,11 @@ const IndexRoute = IndexRouteImport.update({
 const AssistantRoute = AssistantRouteImport.update({
   id: '/assistant',
   path: '/assistant',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConditionsUtilisationRoute = ConditionsUtilisationRouteImport.update({
@@ -46,6 +58,11 @@ const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
   path: '/mentions-legales',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MotDePasseOublieRoute = MotDePasseOublieRouteImport.update({
+  id: '/mot-de-passe-oublie',
+  path: '/mot-de-passe-oublie',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PhrasebookRoute = PhrasebookRouteImport.update({
   id: '/phrasebook',
   path: '/phrasebook',
@@ -57,6 +74,11 @@ const PolitiqueConfidentialiteRoute =
     path: '/politique-confidentialite',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TraducteurRoute = TraducteurRouteImport.update({
   id: '/traducteur',
   path: '/traducteur',
@@ -77,101 +99,170 @@ const ApiTranscribeRoute = ApiTranscribeRouteImport.update({
   path: '/api/transcribe',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LeconsIndexRoute = LeconsIndexRouteImport.update({
+  id: '/lecons/',
+  path: '/lecons/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeconsModuleIdIndexRoute = LeconsModuleIdIndexRouteImport.update({
+  id: '/lecons/$moduleId/',
+  path: '/lecons/$moduleId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeconsModuleIdLessonIdRoute = LeconsModuleIdLessonIdRouteImport.update({
+  id: '/lecons/$moduleId/$lessonId',
+  path: '/lecons/$moduleId/$lessonId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeconsModuleIdQuizRoute = LeconsModuleIdQuizRouteImport.update({
+  id: '/lecons/$moduleId/quiz',
+  path: '/lecons/$moduleId/quiz',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/assistant': typeof AssistantRoute
+  '/auth': typeof AuthRoute
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/phrasebook': typeof PhrasebookRoute
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
   '/api/speech': typeof ApiSpeechRoute
   '/api/transcribe': typeof ApiTranscribeRoute
+  '/lecons/': typeof LeconsIndexRoute
+  '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
+  '/lecons/$moduleId/quiz': typeof LeconsModuleIdQuizRoute
+  '/lecons/$moduleId/': typeof LeconsModuleIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/assistant': typeof AssistantRoute
+  '/auth': typeof AuthRoute
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/phrasebook': typeof PhrasebookRoute
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
   '/api/speech': typeof ApiSpeechRoute
   '/api/transcribe': typeof ApiTranscribeRoute
+  '/lecons': typeof LeconsIndexRoute
+  '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
+  '/lecons/$moduleId/quiz': typeof LeconsModuleIdQuizRoute
+  '/lecons/$moduleId': typeof LeconsModuleIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/assistant': typeof AssistantRoute
+  '/auth': typeof AuthRoute
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/phrasebook': typeof PhrasebookRoute
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
   '/api/speech': typeof ApiSpeechRoute
   '/api/transcribe': typeof ApiTranscribeRoute
+  '/lecons/': typeof LeconsIndexRoute
+  '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
+  '/lecons/$moduleId/quiz': typeof LeconsModuleIdQuizRoute
+  '/lecons/$moduleId/': typeof LeconsModuleIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/assistant'
+    | '/auth'
     | '/conditions-utilisation'
     | '/cookies'
     | '/mentions-legales'
+    | '/mot-de-passe-oublie'
     | '/phrasebook'
     | '/politique-confidentialite'
+    | '/reset-password'
     | '/traducteur'
     | '/api/chat'
     | '/api/speech'
     | '/api/transcribe'
+    | '/lecons/'
+    | '/lecons/$moduleId/$lessonId'
+    | '/lecons/$moduleId/quiz'
+    | '/lecons/$moduleId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/assistant'
+    | '/auth'
     | '/conditions-utilisation'
     | '/cookies'
     | '/mentions-legales'
+    | '/mot-de-passe-oublie'
     | '/phrasebook'
     | '/politique-confidentialite'
+    | '/reset-password'
     | '/traducteur'
     | '/api/chat'
     | '/api/speech'
     | '/api/transcribe'
+    | '/lecons'
+    | '/lecons/$moduleId/$lessonId'
+    | '/lecons/$moduleId/quiz'
+    | '/lecons/$moduleId'
   id:
     | '__root__'
     | '/'
     | '/assistant'
+    | '/auth'
     | '/conditions-utilisation'
     | '/cookies'
     | '/mentions-legales'
+    | '/mot-de-passe-oublie'
     | '/phrasebook'
     | '/politique-confidentialite'
+    | '/reset-password'
     | '/traducteur'
     | '/api/chat'
     | '/api/speech'
     | '/api/transcribe'
+    | '/lecons/'
+    | '/lecons/$moduleId/$lessonId'
+    | '/lecons/$moduleId/quiz'
+    | '/lecons/$moduleId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AssistantRoute: typeof AssistantRoute
+  AuthRoute: typeof AuthRoute
   ConditionsUtilisationRoute: typeof ConditionsUtilisationRoute
   CookiesRoute: typeof CookiesRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
+  MotDePasseOublieRoute: typeof MotDePasseOublieRoute
   PhrasebookRoute: typeof PhrasebookRoute
   PolitiqueConfidentialiteRoute: typeof PolitiqueConfidentialiteRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   TraducteurRoute: typeof TraducteurRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiSpeechRoute: typeof ApiSpeechRoute
   ApiTranscribeRoute: typeof ApiTranscribeRoute
+  LeconsIndexRoute: typeof LeconsIndexRoute
+  LeconsModuleIdLessonIdRoute: typeof LeconsModuleIdLessonIdRoute
+  LeconsModuleIdQuizRoute: typeof LeconsModuleIdQuizRoute
+  LeconsModuleIdIndexRoute: typeof LeconsModuleIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -188,6 +279,13 @@ declare module '@tanstack/react-router' {
       path: '/assistant'
       fullPath: '/assistant'
       preLoaderRoute: typeof AssistantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/conditions-utilisation': {
@@ -211,6 +309,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MentionsLegalesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mot-de-passe-oublie': {
+      id: '/mot-de-passe-oublie'
+      path: '/mot-de-passe-oublie'
+      fullPath: '/mot-de-passe-oublie'
+      preLoaderRoute: typeof MotDePasseOublieRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/phrasebook': {
       id: '/phrasebook'
       path: '/phrasebook'
@@ -223,6 +328,13 @@ declare module '@tanstack/react-router' {
       path: '/politique-confidentialite'
       fullPath: '/politique-confidentialite'
       preLoaderRoute: typeof PolitiqueConfidentialiteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/traducteur': {
@@ -253,32 +365,57 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiTranscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lecons/': {
+      id: '/lecons/'
+      path: '/lecons'
+      fullPath: '/lecons/'
+      preLoaderRoute: typeof LeconsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lecons/$moduleId/': {
+      id: '/lecons/$moduleId/'
+      path: '/lecons/$moduleId'
+      fullPath: '/lecons/$moduleId/'
+      preLoaderRoute: typeof LeconsModuleIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lecons/$moduleId/$lessonId': {
+      id: '/lecons/$moduleId/$lessonId'
+      path: '/lecons/$moduleId/$lessonId'
+      fullPath: '/lecons/$moduleId/$lessonId'
+      preLoaderRoute: typeof LeconsModuleIdLessonIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lecons/$moduleId/quiz': {
+      id: '/lecons/$moduleId/quiz'
+      path: '/lecons/$moduleId/quiz'
+      fullPath: '/lecons/$moduleId/quiz'
+      preLoaderRoute: typeof LeconsModuleIdQuizRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AssistantRoute: AssistantRoute,
+  AuthRoute: AuthRoute,
   ConditionsUtilisationRoute: ConditionsUtilisationRoute,
   CookiesRoute: CookiesRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
+  MotDePasseOublieRoute: MotDePasseOublieRoute,
   PhrasebookRoute: PhrasebookRoute,
   PolitiqueConfidentialiteRoute: PolitiqueConfidentialiteRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   TraducteurRoute: TraducteurRoute,
   ApiChatRoute: ApiChatRoute,
   ApiSpeechRoute: ApiSpeechRoute,
   ApiTranscribeRoute: ApiTranscribeRoute,
+  LeconsIndexRoute: LeconsIndexRoute,
+  LeconsModuleIdLessonIdRoute: LeconsModuleIdLessonIdRoute,
+  LeconsModuleIdQuizRoute: LeconsModuleIdQuizRoute,
+  LeconsModuleIdIndexRoute: LeconsModuleIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
