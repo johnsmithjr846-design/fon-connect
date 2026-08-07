@@ -25,6 +25,7 @@ import { Route as ApiSpeechRouteImport } from './routes/api/speech'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 import { Route as LeconsIndexRouteImport } from './routes/lecons.index'
 import { Route as LeconsModuleIdIndexRouteImport } from './routes/lecons.$moduleId.index'
+import { Route as LeconsModuleIdLessonIdRouteImport } from './routes/lecons.$moduleId.$lessonId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -107,6 +108,11 @@ const LeconsModuleIdIndexRoute = LeconsModuleIdIndexRouteImport.update({
   path: '/lecons/$moduleId/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LeconsModuleIdLessonIdRoute = LeconsModuleIdLessonIdRouteImport.update({
+  id: '/lecons/$moduleId/$lessonId',
+  path: '/lecons/$moduleId/$lessonId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/api/speech': typeof ApiSpeechRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/lecons/': typeof LeconsIndexRoute
+  '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
   '/lecons/$moduleId/': typeof LeconsModuleIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -142,6 +149,7 @@ export interface FileRoutesByTo {
   '/api/speech': typeof ApiSpeechRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/lecons': typeof LeconsIndexRoute
+  '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
   '/lecons/$moduleId': typeof LeconsModuleIdIndexRoute
 }
 export interface FileRoutesById {
@@ -161,6 +169,7 @@ export interface FileRoutesById {
   '/api/speech': typeof ApiSpeechRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/lecons/': typeof LeconsIndexRoute
+  '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
   '/lecons/$moduleId/': typeof LeconsModuleIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -181,6 +190,7 @@ export interface FileRouteTypes {
     | '/api/speech'
     | '/api/transcribe'
     | '/lecons/'
+    | '/lecons/$moduleId/$lessonId'
     | '/lecons/$moduleId/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -199,6 +209,7 @@ export interface FileRouteTypes {
     | '/api/speech'
     | '/api/transcribe'
     | '/lecons'
+    | '/lecons/$moduleId/$lessonId'
     | '/lecons/$moduleId'
   id:
     | '__root__'
@@ -217,6 +228,7 @@ export interface FileRouteTypes {
     | '/api/speech'
     | '/api/transcribe'
     | '/lecons/'
+    | '/lecons/$moduleId/$lessonId'
     | '/lecons/$moduleId/'
   fileRoutesById: FileRoutesById
 }
@@ -236,6 +248,7 @@ export interface RootRouteChildren {
   ApiSpeechRoute: typeof ApiSpeechRoute
   ApiTranscribeRoute: typeof ApiTranscribeRoute
   LeconsIndexRoute: typeof LeconsIndexRoute
+  LeconsModuleIdLessonIdRoute: typeof LeconsModuleIdLessonIdRoute
   LeconsModuleIdIndexRoute: typeof LeconsModuleIdIndexRoute
 }
 
@@ -353,6 +366,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeconsModuleIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lecons/$moduleId/$lessonId': {
+      id: '/lecons/$moduleId/$lessonId'
+      path: '/lecons/$moduleId/$lessonId'
+      fullPath: '/lecons/$moduleId/$lessonId'
+      preLoaderRoute: typeof LeconsModuleIdLessonIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -372,6 +392,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiSpeechRoute: ApiSpeechRoute,
   ApiTranscribeRoute: ApiTranscribeRoute,
   LeconsIndexRoute: LeconsIndexRoute,
+  LeconsModuleIdLessonIdRoute: LeconsModuleIdLessonIdRoute,
   LeconsModuleIdIndexRoute: LeconsModuleIdIndexRoute,
 }
 export const routeTree = rootRouteImport
