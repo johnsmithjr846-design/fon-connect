@@ -18,6 +18,7 @@ import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as MotDePasseOublieRouteImport } from './routes/mot-de-passe-oublie'
 import { Route as PhrasebookRouteImport } from './routes/phrasebook'
 import { Route as PolitiqueConfidentialiteRouteImport } from './routes/politique-confidentialite'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TraducteurRouteImport } from './routes/traducteur'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiSpeechRouteImport } from './routes/api/speech'
@@ -69,6 +70,11 @@ const PolitiqueConfidentialiteRoute =
     path: '/politique-confidentialite',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TraducteurRoute = TraducteurRouteImport.update({
   id: '/traducteur',
   path: '/traducteur',
@@ -100,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/phrasebook': typeof PhrasebookRoute
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
   '/api/speech': typeof ApiSpeechRoute
@@ -115,6 +122,7 @@ export interface FileRoutesByTo {
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/phrasebook': typeof PhrasebookRoute
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
   '/api/speech': typeof ApiSpeechRoute
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/phrasebook': typeof PhrasebookRoute
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
   '/api/speech': typeof ApiSpeechRoute
@@ -148,6 +157,7 @@ export interface FileRouteTypes {
     | '/mot-de-passe-oublie'
     | '/phrasebook'
     | '/politique-confidentialite'
+    | '/reset-password'
     | '/traducteur'
     | '/api/chat'
     | '/api/speech'
@@ -163,6 +173,7 @@ export interface FileRouteTypes {
     | '/mot-de-passe-oublie'
     | '/phrasebook'
     | '/politique-confidentialite'
+    | '/reset-password'
     | '/traducteur'
     | '/api/chat'
     | '/api/speech'
@@ -178,6 +189,7 @@ export interface FileRouteTypes {
     | '/mot-de-passe-oublie'
     | '/phrasebook'
     | '/politique-confidentialite'
+    | '/reset-password'
     | '/traducteur'
     | '/api/chat'
     | '/api/speech'
@@ -194,6 +206,7 @@ export interface RootRouteChildren {
   MotDePasseOublieRoute: typeof MotDePasseOublieRoute
   PhrasebookRoute: typeof PhrasebookRoute
   PolitiqueConfidentialiteRoute: typeof PolitiqueConfidentialiteRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   TraducteurRoute: typeof TraducteurRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiSpeechRoute: typeof ApiSpeechRoute
@@ -265,6 +278,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PolitiqueConfidentialiteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/traducteur': {
       id: '/traducteur'
       path: '/traducteur'
@@ -306,6 +326,7 @@ const rootRouteChildren: RootRouteChildren = {
   MotDePasseOublieRoute: MotDePasseOublieRoute,
   PhrasebookRoute: PhrasebookRoute,
   PolitiqueConfidentialiteRoute: PolitiqueConfidentialiteRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   TraducteurRoute: TraducteurRoute,
   ApiChatRoute: ApiChatRoute,
   ApiSpeechRoute: ApiSpeechRoute,
