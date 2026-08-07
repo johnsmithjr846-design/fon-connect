@@ -34,7 +34,7 @@ const FEATURES: Feature[] = [
     to: "/traducteur",
   },
   { title: "Assistant IA", desc: "Posez vos questions et pratiquez la conversation.", to: "/assistant" },
-  { title: "Leçons", desc: "Apprenez pas à pas, de manière interactive." },
+  { title: "Leçons", desc: "Apprenez pas à pas, de manière interactive.", to: "/lecons" },
   {
     title: "Phrasebook",
     desc: "Les phrases essentielles du quotidien au Bénin, en français et en anglais.",
