@@ -26,6 +26,7 @@ import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 import { Route as LeconsIndexRouteImport } from './routes/lecons.index'
 import { Route as LeconsModuleIdIndexRouteImport } from './routes/lecons.$moduleId.index'
 import { Route as LeconsModuleIdLessonIdRouteImport } from './routes/lecons.$moduleId.$lessonId'
+import { Route as LeconsModuleIdQuizRouteImport } from './routes/lecons.$moduleId.quiz'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -113,6 +114,11 @@ const LeconsModuleIdLessonIdRoute = LeconsModuleIdLessonIdRouteImport.update({
   path: '/lecons/$moduleId/$lessonId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LeconsModuleIdQuizRoute = LeconsModuleIdQuizRouteImport.update({
+  id: '/lecons/$moduleId/quiz',
+  path: '/lecons/$moduleId/quiz',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -131,6 +137,7 @@ export interface FileRoutesByFullPath {
   '/api/transcribe': typeof ApiTranscribeRoute
   '/lecons/': typeof LeconsIndexRoute
   '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
+  '/lecons/$moduleId/quiz': typeof LeconsModuleIdQuizRoute
   '/lecons/$moduleId/': typeof LeconsModuleIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -150,6 +157,7 @@ export interface FileRoutesByTo {
   '/api/transcribe': typeof ApiTranscribeRoute
   '/lecons': typeof LeconsIndexRoute
   '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
+  '/lecons/$moduleId/quiz': typeof LeconsModuleIdQuizRoute
   '/lecons/$moduleId': typeof LeconsModuleIdIndexRoute
 }
 export interface FileRoutesById {
@@ -170,6 +178,7 @@ export interface FileRoutesById {
   '/api/transcribe': typeof ApiTranscribeRoute
   '/lecons/': typeof LeconsIndexRoute
   '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
+  '/lecons/$moduleId/quiz': typeof LeconsModuleIdQuizRoute
   '/lecons/$moduleId/': typeof LeconsModuleIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -191,6 +200,7 @@ export interface FileRouteTypes {
     | '/api/transcribe'
     | '/lecons/'
     | '/lecons/$moduleId/$lessonId'
+    | '/lecons/$moduleId/quiz'
     | '/lecons/$moduleId/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -210,6 +220,7 @@ export interface FileRouteTypes {
     | '/api/transcribe'
     | '/lecons'
     | '/lecons/$moduleId/$lessonId'
+    | '/lecons/$moduleId/quiz'
     | '/lecons/$moduleId'
   id:
     | '__root__'
@@ -229,6 +240,7 @@ export interface FileRouteTypes {
     | '/api/transcribe'
     | '/lecons/'
     | '/lecons/$moduleId/$lessonId'
+    | '/lecons/$moduleId/quiz'
     | '/lecons/$moduleId/'
   fileRoutesById: FileRoutesById
 }
@@ -249,6 +261,7 @@ export interface RootRouteChildren {
   ApiTranscribeRoute: typeof ApiTranscribeRoute
   LeconsIndexRoute: typeof LeconsIndexRoute
   LeconsModuleIdLessonIdRoute: typeof LeconsModuleIdLessonIdRoute
+  LeconsModuleIdQuizRoute: typeof LeconsModuleIdQuizRoute
   LeconsModuleIdIndexRoute: typeof LeconsModuleIdIndexRoute
 }
 
@@ -373,6 +386,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeconsModuleIdLessonIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lecons/$moduleId/quiz': {
+      id: '/lecons/$moduleId/quiz'
+      path: '/lecons/$moduleId/quiz'
+      fullPath: '/lecons/$moduleId/quiz'
+      preLoaderRoute: typeof LeconsModuleIdQuizRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -393,6 +413,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiTranscribeRoute: ApiTranscribeRoute,
   LeconsIndexRoute: LeconsIndexRoute,
   LeconsModuleIdLessonIdRoute: LeconsModuleIdLessonIdRoute,
+  LeconsModuleIdQuizRoute: LeconsModuleIdQuizRoute,
   LeconsModuleIdIndexRoute: LeconsModuleIdIndexRoute,
 }
 export const routeTree = rootRouteImport
