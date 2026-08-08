@@ -115,16 +115,38 @@ function AuthPage() {
 
         <form onSubmit={(e) => void onSubmit(e)} className="space-y-4">
           {mode === "signup" && (
-            <div className="space-y-1.5">
-              <Label htmlFor="pseudo">Pseudo</Label>
-              <Input
-                id="pseudo"
-                value={pseudo}
-                onChange={(e) => setPseudo(e.target.value)}
-                placeholder="Kokou"
-                autoComplete="nickname"
-              />
-            </div>
+            <>
+              <div className="space-y-1.5">
+                <Label htmlFor="pseudo">Pseudo</Label>
+                <Input
+                  id="pseudo"
+                  value={pseudo}
+                  onChange={(e) => setPseudo(e.target.value)}
+                  placeholder="Kokou"
+                  autoComplete="nickname"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="app-language">{t("auth.language")}</Label>
+                <select
+                  id="app-language"
+                  value={appLang}
+                  onChange={(e) => {
+                    const next = e.target.value as UiLang;
+                    setAppLang(next);
+                    setLang(next);
+                  }}
+                  className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground"
+                >
+                  {UI_LANGS.map((l) => (
+                    <option key={l.code} value={l.code}>
+                      {l.label}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-muted-foreground">{t("auth.languageHint")}</p>
+              </div>
+            </>
           )}
           <div className="space-y-1.5">
             <Label htmlFor="email">E-mail</Label>
