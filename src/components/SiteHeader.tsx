@@ -2,17 +2,20 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthUser } from "@/hooks/useAuthUser";
+import { useI18n } from "@/lib/i18n/LanguageProvider";
+import { UI_LANGS, type TranslationKey, type UiLang } from "@/lib/i18n/dictionary";
 
-const NAV = [
-  { to: "/", label: "Accueil" },
-  { to: "/traducteur", label: "Traducteur" },
-  { to: "/lecons", label: "Leçons" },
-  { to: "/phrasebook", label: "Phrasebook" },
-  { to: "/assistant", label: "Assistant IA" },
-] as const;
+const NAV: { to: "/" | "/traducteur" | "/lecons" | "/phrasebook" | "/assistant"; key: TranslationKey }[] = [
+  { to: "/", key: "nav.home" },
+  { to: "/traducteur", key: "nav.translator" },
+  { to: "/lecons", key: "nav.lessons" },
+  { to: "/phrasebook", key: "nav.phrasebook" },
+  { to: "/assistant", key: "nav.assistant" },
+];
 
 export function SiteHeader() {
   const { user, loading } = useAuthUser();
+  const { t, lang, setLang } = useI18n();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -38,10 +41,34 @@ export function SiteHeader() {
                 activeOptions={{ exact: item.to === "/" }}
                 className="text-muted-foreground transition-colors hover:text-primary [&.active]:font-semibold [&.active]:text-primary"
               >
-                {item.label}
+                {t(item.key)}
               </Link>
             </li>
           ))}
+          <li>
+            <select
+              aria-label={t("lang.switchLabel")}
+              value={lang}
+              onChange={(e) => setLang(e.target.value as UiLang)}
+              className="rounded-md border border-input bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground"
+            >
+              {UI_LANGS.map((l) => (
+                <option key={l.code} value={l.code}>
+                  {l.code.toUpperCase()}
+                </option>
+              ))}
+            </select>
+          </li>
+          {!loading && user && (
+            <li>
+              <Link
+                to="/profil"
+                className="text-muted-foreground transition-colors hover:text-primary [&.active]:font-semibold [&.active]:text-primary"
+              >
+                {t("nav.profile")}
+              </Link>
+            </li>
+          )}
           <li>
             {loading ? null : user ? (
               <button
@@ -49,14 +76,14 @@ export function SiteHeader() {
                 onClick={() => void signOut()}
                 className="text-muted-foreground transition-colors hover:text-primary"
               >
-                Déconnexion
+                {t("nav.signOut")}
               </button>
             ) : (
               <Link
                 to="/auth"
                 className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               >
-                Se connecter
+                {t("nav.signIn")}
               </Link>
             )}
           </li>
