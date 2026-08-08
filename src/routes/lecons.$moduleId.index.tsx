@@ -3,6 +3,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SignInBanner } from "@/components/lessons/SignInBanner";
 import { getModule } from "@/lib/lessons-data";
 import { useLessonProgress } from "@/hooks/useLessonProgress";
+import { useI18n } from "@/lib/i18n/LanguageProvider";
 
 export const Route = createFileRoute("/lecons/$moduleId/")({
   loader: ({ params }) => {
@@ -33,6 +34,7 @@ function ModulePage() {
   const { moduleId } = Route.useParams();
   const module = getModule(moduleId)!;
   const { isLessonDone, bestQuiz } = useLessonProgress();
+  const { t, lang } = useI18n();
   const quiz = bestQuiz(moduleId);
   const allDone = module.lessons.every((l) => isLessonDone(moduleId, l.id));
 
@@ -44,12 +46,14 @@ function ModulePage() {
           to="/lecons"
           className="text-sm text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
         >
-          ← Tous les modules
+          ← {t("lessons.allModules")}
         </Link>
         <h1 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-          {module.title}
+          {lang === "en" ? module.titleEn : module.title}
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">{module.description}</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {lang === "en" ? module.descriptionEn : module.description}
+        </p>
 
         <SignInBanner />
 
@@ -62,13 +66,19 @@ function ModulePage() {
               <>
                 <div className="flex items-center justify-between gap-3">
                   <h2 className="text-base font-semibold text-card-foreground">
-                    {index + 1}. {lesson.title}
+                    {index + 1}. {lang === "en" ? lesson.titleEn : lesson.title}
                   </h2>
                   <span className="text-xs text-muted-foreground">
-                    {done ? "Terminée ✓" : locked ? "Verrouillée" : `${lesson.items.length} phrases`}
+                    {done
+                      ? t("lessons.done")
+                      : locked
+                        ? t("lessons.locked")
+                        : t("lessons.phraseCount", { count: lesson.items.length })}
                   </span>
                 </div>
-                <p className="mt-1 text-sm text-muted-foreground">{lesson.objective}</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {lang === "en" ? lesson.objectiveEn : lesson.objective}
+                </p>
               </>
             );
             return (
@@ -92,12 +102,10 @@ function ModulePage() {
         </ol>
 
         <div className="mt-8 rounded-xl border border-border bg-card p-5">
-          <h2 className="text-base font-semibold text-card-foreground">Quiz du module</h2>
+          <h2 className="text-base font-semibold text-card-foreground">{t("lessons.moduleQuiz")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            {allDone
-              ? "Toutes les leçons sont terminées : testez-vous."
-              : "Terminez les leçons pour débloquer le quiz."}
-            {quiz ? ` Meilleur score : ${quiz.score}/${quiz.total}.` : ""}
+            {allDone ? t("lessons.quizUnlocked") : t("lessons.quizLocked")}
+            {quiz ? t("lessons.bestScore", { score: quiz.score, total: quiz.total }) : ""}
           </p>
           {allDone && (
             <Link
@@ -105,7 +113,7 @@ function ModulePage() {
               params={{ moduleId }}
               className="mt-4 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
-              Lancer le quiz
+              {t("lessons.startQuiz")}
             </Link>
           )}
         </div>

@@ -6,6 +6,8 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useI18n } from "@/lib/i18n/LanguageProvider";
+import { UI_LANGS, type UiLang } from "@/lib/i18n/dictionary";
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
@@ -31,10 +33,12 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const { t, lang, setLang } = useI18n();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [pseudo, setPseudo] = useState("");
+  const [appLang, setAppLang] = useState<UiLang>(lang);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -115,16 +119,38 @@ function AuthPage() {
 
         <form onSubmit={(e) => void onSubmit(e)} className="space-y-4">
           {mode === "signup" && (
-            <div className="space-y-1.5">
-              <Label htmlFor="pseudo">Pseudo</Label>
-              <Input
-                id="pseudo"
-                value={pseudo}
-                onChange={(e) => setPseudo(e.target.value)}
-                placeholder="Kokou"
-                autoComplete="nickname"
-              />
-            </div>
+            <>
+              <div className="space-y-1.5">
+                <Label htmlFor="pseudo">Pseudo</Label>
+                <Input
+                  id="pseudo"
+                  value={pseudo}
+                  onChange={(e) => setPseudo(e.target.value)}
+                  placeholder="Kokou"
+                  autoComplete="nickname"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="app-language">{t("auth.language")}</Label>
+                <select
+                  id="app-language"
+                  value={appLang}
+                  onChange={(e) => {
+                    const next = e.target.value as UiLang;
+                    setAppLang(next);
+                    setLang(next);
+                  }}
+                  className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground"
+                >
+                  {UI_LANGS.map((l) => (
+                    <option key={l.code} value={l.code}>
+                      {l.label}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-muted-foreground">{t("auth.languageHint")}</p>
+              </div>
+            </>
           )}
           <div className="space-y-1.5">
             <Label htmlFor="email">E-mail</Label>

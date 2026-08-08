@@ -1,0 +1,318 @@
+export type UiLang = "fr" | "en";
+
+export const UI_LANGS: { code: UiLang; label: string }[] = [
+  { code: "fr", label: "Français" },
+  { code: "en", label: "English" },
+];
+
+export function isUiLang(value: unknown): value is UiLang {
+  return value === "fr" || value === "en";
+}
+
+const fr = {
+  // Header / nav
+  "nav.home": "Accueil",
+  "nav.translator": "Traducteur",
+  "nav.lessons": "Leçons",
+  "nav.phrasebook": "Phrasebook",
+  "nav.assistant": "Assistant IA",
+  "nav.profile": "Profil",
+  "nav.signIn": "Se connecter",
+  "nav.signOut": "Déconnexion",
+  "lang.switchLabel": "Langue de l'interface",
+
+  // Home
+  "home.eyebrow": "Bénin · Fon",
+  "home.intro":
+    "Supprimez la barrière de la langue : traduisez instantanément entre le fon, le français et l'anglais, et apprenez la langue de façon simple, interactive et immersive.",
+  "home.ctaTranslator": "Ouvrir le traducteur",
+  "home.ctaAssistant": "Parler à l'assistant IA",
+  "home.feature.translation.title": "Traduction instantanée",
+  "home.feature.translation.desc": "Fon ↔ français ↔ anglais, en un instant.",
+  "home.feature.assistant.title": "Assistant IA",
+  "home.feature.assistant.desc": "Posez vos questions et pratiquez la conversation.",
+  "home.feature.lessons.title": "Leçons",
+  "home.feature.lessons.desc": "Apprenez pas à pas, de manière interactive.",
+  "home.feature.phrasebook.title": "Phrasebook",
+  "home.feature.phrasebook.desc":
+    "Les phrases essentielles du quotidien au Bénin, en français et en anglais.",
+
+  // Legal links
+  "legal.terms": "Conditions d'utilisation",
+  "legal.privacy": "Politique de confidentialité",
+  "legal.cookies": "Cookies",
+  "legal.notice": "Mentions légales",
+
+  // Translator
+  "translator.title": "Traducteur fon · français · anglais",
+  "translator.intro":
+    "Le fon n'est pas pris en charge par les traducteurs génériques : FonConnect utilise son corpus local prioritaire, puis son IA linguistique pour les phrases inconnues.",
+  "translator.sourceLang": "Langue source",
+  "translator.targetLang": "Langue cible",
+  "translator.swap": "Inverser le sens de traduction",
+  "translator.submit": "Traduire",
+  "translator.recording": "Enregistrement…",
+  "translator.transcribing": "Transcription…",
+  "translator.failed": "La traduction a échoué. Réessayez.",
+  "translator.copy": "Copier",
+  "translator.copied": "Copié",
+  "translator.pronunciation": "Prononciation",
+  "translator.fonAudioNote":
+    "Lecture audio approximative : aucune voix de synthèse n'existe encore pour le fon. Des enregistrements de locuteurs natifs arriveront prochainement.",
+
+  // Assistant
+  "assistant.title": "Ayi, votre assistant fon",
+  "assistant.intro":
+    "Posez vos questions sur la langue et la culture du Bénin, pratiquez la conversation et faites corriger votre prononciation.",
+  "assistant.handsFreeOn": "Mains libres activé",
+  "assistant.handsFree": "Mains libres",
+  "assistant.handsFreeHint": "Lecture automatique des réponses d'Ayi.",
+  "assistant.thinking": "Ayi réfléchit…",
+  "assistant.failed": "La discussion a échoué. Vérifiez votre connexion et réessayez.",
+  "assistant.placeholder": "Écrivez ou dictez votre message…",
+  "assistant.recording": "Enregistrement en cours…",
+  "assistant.transcribing": "Transcription…",
+  "assistant.suggestion1": "Comment saluer un aîné en fon ?",
+  "assistant.suggestion2": "Apprends-moi à négocier au marché de Dantokpa",
+  "assistant.suggestion3": "Que dire en cas d'urgence médicale ?",
+
+  // Phrasebook
+  "phrasebook.title": "Phrasebook fon · français · anglais",
+  "phrasebook.intro":
+    "{count} phrases essentielles du quotidien béninois, avec prononciation simplifiée et traduction en français et en anglais. Utilisables hors connexion par le traducteur.",
+  "phrasebook.search": "Rechercher en fon, français ou anglais…",
+  "phrasebook.searchLabel": "Rechercher une phrase",
+  "phrasebook.all": "Toutes",
+  "phrasebook.empty": "Aucune phrase ne correspond à « {query} ».",
+  "phrasebook.audioNote":
+    "La lecture audio du fon reste approximative : elle s'appuie sur la graphie phonétique en attendant des enregistrements de locuteurs natifs.",
+
+  // Lessons
+  "lessons.title": "Leçons de fon",
+  "lessons.intro":
+    "Un parcours progressif : chaque module regroupe des leçons courtes et se termine par un quiz. La prononciation s'écoute directement sur chaque phrase.",
+  "lessons.progress": "{done}/{total} leçons terminées",
+  "lessons.quizScore": " · quiz : {score}/{total}",
+  "lessons.footnote":
+    "Ce premier module reprend des phrases déjà validées du Phrasebook. D'autres modules seront ajoutés dès que le contenu pédagogique complet sera fourni.",
+  "lessons.allModules": "Tous les modules",
+  "lessons.done": "Terminée ✓",
+  "lessons.locked": "Verrouillée",
+  "lessons.phraseCount": "{count} phrases",
+  "lessons.moduleQuiz": "Quiz du module",
+  "lessons.quizUnlocked": "Toutes les leçons sont terminées : testez-vous.",
+  "lessons.quizLocked": "Terminez les leçons pour débloquer le quiz.",
+  "lessons.bestScore": " Meilleur score : {score}/{total}.",
+  "lessons.startQuiz": "Lancer le quiz",
+  "lessons.lessonCounter": "Leçon {index} / {total}",
+  "lessons.markDone": "Marquer comme terminée",
+  "lessons.alreadyDone": "Revoir plus tard · déjà terminée",
+  "lessons.saving": "Enregistrement…",
+  "lessons.saveFailed": "L'enregistrement a échoué.",
+  "lessons.signInLesson": "Connectez-vous pour marquer cette leçon comme terminée.",
+  "lessons.signInScore": "Connectez-vous pour enregistrer votre score.",
+  "lessons.signInDefault": "Connectez-vous pour sauvegarder votre progression.",
+
+  // Quiz
+  "quiz.title": "Quiz · {module}",
+  "quiz.intro": "{total} questions. Il faut {ratio} % de bonnes réponses pour valider le module.",
+  "quiz.score": "Score : {score}/{total}",
+  "quiz.passed": "· Module validé 🏅",
+  "quiz.retry": "· Réessayez",
+  "quiz.restart": "Recommencer",
+  "quiz.backToModules": "Retour aux modules",
+  "quiz.submit": "Valider mes réponses",
+
+  // Auth
+  "auth.signIn": "Se connecter",
+  "auth.signUp": "Créer un compte",
+  "auth.intro": "Votre progression dans les leçons de fon est sauvegardée sur votre compte.",
+  "auth.google": "Continuer avec Google",
+  "auth.or": "ou",
+  "auth.pseudo": "Pseudo",
+  "auth.email": "E-mail",
+  "auth.password": "Mot de passe",
+  "auth.language": "Langue de l'application",
+  "auth.languageHint": "Vous pourrez la changer à tout moment dans votre profil.",
+  "auth.submitSignIn": "Se connecter",
+  "auth.submitSignUp": "Créer mon compte",
+  "auth.busy": "Un instant…",
+  "auth.toSignUp": "Pas encore de compte ? Créer un compte",
+  "auth.toSignIn": "J'ai déjà un compte",
+  "auth.forgot": "Mot de passe oublié ?",
+  "auth.failed": "La connexion a échoué.",
+  "auth.googleFailed": "La connexion Google a échoué.",
+  "auth.checkEmail": "Compte créé. Vérifiez votre boîte mail pour confirmer votre adresse.",
+
+  // Profile
+  "profile.title": "Mon profil",
+  "profile.intro": "Modifiez votre pseudo et la langue de l'application.",
+  "profile.pseudo": "Pseudo",
+  "profile.language": "Langue de l'application",
+  "profile.save": "Enregistrer",
+  "profile.saving": "Enregistrement…",
+  "profile.saved": "Profil mis à jour.",
+  "profile.failed": "La mise à jour a échoué.",
+  "profile.loading": "Chargement…",
+  "profile.signedInAs": "Connecté avec {email}",
+  "profile.signOut": "Se déconnecter",
+
+  "common.back": "Retour à l'accueil",
+} as const;
+
+export type TranslationKey = keyof typeof fr;
+
+const en: Record<TranslationKey, string> = {
+  "nav.home": "Home",
+  "nav.translator": "Translator",
+  "nav.lessons": "Lessons",
+  "nav.phrasebook": "Phrasebook",
+  "nav.assistant": "AI Assistant",
+  "nav.profile": "Profile",
+  "nav.signIn": "Sign in",
+  "nav.signOut": "Sign out",
+  "lang.switchLabel": "Interface language",
+
+  "home.eyebrow": "Benin · Fon",
+  "home.intro":
+    "Break the language barrier: translate instantly between Fon, French and English, and learn the language in a simple, interactive and immersive way.",
+  "home.ctaTranslator": "Open the translator",
+  "home.ctaAssistant": "Talk to the AI assistant",
+  "home.feature.translation.title": "Instant translation",
+  "home.feature.translation.desc": "Fon ↔ French ↔ English, in a moment.",
+  "home.feature.assistant.title": "AI Assistant",
+  "home.feature.assistant.desc": "Ask your questions and practise conversation.",
+  "home.feature.lessons.title": "Lessons",
+  "home.feature.lessons.desc": "Learn step by step, interactively.",
+  "home.feature.phrasebook.title": "Phrasebook",
+  "home.feature.phrasebook.desc":
+    "Everyday essential phrases in Benin, in French and English.",
+
+  "legal.terms": "Terms of use",
+  "legal.privacy": "Privacy policy",
+  "legal.cookies": "Cookies",
+  "legal.notice": "Legal notice",
+
+  "translator.title": "Fon · French · English translator",
+  "translator.intro":
+    "Fon is not supported by generic translators: FonConnect first uses its local corpus, then its language AI for unknown sentences.",
+  "translator.sourceLang": "Source language",
+  "translator.targetLang": "Target language",
+  "translator.swap": "Swap translation direction",
+  "translator.submit": "Translate",
+  "translator.recording": "Recording…",
+  "translator.transcribing": "Transcribing…",
+  "translator.failed": "Translation failed. Please try again.",
+  "translator.copy": "Copy",
+  "translator.copied": "Copied",
+  "translator.pronunciation": "Pronunciation",
+  "translator.fonAudioNote":
+    "Approximate audio playback: no synthetic voice exists for Fon yet. Native speaker recordings are coming soon.",
+
+  "assistant.title": "Ayi, your Fon assistant",
+  "assistant.intro":
+    "Ask about the language and culture of Benin, practise conversation and get your pronunciation corrected.",
+  "assistant.handsFreeOn": "Hands-free on",
+  "assistant.handsFree": "Hands-free",
+  "assistant.handsFreeHint": "Ayi's answers are read out automatically.",
+  "assistant.thinking": "Ayi is thinking…",
+  "assistant.failed": "The chat failed. Check your connection and try again.",
+  "assistant.placeholder": "Type or dictate your message…",
+  "assistant.recording": "Recording…",
+  "assistant.transcribing": "Transcribing…",
+  "assistant.suggestion1": "How do I greet an elder in Fon?",
+  "assistant.suggestion2": "Teach me how to bargain at Dantokpa market",
+  "assistant.suggestion3": "What should I say in a medical emergency?",
+
+  "phrasebook.title": "Fon · French · English phrasebook",
+  "phrasebook.intro":
+    "{count} essential everyday phrases from Benin, with simplified pronunciation and French and English translations. Also used offline by the translator.",
+  "phrasebook.search": "Search in Fon, French or English…",
+  "phrasebook.searchLabel": "Search a phrase",
+  "phrasebook.all": "All",
+  "phrasebook.empty": "No phrase matches “{query}”.",
+  "phrasebook.audioNote":
+    "Fon audio playback stays approximate: it relies on the phonetic spelling until native speaker recordings are available.",
+
+  "lessons.title": "Fon lessons",
+  "lessons.intro":
+    "A progressive path: each module gathers short lessons and ends with a quiz. Pronunciation can be played on every sentence.",
+  "lessons.progress": "{done}/{total} lessons completed",
+  "lessons.quizScore": " · quiz: {score}/{total}",
+  "lessons.footnote":
+    "This first module reuses phrases already validated in the Phrasebook. More modules will be added as the full teaching content arrives.",
+  "lessons.allModules": "All modules",
+  "lessons.done": "Completed ✓",
+  "lessons.locked": "Locked",
+  "lessons.phraseCount": "{count} phrases",
+  "lessons.moduleQuiz": "Module quiz",
+  "lessons.quizUnlocked": "All lessons are completed: test yourself.",
+  "lessons.quizLocked": "Finish the lessons to unlock the quiz.",
+  "lessons.bestScore": " Best score: {score}/{total}.",
+  "lessons.startQuiz": "Start the quiz",
+  "lessons.lessonCounter": "Lesson {index} / {total}",
+  "lessons.markDone": "Mark as completed",
+  "lessons.alreadyDone": "Review later · already completed",
+  "lessons.saving": "Saving…",
+  "lessons.saveFailed": "Saving failed.",
+  "lessons.signInLesson": "Sign in to mark this lesson as completed.",
+  "lessons.signInScore": "Sign in to save your score.",
+  "lessons.signInDefault": "Sign in to save your progress.",
+
+  "quiz.title": "Quiz · {module}",
+  "quiz.intro": "{total} questions. You need {ratio}% correct answers to pass the module.",
+  "quiz.score": "Score: {score}/{total}",
+  "quiz.passed": "· Module passed 🏅",
+  "quiz.retry": "· Try again",
+  "quiz.restart": "Restart",
+  "quiz.backToModules": "Back to modules",
+  "quiz.submit": "Submit my answers",
+
+  "auth.signIn": "Sign in",
+  "auth.signUp": "Create an account",
+  "auth.intro": "Your progress in the Fon lessons is saved to your account.",
+  "auth.google": "Continue with Google",
+  "auth.or": "or",
+  "auth.pseudo": "Nickname",
+  "auth.email": "Email",
+  "auth.password": "Password",
+  "auth.language": "App language",
+  "auth.languageHint": "You can change it any time in your profile.",
+  "auth.submitSignIn": "Sign in",
+  "auth.submitSignUp": "Create my account",
+  "auth.busy": "One moment…",
+  "auth.toSignUp": "No account yet? Create one",
+  "auth.toSignIn": "I already have an account",
+  "auth.forgot": "Forgot your password?",
+  "auth.failed": "Sign-in failed.",
+  "auth.googleFailed": "Google sign-in failed.",
+  "auth.checkEmail": "Account created. Check your inbox to confirm your address.",
+
+  "profile.title": "My profile",
+  "profile.intro": "Change your nickname and the app language.",
+  "profile.pseudo": "Nickname",
+  "profile.language": "App language",
+  "profile.save": "Save",
+  "profile.saving": "Saving…",
+  "profile.saved": "Profile updated.",
+  "profile.failed": "Update failed.",
+  "profile.loading": "Loading…",
+  "profile.signedInAs": "Signed in as {email}",
+  "profile.signOut": "Sign out",
+
+  "common.back": "Back to home",
+};
+
+export const DICTIONARY: Record<UiLang, Record<TranslationKey, string>> = { fr, en };
+
+export function translate(
+  lang: UiLang,
+  key: TranslationKey,
+  vars?: Record<string, string | number>,
+): string {
+  const template = DICTIONARY[lang][key] ?? DICTIONARY.fr[key] ?? key;
+  if (!vars) return template;
+  return template.replace(/\{(\w+)\}/g, (match, name: string) =>
+    name in vars ? String(vars[name]) : match,
+  );
+}

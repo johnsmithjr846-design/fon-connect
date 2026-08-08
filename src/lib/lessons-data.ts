@@ -5,6 +5,7 @@ export type LessonItem = PhraseEntry;
 export type QuizQuestion = {
   id: string;
   prompt: string;
+  promptEn: string;
   answer: string;
   options: string[];
 };
@@ -12,15 +13,20 @@ export type QuizQuestion = {
 export type Lesson = {
   id: string;
   title: string;
+  titleEn: string;
   objective: string;
+  objectiveEn: string;
   items: LessonItem[];
 };
 
 export type LessonModule = {
   id: string;
   title: string;
+  titleEn: string;
   level: string;
+  levelEn: string;
   description: string;
+  descriptionEn: string;
   lessons: Lesson[];
   quiz: QuizQuestion[];
 };
@@ -47,6 +53,7 @@ function buildQuiz(moduleId: string, items: LessonItem[]): QuizQuestion[] {
     return {
       id: `${moduleId}-q${index + 1}`,
       prompt: `Comment dit-on « ${item.fr} » en fon ?`,
+      promptEn: `How do you say “${item.en}” in Fon?`,
       answer: item.fon,
       options,
     };
@@ -57,19 +64,25 @@ const decouverteLessons: Lesson[] = [
   {
     id: "salutations",
     title: "Saluer au quotidien",
+    titleEn: "Everyday greetings",
     objective: "Ouvrir une conversation avec respect au Bénin.",
+    objectiveEn: "Open a conversation respectfully in Benin.",
     items: categoryEntries("salutations"),
   },
   {
     id: "politesse",
     title: "Les formules de politesse",
+    titleEn: "Polite expressions",
     objective: "Remercier, s'excuser et demander poliment.",
+    objectiveEn: "Thank, apologise and ask politely.",
     items: categoryEntries("politesse"),
   },
   {
     id: "presentation",
     title: "Se présenter",
+    titleEn: "Introducing yourself",
     objective: "Dire qui vous êtes et d'où vous venez.",
+    objectiveEn: "Say who you are and where you come from.",
     items: categoryEntries("presentation"),
   },
 ];
@@ -78,9 +91,13 @@ export const LESSON_MODULES: LessonModule[] = [
   {
     id: "decouverte",
     title: "Découverte du fon",
+    titleEn: "Discovering Fon",
     level: "Débutant",
+    levelEn: "Beginner",
     description:
       "Module de démonstration construit à partir des phrases validées du Phrasebook : saluer, remercier et se présenter.",
+    descriptionEn:
+      "Starter module built from the validated Phrasebook sentences: greeting, thanking and introducing yourself.",
     lessons: decouverteLessons,
     quiz: buildQuiz("decouverte", decouverteLessons.flatMap((l) => l.items)),
   },

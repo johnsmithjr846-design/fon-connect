@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LEGAL_LINKS } from "@/components/legal/LegalLayout";
 import { SiteHeader } from "@/components/SiteHeader";
+import { useI18n } from "@/lib/i18n/LanguageProvider";
+import type { TranslationKey } from "@/lib/i18n/dictionary";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -18,82 +20,78 @@ export const Route = createFileRoute("/")({
         content: "FonConnect supprime la barrière de la langue : traduction instantanée français ↔ fon, assistant IA, leçons et guide de conversation.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [{ rel: "canonical", href: "/" }],
   }),
 });
 
-type Feature = { title: string; desc: string; to?: `/${string}` };
+type Feature = {
+  titleKey: TranslationKey;
+  descKey: TranslationKey;
+  to: "/traducteur" | "/assistant" | "/lecons" | "/phrasebook";
+};
 
 const FEATURES: Feature[] = [
   {
-    title: "Traduction instantanée",
-    desc: "Fon ↔ français ↔ anglais, en un instant.",
+    titleKey: "home.feature.translation.title",
+    descKey: "home.feature.translation.desc",
     to: "/traducteur",
   },
-  { title: "Assistant IA", desc: "Posez vos questions et pratiquez la conversation.", to: "/assistant" },
-  { title: "Leçons", desc: "Apprenez pas à pas, de manière interactive.", to: "/lecons" },
-  {
-    title: "Phrasebook",
-    desc: "Les phrases essentielles du quotidien au Bénin, en français et en anglais.",
-    to: "/phrasebook",
-  },
+  { titleKey: "home.feature.assistant.title", descKey: "home.feature.assistant.desc", to: "/assistant" },
+  { titleKey: "home.feature.lessons.title", descKey: "home.feature.lessons.desc", to: "/lecons" },
+  { titleKey: "home.feature.phrasebook.title", descKey: "home.feature.phrasebook.desc", to: "/phrasebook" },
 ];
 
+const LEGAL_KEYS: Record<string, TranslationKey> = {
+  "/conditions-utilisation": "legal.terms",
+  "/politique-confidentialite": "legal.privacy",
+  "/cookies": "legal.cookies",
+  "/mentions-legales": "legal.notice",
+};
+
 function Index() {
+  const { t } = useI18n();
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <SiteHeader />
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-5 py-14">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Bénin · Fon</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+          {t("home.eyebrow")}
+        </p>
         <h1 className="mt-3 text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl">
           Fon<span className="text-primary">Connect</span>
         </h1>
-        <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-          Supprimez la barrière de la langue : traduisez instantanément entre le fon, le français et
-          l'anglais, et apprenez la langue de façon simple, interactive et immersive.
-        </p>
+        <p className="mt-4 text-base leading-relaxed text-muted-foreground">{t("home.intro")}</p>
 
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             to="/traducteur"
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Ouvrir le traducteur
+            {t("home.ctaTranslator")}
           </Link>
           <Link
             to="/assistant"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            Parler à l'assistant IA
+            {t("home.ctaAssistant")}
           </Link>
         </div>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
-          {FEATURES.map((f) => {
-            const body = (
-              <>
-                <h2 className="text-base font-semibold text-card-foreground">{f.title}</h2>
-                <p className="mt-1 text-sm text-muted-foreground">{f.desc}</p>
-              </>
-            );
-            return f.to ? (
-              <Link
-                key={f.title}
-                to={f.to}
-                className="rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/50 hover:bg-accent"
-              >
-                {body}
-              </Link>
-            ) : (
-              <div key={f.title} className="rounded-xl border border-border bg-card p-5">
-                {body}
-              </div>
-            );
-          })}
+          {FEATURES.map((f) => (
+            <Link
+              key={f.to}
+              to={f.to}
+              className="rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/50 hover:bg-accent"
+            >
+              <h2 className="text-base font-semibold text-card-foreground">{t(f.titleKey)}</h2>
+              <p className="mt-1 text-sm text-muted-foreground">{t(f.descKey)}</p>
+            </Link>
+          ))}
         </div>
       </main>
 
@@ -106,7 +104,7 @@ function Index() {
                   to={l.to}
                   className="text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
                 >
-                  {l.label}
+                  {LEGAL_KEYS[l.to] ? t(LEGAL_KEYS[l.to]!) : l.label}
                 </Link>
               </li>
             ))}
