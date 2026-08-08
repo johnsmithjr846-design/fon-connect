@@ -9,6 +9,7 @@ import { getLesson, getModule } from "@/lib/lessons-data";
 import { completeLesson } from "@/lib/lessons.functions";
 import { useLessonProgress } from "@/hooks/useLessonProgress";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n/LanguageProvider";
 
 export const Route = createFileRoute("/lecons/$moduleId/$lessonId")({
   loader: ({ params }) => {
@@ -42,6 +43,7 @@ function LessonPage() {
   const lesson = getLesson(moduleId, lessonId)!;
   const speech = useSpeech();
   const { user, isLessonDone, invalidate } = useLessonProgress();
+  const { t, lang } = useI18n();
   const done = isLessonDone(moduleId, lessonId);
 
   const markDone = useServerFn(completeLesson);
@@ -64,17 +66,19 @@ function LessonPage() {
           params={{ moduleId }}
           className="text-sm text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
         >
-          ← {module.title}
+          ← {lang === "en" ? module.titleEn : module.title}
         </Link>
         <p className="mt-3 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-          Leçon {index + 1} / {module.lessons.length}
+          {t("lessons.lessonCounter", { index: index + 1, total: module.lessons.length })}
         </p>
         <h1 className="mt-1 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-          {lesson.title}
+          {lang === "en" ? lesson.titleEn : lesson.title}
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">{lesson.objective}</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {lang === "en" ? lesson.objectiveEn : lesson.objective}
+        </p>
 
-        <SignInBanner message="Connectez-vous pour marquer cette leçon comme terminée." />
+        <SignInBanner messageKey="lessons.signInLesson" />
 
         {speech.error && (
           <p className="mt-4 rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
@@ -92,8 +96,12 @@ function LessonPage() {
                   {item.phonetic && (
                     <p className="mt-0.5 text-xs italic text-muted-foreground">[{item.phonetic}]</p>
                   )}
-                  <p className="mt-1 text-sm text-foreground">🇫🇷 {item.fr}</p>
-                  <p className="mt-0.5 text-sm text-muted-foreground">🇬🇧 {item.en}</p>
+                  <p className="mt-1 text-sm text-foreground">
+                    {lang === "en" ? `🇬🇧 ${item.en}` : `🇫🇷 ${item.fr}`}
+                  </p>
+                  <p className="mt-0.5 text-sm text-muted-foreground">
+                    {lang === "en" ? `🇫🇷 ${item.fr}` : `🇬🇧 ${item.en}`}
+                  </p>
                 </div>
                 <SpeakButton
                   speaking={speech.speakingId === id}
@@ -111,10 +119,14 @@ function LessonPage() {
             disabled={!user || mutation.isPending}
             onClick={() => mutation.mutate()}
           >
-            {done ? "Revoir plus tard · déjà terminée" : mutation.isPending ? "Enregistrement…" : "Marquer comme terminée"}
+            {done
+              ? t("lessons.alreadyDone")
+              : mutation.isPending
+                ? t("lessons.saving")
+                : t("lessons.markDone")}
           </Button>
           {mutation.isError && (
-            <span className="text-sm text-destructive">L'enregistrement a échoué.</span>
+            <span className="text-sm text-destructive">{t("lessons.saveFailed")}</span>
           )}
         </div>
       </main>

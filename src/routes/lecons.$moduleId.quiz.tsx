@@ -8,6 +8,7 @@ import { getModule, QUIZ_PASS_RATIO } from "@/lib/lessons-data";
 import { saveQuizResult } from "@/lib/lessons.functions";
 import { useLessonProgress } from "@/hooks/useLessonProgress";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n/LanguageProvider";
 
 export const Route = createFileRoute("/lecons/$moduleId/quiz")({
   loader: ({ params }) => {
@@ -40,6 +41,7 @@ function QuizPage() {
   const navigate = useNavigate();
   const module = getModule(moduleId)!;
   const { user, invalidate } = useLessonProgress();
+  const { t, lang } = useI18n();
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
 
@@ -68,23 +70,22 @@ function QuizPage() {
           params={{ moduleId }}
           className="text-sm text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
         >
-          ← {module.title}
+          ← {lang === "en" ? module.titleEn : module.title}
         </Link>
         <h1 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-          Quiz · {module.title}
+          {t("quiz.title", { module: lang === "en" ? module.titleEn : module.title })}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          {total} questions. Il faut {Math.round(QUIZ_PASS_RATIO * 100)} % de bonnes réponses pour
-          valider le module.
+          {t("quiz.intro", { total, ratio: Math.round(QUIZ_PASS_RATIO * 100) })}
         </p>
 
-        <SignInBanner message="Connectez-vous pour enregistrer votre score." />
+        <SignInBanner messageKey="lessons.signInScore" />
 
         <div className="mt-8 space-y-5">
           {module.quiz.map((q, i) => (
             <fieldset key={q.id} className="rounded-xl border border-border bg-card p-5">
               <legend className="px-1 text-sm font-semibold text-card-foreground">
-                {i + 1}. {q.prompt}
+                {i + 1}. {lang === "en" ? q.promptEn : q.prompt}
               </legend>
               <div className="mt-3 space-y-2">
                 {q.options.map((option) => {
@@ -124,7 +125,7 @@ function QuizPage() {
         {submitted ? (
           <div className="mt-8 rounded-xl border border-border bg-card p-5">
             <p className="text-base font-semibold text-card-foreground">
-              Score : {score}/{total} {passed ? "· Module validé 🏅" : "· Réessayez"}
+              {t("quiz.score", { score, total })} {passed ? t("quiz.passed") : t("quiz.retry")}
             </p>
             <div className="mt-4 flex flex-wrap gap-3">
               <Button
@@ -135,10 +136,10 @@ function QuizPage() {
                   setSubmitted(false);
                 }}
               >
-                Recommencer
+                {t("quiz.restart")}
               </Button>
               <Button type="button" onClick={() => void navigate({ to: "/lecons" })}>
-                Retour aux modules
+                {t("quiz.backToModules")}
               </Button>
             </div>
           </div>
@@ -149,7 +150,7 @@ function QuizPage() {
             disabled={Object.keys(answers).length < total}
             onClick={onSubmit}
           >
-            Valider mes réponses
+            {t("quiz.submit")}
           </Button>
         )}
       </main>
