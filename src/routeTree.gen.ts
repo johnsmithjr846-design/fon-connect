@@ -18,6 +18,7 @@ import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as MotDePasseOublieRouteImport } from './routes/mot-de-passe-oublie'
 import { Route as PhrasebookRouteImport } from './routes/phrasebook'
 import { Route as PolitiqueConfidentialiteRouteImport } from './routes/politique-confidentialite'
+import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TraducteurRouteImport } from './routes/traducteur'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
@@ -74,6 +75,11 @@ const PolitiqueConfidentialiteRoute =
     path: '/politique-confidentialite',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ProfilRoute = ProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/phrasebook': typeof PhrasebookRoute
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
+  '/profil': typeof ProfilRoute
   '/reset-password': typeof ResetPasswordRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
@@ -150,6 +157,7 @@ export interface FileRoutesByTo {
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/phrasebook': typeof PhrasebookRoute
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
+  '/profil': typeof ProfilRoute
   '/reset-password': typeof ResetPasswordRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
@@ -171,6 +179,7 @@ export interface FileRoutesById {
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/phrasebook': typeof PhrasebookRoute
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
+  '/profil': typeof ProfilRoute
   '/reset-password': typeof ResetPasswordRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
@@ -193,6 +202,7 @@ export interface FileRouteTypes {
     | '/mot-de-passe-oublie'
     | '/phrasebook'
     | '/politique-confidentialite'
+    | '/profil'
     | '/reset-password'
     | '/traducteur'
     | '/api/chat'
@@ -213,6 +223,7 @@ export interface FileRouteTypes {
     | '/mot-de-passe-oublie'
     | '/phrasebook'
     | '/politique-confidentialite'
+    | '/profil'
     | '/reset-password'
     | '/traducteur'
     | '/api/chat'
@@ -233,6 +244,7 @@ export interface FileRouteTypes {
     | '/mot-de-passe-oublie'
     | '/phrasebook'
     | '/politique-confidentialite'
+    | '/profil'
     | '/reset-password'
     | '/traducteur'
     | '/api/chat'
@@ -254,6 +266,7 @@ export interface RootRouteChildren {
   MotDePasseOublieRoute: typeof MotDePasseOublieRoute
   PhrasebookRoute: typeof PhrasebookRoute
   PolitiqueConfidentialiteRoute: typeof PolitiqueConfidentialiteRoute
+  ProfilRoute: typeof ProfilRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   TraducteurRoute: typeof TraducteurRoute
   ApiChatRoute: typeof ApiChatRoute
@@ -328,6 +341,13 @@ declare module '@tanstack/react-router' {
       path: '/politique-confidentialite'
       fullPath: '/politique-confidentialite'
       preLoaderRoute: typeof PolitiqueConfidentialiteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profil': {
+      id: '/profil'
+      path: '/profil'
+      fullPath: '/profil'
+      preLoaderRoute: typeof ProfilRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -406,6 +426,7 @@ const rootRouteChildren: RootRouteChildren = {
   MotDePasseOublieRoute: MotDePasseOublieRoute,
   PhrasebookRoute: PhrasebookRoute,
   PolitiqueConfidentialiteRoute: PolitiqueConfidentialiteRoute,
+  ProfilRoute: ProfilRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   TraducteurRoute: TraducteurRoute,
   ApiChatRoute: ApiChatRoute,
@@ -419,13 +440,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
