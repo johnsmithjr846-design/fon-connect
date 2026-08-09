@@ -1,17 +1,17 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { LEARNING_PATHS, XP_PER_LESSON, MAX_HEARTS, HEART_REFILL_MINUTES } from "@/lib/lessons";
+import { LEARNING_PATHS, XP_PER_LESSON, MAX_HEARTS } from "@/lib/lessons";
 import { streakBonus } from "@/lib/lessons/gamification";
+import {
+  DEFAULT_STATS,
+  nextStreak,
+  refillHearts,
+  todayKey,
+  type UserStats,
+} from "@/lib/lessons/stats";
 
-export type UserStats = {
-  xp_total: number;
-  current_streak: number;
-  best_streak: number;
-  hearts: number;
-  hearts_updated_at: string;
-  last_active_day: string | null;
-};
+export type { UserStats };
 
 export type ProgressSnapshot = {
   lessons: { path_id: string | null; module_id: string; lesson_id: string; xp_earned: number }[];
@@ -20,42 +20,6 @@ export type ProgressSnapshot = {
   badges: string[];
   chests: string[];
 };
-
-const DEFAULT_STATS: UserStats = {
-  xp_total: 0,
-  current_streak: 0,
-  best_streak: 0,
-  hearts: MAX_HEARTS,
-  hearts_updated_at: new Date(0).toISOString(),
-  last_active_day: null,
-};
-
-/** Recharge progressive : 1 cœur toutes les HEART_REFILL_MINUTES minutes. */
-function refill(stats: UserStats): UserStats {
-  if (stats.hearts >= MAX_HEARTS) return stats;
-  const elapsed = Date.now() - new Date(stats.hearts_updated_at).getTime();
-  const gained = Math.floor(elapsed / (HEART_REFILL_MINUTES * 60_000));
-  if (gained <= 0) return stats;
-  const hearts = Math.min(MAX_HEARTS, stats.hearts + gained);
-  return {
-    ...stats,
-    hearts,
-    hearts_updated_at:
-      hearts >= MAX_HEARTS
-        ? new Date().toISOString()
-        : new Date(
-            new Date(stats.hearts_updated_at).getTime() + gained * HEART_REFILL_MINUTES * 60_000,
-          ).toISOString(),
-  };
-}
-
-function today(): string {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function dayDiff(from: string, to: string): number {
-  return Math.round((Date.parse(to) - Date.parse(from)) / 86_400_000);
-}
 
 export const getLessonProgress = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -82,7 +46,7 @@ export const getLessonProgress = createServerFn({ method: "GET" })
     return {
       lessons: lessons.data ?? [],
       quizzes: quizzes.data ?? [],
-      stats: refill(raw),
+      stats: refillHearts(raw),
       badges: (badges.data ?? []).map((b) => b.badge_id),
       chests: (chests.data ?? []).map((c) => c.chest_id),
     };
@@ -122,10 +86,9 @@ export const completeLesson = createServerFn({ method: "POST" })
         .eq("user_id", userId),
     ]);
 
-    const prev = refill((statsRes.data as UserStats | null) ?? DEFAULT_STATS);
-    const day = today();
-    const diff = prev.last_active_day ? dayDiff(prev.last_active_day, day) : null;
-    const streak = diff === 0 ? Math.max(prev.current_streak, 1) : diff === 1 ? prev.current_streak + 1 : 1;
+    const prev = refillHearts((statsRes.data as UserStats | null) ?? DEFAULT_STATS);
+    const day = todayKey();
+    const streak = nextStreak(prev.current_streak, prev.last_active_day);
 
     const accuracy = Math.max(0, 1 - data.mistakes / data.total);
     const bonus = streakBonus(streak) + (data.mistakes === 0 ? 0.2 : 0);
@@ -210,7 +173,7 @@ export const loseHeart = createServerFn({ method: "POST" })
   .handler(async ({ context }): Promise<{ hearts: number }> => {
     const { supabase, userId } = context;
     const { data } = await supabase.from("user_stats").select("*").eq("user_id", userId).maybeSingle();
-    const prev = refill((data as UserStats | null) ?? DEFAULT_STATS);
+    const prev = refillHearts((data as UserStats | null) ?? DEFAULT_STATS);
     const hearts = Math.max(0, prev.hearts - 1);
     const { error } = await supabase.from("user_stats").upsert(
       {
