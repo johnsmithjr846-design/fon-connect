@@ -151,11 +151,17 @@ function PathPage() {
             {allDone ? t("lessons.quizUnlocked") : t("lessons.quizLocked")}
             {quiz && t("lessons.bestScore", { score: quiz.score, total: quiz.total })}
           </p>
-          <Button asChild className="mt-4" disabled={!allDone}>
-            <Link to="/lecons/$moduleId/quiz" params={{ moduleId: path.id }}>
+          {allDone ? (
+            <Button asChild className="mt-4">
+              <Link to="/lecons/$moduleId/quiz" params={{ moduleId: path.id }}>
+                {t("lessons.startQuiz")}
+              </Link>
+            </Button>
+          ) : (
+            <Button className="mt-4" disabled>
               {t("lessons.startQuiz")}
-            </Link>
-          </Button>
+            </Button>
+          )}
         </div>
       </main>
     </div>
