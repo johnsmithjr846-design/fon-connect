@@ -147,6 +147,14 @@ const fr = {
   "lessons.aiIntro": "Discute en fon avec l'IA en utilisant le vocabulaire de la leçon.",
   "lessons.aiSend": "Envoyer",
   "lessons.aiFinish": "Terminer la conversation",
+  "lessons.pathLocked": "Terminez le parcours précédent pour débloquer celui-ci.",
+  "lessons.lessonLocked": "Terminez d'abord la leçon précédente.",
+  "lessons.lessonsCount": "{count} leçons",
+  "lessons.pathQuiz": "Quiz du parcours",
+  "lessons.aiPlaceholder": "Écris en fon…",
+  "lessons.newBadges": "Nouveau badge débloqué !",
+  "lessons.retryLesson": "Recommencer la leçon",
+  "lessons.myProgress": "Ma progression",
 
   // Quiz
   "quiz.title": "Quiz · {module}",
