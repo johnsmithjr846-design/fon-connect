@@ -22,6 +22,7 @@ import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TraducteurRouteImport } from './routes/traducteur'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiLessonChatRouteImport } from './routes/api/lesson-chat'
 import { Route as ApiSpeechRouteImport } from './routes/api/speech'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 import { Route as LeconsIndexRouteImport } from './routes/lecons.index'
@@ -95,6 +96,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiLessonChatRoute = ApiLessonChatRouteImport.update({
+  id: '/api/lesson-chat',
+  path: '/api/lesson-chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiSpeechRoute = ApiSpeechRouteImport.update({
   id: '/api/speech',
   path: '/api/speech',
@@ -140,6 +146,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/lesson-chat': typeof ApiLessonChatRoute
   '/api/speech': typeof ApiSpeechRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/lecons/': typeof LeconsIndexRoute
@@ -161,6 +168,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/lesson-chat': typeof ApiLessonChatRoute
   '/api/speech': typeof ApiSpeechRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/lecons': typeof LeconsIndexRoute
@@ -183,6 +191,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/lesson-chat': typeof ApiLessonChatRoute
   '/api/speech': typeof ApiSpeechRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/lecons/': typeof LeconsIndexRoute
@@ -206,6 +215,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/traducteur'
     | '/api/chat'
+    | '/api/lesson-chat'
     | '/api/speech'
     | '/api/transcribe'
     | '/lecons/'
@@ -227,6 +237,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/traducteur'
     | '/api/chat'
+    | '/api/lesson-chat'
     | '/api/speech'
     | '/api/transcribe'
     | '/lecons'
@@ -248,6 +259,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/traducteur'
     | '/api/chat'
+    | '/api/lesson-chat'
     | '/api/speech'
     | '/api/transcribe'
     | '/lecons/'
@@ -270,6 +282,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   TraducteurRoute: typeof TraducteurRoute
   ApiChatRoute: typeof ApiChatRoute
+  ApiLessonChatRoute: typeof ApiLessonChatRoute
   ApiSpeechRoute: typeof ApiSpeechRoute
   ApiTranscribeRoute: typeof ApiTranscribeRoute
   LeconsIndexRoute: typeof LeconsIndexRoute
@@ -371,6 +384,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/lesson-chat': {
+      id: '/api/lesson-chat'
+      path: '/api/lesson-chat'
+      fullPath: '/api/lesson-chat'
+      preLoaderRoute: typeof ApiLessonChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/speech': {
       id: '/api/speech'
       path: '/api/speech'
@@ -430,6 +450,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   TraducteurRoute: TraducteurRoute,
   ApiChatRoute: ApiChatRoute,
+  ApiLessonChatRoute: ApiLessonChatRoute,
   ApiSpeechRoute: ApiSpeechRoute,
   ApiTranscribeRoute: ApiTranscribeRoute,
   LeconsIndexRoute: LeconsIndexRoute,
@@ -440,13 +461,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

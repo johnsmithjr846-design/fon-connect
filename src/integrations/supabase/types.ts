@@ -14,33 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
+      chest_rewards: {
+        Row: {
+          chest_id: string
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+          xp_awarded: number
+        }
+        Insert: {
+          chest_id: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+          xp_awarded?: number
+        }
+        Update: {
+          chest_id?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+          xp_awarded?: number
+        }
+        Relationships: []
+      }
       lesson_progress: {
         Row: {
+          attempts: number
+          best_accuracy: number
           completed_at: string
           created_at: string
           id: string
           lesson_id: string
           module_id: string
+          path_id: string | null
           updated_at: string
           user_id: string
+          xp_earned: number
         }
         Insert: {
+          attempts?: number
+          best_accuracy?: number
           completed_at?: string
           created_at?: string
           id?: string
           lesson_id: string
           module_id: string
+          path_id?: string | null
           updated_at?: string
           user_id: string
+          xp_earned?: number
         }
         Update: {
+          attempts?: number
+          best_accuracy?: number
           completed_at?: string
           created_at?: string
           id?: string
           lesson_id?: string
           module_id?: string
+          path_id?: string | null
           updated_at?: string
           user_id?: string
+          xp_earned?: number
         }
         Relationships: []
       }
@@ -98,6 +137,69 @@ export type Database = {
           total?: number
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_badges: {
+        Row: {
+          badge_id: string
+          created_at: string
+          earned_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          badge_id: string
+          created_at?: string
+          earned_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          badge_id?: string
+          created_at?: string
+          earned_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_stats: {
+        Row: {
+          best_streak: number
+          created_at: string
+          current_streak: number
+          hearts: number
+          hearts_updated_at: string
+          last_active_day: string | null
+          updated_at: string
+          user_id: string
+          xp_total: number
+        }
+        Insert: {
+          best_streak?: number
+          created_at?: string
+          current_streak?: number
+          hearts?: number
+          hearts_updated_at?: string
+          last_active_day?: string | null
+          updated_at?: string
+          user_id: string
+          xp_total?: number
+        }
+        Update: {
+          best_streak?: number
+          created_at?: string
+          current_streak?: number
+          hearts?: number
+          hearts_updated_at?: string
+          last_active_day?: string | null
+          updated_at?: string
+          user_id?: string
+          xp_total?: number
         }
         Relationships: []
       }
