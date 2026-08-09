@@ -1,10 +1,11 @@
-import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SignInBanner } from "@/components/lessons/SignInBanner";
-import { getModule, QUIZ_PASS_RATIO } from "@/lib/lessons-data";
+import { getPath } from "@/lib/lessons";
+import { buildPathQuiz, QUIZ_PASS_RATIO } from "@/lib/lessons/quiz";
 import { saveQuizResult } from "@/lib/lessons.functions";
 import { useLessonProgress } from "@/hooks/useLessonProgress";
 import { Button } from "@/components/ui/button";
@@ -12,16 +13,21 @@ import { useI18n } from "@/lib/i18n/LanguageProvider";
 
 export const Route = createFileRoute("/lecons/$moduleId/quiz")({
   loader: ({ params }) => {
-    const module = getModule(params.moduleId);
-    if (!module) throw notFound();
-    return { title: module.title };
+    const path = getPath(params.moduleId);
+    if (!path) throw notFound();
+    return { title: path.title };
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
-      return { meta: [{ title: "Quiz indisponible — FonConnect" }, { name: "robots", content: "noindex" }] };
+      return {
+        meta: [
+          { title: "Quiz indisponible — FonConnect" },
+          { name: "robots", content: "noindex" },
+        ],
+      };
     }
     const title = `Quiz — ${loaderData.title} — FonConnect`;
-    const description = `Testez vos connaissances en fon sur le module ${loaderData.title}.`;
+    const description = `Testez vos connaissances en fon sur le parcours ${loaderData.title}.`;
     return {
       meta: [
         { title },
@@ -38,10 +44,10 @@ export const Route = createFileRoute("/lecons/$moduleId/quiz")({
 
 function QuizPage() {
   const { moduleId } = Route.useParams();
-  const navigate = useNavigate();
-  const module = getModule(moduleId)!;
+  const path = getPath(moduleId)!;
   const { user, invalidate } = useLessonProgress();
   const { t, lang } = useI18n();
+  const questions = useMemo(() => buildPathQuiz(path), [path]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
 
@@ -52,8 +58,8 @@ function QuizPage() {
     onSuccess: () => invalidate(),
   });
 
-  const total = module.quiz.length;
-  const score = module.quiz.filter((q) => answers[q.id] === q.answer).length;
+  const total = questions.length;
+  const score = questions.filter((q) => answers[q.id] === q.answer).length;
   const passed = total > 0 && score / total >= QUIZ_PASS_RATIO;
 
   function onSubmit() {
@@ -64,16 +70,16 @@ function QuizPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <SiteHeader />
-      <main className="mx-auto w-full max-w-3xl flex-1 px-5 py-10">
+      <main className="mx-auto w-full max-w-2xl flex-1 px-5 py-10">
         <Link
           to="/lecons/$moduleId"
           params={{ moduleId }}
           className="text-sm text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
         >
-          ← {lang === "en" ? module.titleEn : module.title}
+          ← {lang === "en" ? path.titleEn : path.title}
         </Link>
         <h1 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-          {t("quiz.title", { module: lang === "en" ? module.titleEn : module.title })}
+          {t("quiz.title", { module: lang === "en" ? path.titleEn : path.title })}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
           {t("quiz.intro", { total, ratio: Math.round(QUIZ_PASS_RATIO * 100) })}
@@ -82,7 +88,7 @@ function QuizPage() {
         <SignInBanner messageKey="lessons.signInScore" />
 
         <div className="mt-8 space-y-5">
-          {module.quiz.map((q, i) => (
+          {questions.map((q, i) => (
             <fieldset key={q.id} className="rounded-xl border border-border bg-card p-5">
               <legend className="px-1 text-sm font-semibold text-card-foreground">
                 {i + 1}. {lang === "en" ? q.promptEn : q.prompt}
@@ -138,8 +144,10 @@ function QuizPage() {
               >
                 {t("quiz.restart")}
               </Button>
-              <Button type="button" onClick={() => void navigate({ to: "/lecons" })}>
-                {t("quiz.backToModules")}
+              <Button asChild>
+                <Link to="/lecons/$moduleId" params={{ moduleId }}>
+                  {t("lessons.backToPath")}
+                </Link>
               </Button>
             </div>
           </div>

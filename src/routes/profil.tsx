@@ -11,6 +11,9 @@ import { useAuthUser } from "@/hooks/useAuthUser";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 import { UI_LANGS, type UiLang } from "@/lib/i18n/dictionary";
 import { getMyProfile, updateMyProfile } from "@/lib/profile.functions";
+import { BadgeGrid } from "@/components/lessons/BadgeGrid";
+import { StatsBar } from "@/components/lessons/StatsBar";
+import { useLessonProgress } from "@/hooks/useLessonProgress";
 
 export const Route = createFileRoute("/profil")({
   component: ProfilePage,
@@ -133,6 +136,8 @@ function ProfilePage() {
           </form>
         )}
 
+        <ProgressSection />
+
         <div className="mt-8 flex flex-col gap-2 text-sm">
           <button
             type="button"
@@ -156,5 +161,23 @@ function ProfilePage() {
         </div>
       </main>
     </div>
+  );
+}
+
+function ProgressSection() {
+  const { t } = useI18n();
+  const { user, badges } = useLessonProgress();
+  if (!user) return null;
+  return (
+    <section className="mt-10">
+      <h2 className="text-base font-semibold text-foreground">{t("lessons.myProgress")}</h2>
+      <StatsBar />
+      <h3 className="mt-6 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+        {t("lessons.badges")}
+      </h3>
+      <div className="mt-3">
+        <BadgeGrid owned={badges} />
+      </div>
+    </section>
   );
 }
