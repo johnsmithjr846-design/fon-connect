@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SignInBanner } from "@/components/lessons/SignInBanner";
-import { LESSON_MODULES } from "@/lib/lessons-data";
+import { StatsBar } from "@/components/lessons/StatsBar";
+import { LEARNING_PATHS } from "@/lib/lessons";
 import { useLessonProgress } from "@/hooks/useLessonProgress";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 
@@ -9,16 +10,16 @@ export const Route = createFileRoute("/lecons/")({
   component: LessonsIndex,
   head: () => ({
     meta: [
-      { title: "Leçons de fon — parcours progressif — FonConnect" },
+      { title: "Leçons de fon — 8 parcours progressifs — FonConnect" },
       {
         name: "description",
         content:
-          "Apprenez le fon du Bénin pas à pas : modules courts, vocabulaire audio, phonétique et quiz de fin de module.",
+          "Apprenez le fon du Bénin comme sur Duolingo : 8 parcours, leçons courtes, exercices, prononciation, XP, séries et badges.",
       },
-      { property: "og:title", content: "Leçons de fon — parcours progressif — FonConnect" },
+      { property: "og:title", content: "Leçons de fon — 8 parcours progressifs — FonConnect" },
       {
         property: "og:description",
-        content: "Modules courts, prononciation audio et quiz pour apprendre le fon.",
+        content: "Parcours gamifiés, exercices variés et prononciation pour apprendre le fon.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -28,7 +29,7 @@ export const Route = createFileRoute("/lecons/")({
 });
 
 function LessonsIndex() {
-  const { isLessonDone, bestQuiz } = useLessonProgress();
+  const { pathDoneCount } = useLessonProgress();
   const { t, lang } = useI18n();
 
   return (
@@ -40,46 +41,75 @@ function LessonsIndex() {
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">{t("lessons.intro")}</p>
 
+        <StatsBar />
         <SignInBanner />
 
-        <div className="mt-8 space-y-4">
-          {LESSON_MODULES.map((module) => {
-            const done = module.lessons.filter((l) => isLessonDone(module.id, l.id)).length;
-            const quiz = bestQuiz(module.id);
-            const pct = Math.round((done / module.lessons.length) * 100);
-            return (
-              <Link
-                key={module.id}
-                to="/lecons/$moduleId"
-                params={{ moduleId: module.id }}
-                className="block rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/50 hover:bg-accent"
-              >
+        <h2 className="mt-8 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+          {t("lessons.paths")}
+        </h2>
+
+        <div className="mt-4 space-y-4">
+          {LEARNING_PATHS.map((path, i) => {
+            const done = pathDoneCount(path.id);
+            const total = path.lessons.length;
+            const pct = Math.round((done / total) * 100);
+            const previous = LEARNING_PATHS[i - 1];
+            const unlocked =
+              i === 0 ||
+              (previous
+                ? pathDoneCount(previous.id) >= Math.ceil(previous.lessons.length * 0.8)
+                : true);
+
+            const inner = (
+              <>
                 <div className="flex items-center justify-between gap-3">
-                  <h2 className="text-base font-semibold text-card-foreground">
-                    {lang === "en" ? module.titleEn : module.title}
-                  </h2>
-                  <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">
-                    {lang === "en" ? module.levelEn : module.level}
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="flex size-9 items-center justify-center rounded-full text-sm font-bold text-white"
+                      style={{ backgroundColor: path.color }}
+                      aria-hidden
+                    >
+                      {path.index}
+                    </span>
+                    <h3 className="text-base font-semibold text-card-foreground">
+                      {lang === "en" ? path.titleEn : path.title}
+                    </h3>
+                  </div>
+                  <span className="shrink-0 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">
+                    {t("lessons.lessonsCount", { count: total })}
                   </span>
                 </div>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {lang === "en" ? module.descriptionEn : module.description}
-                </p>
                 <div className="mt-4 h-2 overflow-hidden rounded-full bg-muted">
-                  <div className="h-full bg-primary transition-all" style={{ width: `${pct}%` }} />
+                  <div
+                    className="h-full rounded-full transition-all"
+                    style={{ width: `${pct}%`, backgroundColor: path.color }}
+                  />
                 </div>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  {t("lessons.progress", { done, total: module.lessons.length })}
-                  {quiz
-                    ? `${t("lessons.quizScore", { score: quiz.score, total: quiz.total })}${quiz.passed ? " ✓" : ""}`
-                    : ""}
+                  {unlocked ? t("lessons.progress", { done, total }) : t("lessons.pathLocked")}
                 </p>
+              </>
+            );
+
+            return unlocked ? (
+              <Link
+                key={path.id}
+                to="/lecons/$moduleId"
+                params={{ moduleId: path.id }}
+                className="block rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/50 hover:bg-accent"
+              >
+                {inner}
               </Link>
+            ) : (
+              <div
+                key={path.id}
+                className="block rounded-xl border border-dashed border-border bg-card/50 p-5 opacity-60"
+              >
+                {inner}
+              </div>
             );
           })}
         </div>
-
-        <p className="mt-10 text-xs text-muted-foreground">{t("lessons.footnote")}</p>
       </main>
     </div>
   );
