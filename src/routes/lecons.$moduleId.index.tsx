@@ -126,9 +126,7 @@ function PathPage() {
                       </p>
                     </div>
                     {chestOpened ? (
-                      <span className="text-xs text-muted-foreground">
-                        {t("lessons.chestDone", { xp: "" }).replace("+ ", "+")}
-                      </span>
+                      <span className="text-xs text-muted-foreground">{t("lessons.done")}</span>
                     ) : (
                       <Button
                         type="button"
