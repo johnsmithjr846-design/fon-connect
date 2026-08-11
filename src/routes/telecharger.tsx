@@ -35,8 +35,8 @@ function DownloadPage() {
   usePageView("/telecharger");
 
   const releases = data ?? [];
-  const android = releases.find((r) => r.platform === "android");
-  const ios = releases.find((r) => r.platform === "ios");
+  const android = releases.filter((r) => r.platform === "android");
+  const ios = releases.filter((r) => r.platform === "ios");
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -56,23 +56,21 @@ function DownloadPage() {
           <PlatformCard
             icon={<Smartphone className="size-5" aria-hidden />}
             name="Android"
-            available={Boolean(android)}
-            version={android?.version}
-            size={android?.size_label}
-            notes={android?.notes}
-            href="/api/public/telechargement/android"
-            cta={en ? "Download for Android" : "Télécharger pour Android"}
+            releases={android}
+            platform="android"
+            cta={en ? "Download" : "Télécharger"}
+            latestLabel={en ? "Latest" : "Dernière version"}
+            olderLabel={en ? "Previous versions" : "Versions précédentes"}
             soon={en ? "Coming soon on Android" : "Bientôt disponible sur Android"}
           />
           <PlatformCard
             icon={<Apple className="size-5" aria-hidden />}
             name="iOS"
-            available={Boolean(ios)}
-            version={ios?.version}
-            size={ios?.size_label}
-            notes={ios?.notes}
-            href="/api/public/telechargement/ios"
-            cta={en ? "Download for iOS" : "Télécharger pour iOS"}
+            releases={ios}
+            platform="ios"
+            cta={en ? "Download" : "Télécharger"}
+            latestLabel={en ? "Latest" : "Dernière version"}
+            olderLabel={en ? "Previous versions" : "Versions précédentes"}
             soon={en ? "Coming soon on iOS" : "Bientôt disponible sur iOS"}
           />
         </div>
@@ -95,44 +93,81 @@ function DownloadPage() {
 function PlatformCard({
   icon,
   name,
-  available,
-  version,
-  size,
-  notes,
-  href,
+  releases,
+  platform,
   cta,
+  latestLabel,
+  olderLabel,
   soon,
 }: {
   icon: React.ReactNode;
   name: string;
-  available: boolean;
-  version?: string;
-  size?: string;
-  notes?: string;
-  href: string;
+  releases: { id: string; version: string; size_label: string; notes: string }[];
+  platform: string;
   cta: string;
+  latestLabel: string;
+  olderLabel: string;
   soon: string;
 }) {
+  const [latest, ...older] = releases;
+
   return (
     <section className="rounded-xl border border-border bg-card p-5">
       <div className="flex items-center gap-2 text-card-foreground">
         {icon}
         <h2 className="text-base font-semibold">{name}</h2>
       </div>
-      <p className="mt-2 text-xs text-muted-foreground">
-        {available ? [version && `v${version}`, size].filter(Boolean).join(" · ") || "—" : soon}
-      </p>
-      {notes && <p className="mt-2 text-sm text-muted-foreground">{notes}</p>}
-      <Button asChild={available} disabled={!available} className="mt-4 w-full">
-        {available ? (
-          <a href={href}>
-            <Download className="mr-2 size-4" aria-hidden />
-            {cta}
-          </a>
-        ) : (
-          <span>{soon}</span>
-        )}
-      </Button>
+
+      {!latest ? (
+        <>
+          <p className="mt-2 text-xs text-muted-foreground">{soon}</p>
+          <Button disabled className="mt-4 w-full">
+            {soon}
+          </Button>
+        </>
+      ) : (
+        <>
+          <p className="mt-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            {latestLabel}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {[latest.version && `v${latest.version}`, latest.size_label].filter(Boolean).join(" · ") ||
+              "—"}
+          </p>
+          {latest.notes && <p className="mt-2 text-sm text-muted-foreground">{latest.notes}</p>}
+          <Button asChild className="mt-4 w-full">
+            <a href={`/api/public/telechargement/${platform}?id=${latest.id}`}>
+              <Download className="mr-2 size-4" aria-hidden />
+              {cta}
+            </a>
+          </Button>
+
+          {older.length > 0 && (
+            <div className="mt-5 border-t border-border pt-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {olderLabel}
+              </p>
+              <ul className="mt-2 space-y-2">
+                {older.map((r) => (
+                  <li key={r.id} className="flex items-center justify-between gap-3 text-sm">
+                    <span className="text-muted-foreground">
+                      {[r.version && `v${r.version}`, r.size_label].filter(Boolean).join(" · ") ||
+                        "—"}
+                    </span>
+                    <a
+                      className="inline-flex items-center gap-1 text-primary underline-offset-4 hover:underline"
+                      href={`/api/public/telechargement/${platform}?id=${r.id}`}
+                    >
+                      <Download className="size-3.5" aria-hidden />
+                      {cta}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </>
+      )}
     </section>
   );
 }

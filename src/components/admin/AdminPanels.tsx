@@ -323,6 +323,8 @@ function emptyRelease(platform: "android" | "ios"): ReleaseForm {
 export function DownloadsPanel() {
   const qc = useQueryClient();
   const [status, setStatus] = useState<string | null>(null);
+  const [editing, setEditing] = useState<ReleaseForm | null>(null);
+
   const releases = useQuery({
     queryKey: ["admin", "releases"],
     queryFn: async () => {
@@ -334,17 +336,6 @@ export function DownloadsPanel() {
       return data ?? [];
     },
   });
-
-  const [android, setAndroid] = useState<ReleaseForm>(emptyRelease("android"));
-  const [ios, setIos] = useState<ReleaseForm>(emptyRelease("ios"));
-
-  useEffect(() => {
-    const rows = releases.data ?? [];
-    const a = rows.find((r) => r.platform === "android");
-    const i = rows.find((r) => r.platform === "ios");
-    if (a) setAndroid({ ...(a as unknown as ReleaseForm), platform: "android" });
-    if (i) setIos({ ...(i as unknown as ReleaseForm), platform: "ios" });
-  }, [releases.data]);
 
   const save = useMutation({
     mutationFn: async (form: ReleaseForm) => {
@@ -366,13 +357,28 @@ export function DownloadsPanel() {
     },
     onSuccess: async () => {
       setStatus("Enregistré.");
+      setEditing(null);
       await qc.invalidateQueries({ queryKey: ["admin", "releases"] });
       await qc.invalidateQueries({ queryKey: ["app-releases"] });
     },
     onError: (e: Error) => setStatus(e.message),
   });
 
-  async function upload(file: File, form: ReleaseForm, set: (f: ReleaseForm) => void) {
+  const remove = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("app_releases").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: async () => {
+      setStatus("Version supprimée.");
+      setEditing(null);
+      await qc.invalidateQueries({ queryKey: ["admin", "releases"] });
+      await qc.invalidateQueries({ queryKey: ["app-releases"] });
+    },
+    onError: (e: Error) => setStatus(e.message),
+  });
+
+  async function upload(file: File, form: ReleaseForm) {
     setStatus("Téléversement en cours…");
     const path = `${form.platform}/${Date.now()}-${file.name.replace(/[^\w.-]/g, "_")}`;
     const { error } = await supabase.storage.from("app-downloads").upload(path, file, {
@@ -384,65 +390,128 @@ export function DownloadsPanel() {
       return;
     }
     const mb = (file.size / (1024 * 1024)).toFixed(1);
-    set({ ...form, download_url: `storage:${path}`, size_label: `${mb} Mo` });
+    setEditing({ ...form, download_url: `storage:${path}`, size_label: `${mb} Mo` });
     setStatus("Fichier téléversé. Pensez à enregistrer.");
   }
 
-  function form(f: ReleaseForm, set: (v: ReleaseForm) => void, title: string) {
+  function platformList(platform: "android" | "ios", title: string) {
+    const rows = (releases.data ?? []).filter((r) => r.platform === platform);
     return (
       <Panel title={title}>
-        <div className="grid gap-3">
-          <div className="grid gap-1.5">
-            <Label>Version</Label>
-            <Input value={f.version} onChange={(e) => set({ ...f, version: e.target.value })} />
-          </div>
-          <div className="grid gap-1.5">
-            <Label>Lien de téléchargement (ou fichier téléversé)</Label>
-            <Input
-              value={f.download_url}
-              onChange={(e) => set({ ...f, download_url: e.target.value })}
-              placeholder="https://… ou storage:android/app.apk"
-            />
-          </div>
-          <div className="grid gap-1.5">
-            <Label>Téléverser un fichier</Label>
-            <input
-              type="file"
-              className="text-sm text-muted-foreground file:mr-3 file:rounded-md file:border file:border-border file:bg-secondary file:px-3 file:py-1.5 file:text-secondary-foreground"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) void upload(file, f, set);
-              }}
-            />
-          </div>
-          <div className="grid gap-1.5">
-            <Label>Taille affichée</Label>
-            <Input
-              value={f.size_label}
-              onChange={(e) => set({ ...f, size_label: e.target.value })}
-            />
-          </div>
-          <div className="grid gap-1.5">
-            <Label>Notes de version</Label>
-            <Textarea
-              rows={3}
-              value={f.notes}
-              onChange={(e) => set({ ...f, notes: e.target.value })}
-            />
-          </div>
-          <div className="flex items-center gap-3">
-            <Switch
-              checked={f.published}
-              onCheckedChange={(v) => set({ ...f, published: v })}
-              id={`pub-${f.platform}`}
-            />
-            <Label htmlFor={`pub-${f.platform}`}>Visible sur la page de téléchargement</Label>
-          </div>
+        <div className="space-y-3">
+          <Button
+            variant="secondary"
+            onClick={() => setEditing(emptyRelease(platform))}
+            disabled={editing?.platform === platform && !editing.id}
+          >
+            + Nouvelle version
+          </Button>
+
+          {editing && editing.platform === platform && !editing.id && releaseForm(editing)}
+
+          {rows.length === 0 && (
+            <p className="text-sm text-muted-foreground">Aucune version enregistrée.</p>
+          )}
+
+          {rows.map((r) => {
+            const isEditing = editing?.id === r.id;
+            return (
+              <div key={r.id} className="rounded-lg border border-border p-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="text-sm">
+                    <span className="font-semibold">v{r.version || "—"}</span>
+                    <span className="text-muted-foreground">
+                      {" "}
+                      · {r.size_label || "—"} · {r.published ? "visible" : "masquée"}
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        setEditing(
+                          isEditing
+                            ? null
+                            : ({ ...(r as unknown as ReleaseForm), platform } as ReleaseForm),
+                        )
+                      }
+                    >
+                      {isEditing ? "Fermer" : "Modifier"}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => remove.mutate(r.id as string)}
+                      disabled={remove.isPending}
+                    >
+                      Supprimer
+                    </Button>
+                  </div>
+                </div>
+                {isEditing && editing && <div className="mt-3">{releaseForm(editing)}</div>}
+              </div>
+            );
+          })}
+        </div>
+      </Panel>
+    );
+  }
+
+  function releaseForm(f: ReleaseForm) {
+    const set = (v: ReleaseForm) => setEditing(v);
+    return (
+      <div className="grid gap-3 rounded-lg border border-dashed border-border p-3">
+        <div className="grid gap-1.5">
+          <Label>Version</Label>
+          <Input value={f.version} onChange={(e) => set({ ...f, version: e.target.value })} />
+        </div>
+        <div className="grid gap-1.5">
+          <Label>Lien de téléchargement (ou fichier téléversé)</Label>
+          <Input
+            value={f.download_url}
+            onChange={(e) => set({ ...f, download_url: e.target.value })}
+            placeholder="https://… ou storage:android/app.apk"
+          />
+        </div>
+        <div className="grid gap-1.5">
+          <Label>Téléverser un fichier</Label>
+          <input
+            type="file"
+            className="text-sm text-muted-foreground file:mr-3 file:rounded-md file:border file:border-border file:bg-secondary file:px-3 file:py-1.5 file:text-secondary-foreground"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) void upload(file, f);
+            }}
+          />
+        </div>
+        <div className="grid gap-1.5">
+          <Label>Taille affichée</Label>
+          <Input value={f.size_label} onChange={(e) => set({ ...f, size_label: e.target.value })} />
+        </div>
+        <div className="grid gap-1.5">
+          <Label>Notes de version</Label>
+          <Textarea rows={3} value={f.notes} onChange={(e) => set({ ...f, notes: e.target.value })} />
+        </div>
+        <div className="flex items-center gap-3">
+          <Switch
+            checked={f.published}
+            onCheckedChange={(v) => set({ ...f, published: v })}
+            id={`pub-${f.platform}-${f.id ?? "new"}`}
+          />
+          <Label htmlFor={`pub-${f.platform}-${f.id ?? "new"}`}>
+            Visible sur la page de téléchargement
+          </Label>
+        </div>
+        <div className="flex gap-2">
           <Button onClick={() => save.mutate(f)} disabled={save.isPending}>
             Enregistrer
           </Button>
+          <Button variant="ghost" onClick={() => setEditing(null)}>
+            Annuler
+          </Button>
         </div>
-      </Panel>
+      </div>
     );
   }
 
@@ -450,8 +519,8 @@ export function DownloadsPanel() {
     <div className="space-y-5">
       {status && <p className="text-sm text-primary">{status}</p>}
       <div className="grid gap-5 lg:grid-cols-2">
-        {form(android, setAndroid, "application android")}
-        {form(ios, setIos, "application ios")}
+        {platformList("android", "application android")}
+        {platformList("ios", "application ios")}
       </div>
     </div>
   );
