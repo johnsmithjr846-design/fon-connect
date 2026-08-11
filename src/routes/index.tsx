@@ -1,8 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { Smartphone } from "lucide-react";
+import { AdSlot } from "@/components/AdSlot";
 import { LEGAL_LINKS } from "@/components/legal/LegalLayout";
 import { SiteHeader } from "@/components/SiteHeader";
+import { usePageView, useSiteSettings } from "@/hooks/useSiteData";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 import type { TranslationKey } from "@/lib/i18n/dictionary";
+
 
 export const Route = createFileRoute("/")({
   component: Index,
