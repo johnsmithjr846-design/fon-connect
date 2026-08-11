@@ -233,6 +233,9 @@ const en: Record<TranslationKey, string> = {
   "home.feature.phrasebook.title": "Phrasebook",
   "home.feature.phrasebook.desc":
     "Everyday essential phrases in Benin, in French and English.",
+  "home.download.title": "Download the app",
+  "home.download.desc": "FonConnect on Android and iOS, to translate on the go.",
+
 
   "legal.terms": "Terms of use",
   "legal.privacy": "Privacy policy",
