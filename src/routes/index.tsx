@@ -56,10 +56,16 @@ const LEGAL_KEYS: Record<string, TranslationKey> = {
 
 function Index() {
   const { t } = useI18n();
+  const { contactEmail, companyName, announcement } = useSiteSettings();
+  usePageView("/");
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <SiteHeader />
+
+      {announcement && (
+        <p className="bg-primary/10 px-5 py-2 text-center text-sm text-primary">{announcement}</p>
+      )}
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-5 py-14">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
@@ -97,6 +103,21 @@ function Index() {
             </Link>
           ))}
         </div>
+
+        <Link
+          to="/telecharger"
+          className="mt-8 flex items-center gap-4 rounded-xl border border-primary/40 bg-secondary p-5 transition-colors hover:bg-accent"
+        >
+          <Smartphone className="size-6 shrink-0 text-primary" aria-hidden />
+          <div>
+            <h2 className="text-base font-semibold text-secondary-foreground">
+              {t("home.download.title")}
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">{t("home.download.desc")}</p>
+          </div>
+        </Link>
+
+        <AdSlot placement="home" />
       </main>
 
       <footer className="border-t border-border">
@@ -112,12 +133,32 @@ function Index() {
                 </Link>
               </li>
             ))}
+            <li>
+              <Link
+                to="/telecharger"
+                className="text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
+              >
+                {t("home.download.title")}
+              </Link>
+            </li>
           </ul>
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} FonConnect · contact@fonconnect.app
+            © {new Date().getFullYear()} {companyName} ·{" "}
+            <a href={`mailto:${contactEmail}`} className="hover:text-primary">
+              {contactEmail}
+            </a>
+            {" · "}
+            <Link
+              to="/admin"
+              rel="nofollow"
+              className="text-muted-foreground/50 transition-colors hover:text-primary"
+            >
+              ·
+            </Link>
           </p>
         </div>
       </footer>
     </div>
   );
 }
+
