@@ -3,15 +3,19 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/api/public/telechargement/$platform")({
   server: {
     handlers: {
-      GET: async ({ params }) => {
+      GET: async ({ params, request }) => {
         const platform = params.platform === "ios" ? "ios" : "android";
+        const id = new URL(request.url).searchParams.get("id");
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-        const { data, error } = await supabaseAdmin
+        let query = supabaseAdmin
           .from("app_releases")
           .select("download_url")
           .eq("platform", platform)
-          .eq("published", true)
+          .eq("published", true);
+        if (id) query = query.eq("id", id);
+
+        const { data, error } = await query
           .order("released_at", { ascending: false })
           .limit(1)
           .maybeSingle();
