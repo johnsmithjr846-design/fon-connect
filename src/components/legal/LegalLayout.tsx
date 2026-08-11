@@ -57,7 +57,14 @@ export function LegalLayout({
               </li>
             ))}
           </ul>
+          <p className="mt-4 text-sm text-muted-foreground">
+            Contact :{" "}
+            <a href={`mailto:${contactEmail}`} className="text-primary hover:underline">
+              {contactEmail}
+            </a>
+          </p>
         </nav>
+
       </main>
     </div>
   );
