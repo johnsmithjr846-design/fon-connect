@@ -122,6 +122,8 @@ const fr = {
   "lessons.ex.speakPrompt": "Écoute puis répète au micro.",
   "lessons.ex.heard": "Entendu : « {text} » · {score}%",
   "lessons.ex.skip": "Passer",
+  "lessons.ex.readPrompt": "Écouter la consigne",
+  "lessons.ex.autoRead": "Lire les consignes à voix haute",
   "lessons.ex.correct": "Bravo !",
   "lessons.ex.wrong": "Pas tout à fait.",
   "lessons.ex.answer": "Réponse : {answer}",
