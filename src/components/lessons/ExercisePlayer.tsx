@@ -21,6 +21,7 @@ export function ExercisePlayer({ exercise, onResult }: ExercisePlayerProps) {
   const [value, setValue] = useState("");
   const [tokens, setTokens] = useState<string[]>([]);
   const [verdict, setVerdict] = useState<null | { correct: boolean; expected: string }>(null);
+  const [autoRead, setAutoRead] = useState(true);
 
   const prompt = useMemo(() => {
     if (exercise.kind === "discover") return t("lessons.ex.discover");
@@ -30,6 +31,29 @@ export function ExercisePlayer({ exercise, onResult }: ExercisePlayerProps) {
     if (exercise.kind === "mcq") return t("lessons.ex.mcq");
     return t("lessons.ex.translate");
   }, [exercise, t]);
+
+  useEffect(() => {
+    const stored = window.localStorage.getItem("lessons.autoReadPrompt");
+    if (stored === "0") setAutoRead(false);
+  }, []);
+
+  const promptId = `prompt-${exercise.id}`;
+  const speakRef = useRef(speech.speak);
+  speakRef.current = speech.speak;
+
+  useEffect(() => {
+    if (!autoRead) return;
+    void speakRef.current(promptId, prompt, lang === "en" ? "en" : "fr");
+  }, [promptId, prompt, autoRead, lang]);
+
+  function toggleAutoRead() {
+    setAutoRead((prev) => {
+      const next = !prev;
+      window.localStorage.setItem("lessons.autoReadPrompt", next ? "1" : "0");
+      if (!next) speech.stop();
+      return next;
+    });
+  }
 
   const target = exercise.kind === "discover" ? "" : exercise.item.fon;
   const meaning =
@@ -54,7 +78,31 @@ export function ExercisePlayer({ exercise, onResult }: ExercisePlayerProps) {
 
   return (
     <div className="flex flex-1 flex-col">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">{prompt}</p>
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">{prompt}</p>
+        <div className="flex shrink-0 items-center gap-1">
+          <SpeakButton
+            speaking={speech.speakingId === promptId}
+            onSpeak={() => void speech.speak(promptId, prompt, lang === "en" ? "en" : "fr")}
+            onStop={speech.stop}
+            label={t("lessons.ex.readPrompt")}
+          />
+          <button
+            type="button"
+            aria-pressed={autoRead}
+            onClick={toggleAutoRead}
+            title={t("lessons.ex.autoRead")}
+            className={`rounded-lg border px-2 py-1 text-[11px] font-medium transition-colors ${
+              autoRead
+                ? "border-primary/50 bg-primary/10 text-primary"
+                : "border-border text-muted-foreground"
+            }`}
+          >
+            {autoRead ? "Auto ON" : "Auto OFF"}
+          </button>
+        </div>
+      </div>
+
 
       {exercise.kind === "discover" && (
         <ul className="mt-5 divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
