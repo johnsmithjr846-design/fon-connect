@@ -313,6 +313,8 @@ const en: Record<TranslationKey, string> = {
   "lessons.ex.speakPrompt": "Listen, then repeat into the mic.",
   "lessons.ex.heard": "Heard: \u201c{text}\u201d \u00b7 {score}%",
   "lessons.ex.skip": "Skip",
+  "lessons.ex.readPrompt": "Listen to the instruction",
+  "lessons.ex.autoRead": "Read instructions aloud",
   "lessons.ex.correct": "Well done!",
   "lessons.ex.wrong": "Not quite.",
   "lessons.ex.answer": "Answer: {answer}",
