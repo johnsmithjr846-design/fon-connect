@@ -36,6 +36,9 @@ const fr = {
   "home.feature.phrasebook.title": "Phrasebook",
   "home.feature.phrasebook.desc":
     "Les phrases essentielles du quotidien au Bénin, en français et en anglais.",
+  "home.download.title": "Télécharger l'application",
+  "home.download.desc": "FonConnect sur Android et iOS, pour traduire même en déplacement.",
+
 
   // Legal links
   "legal.terms": "Conditions d'utilisation",
