@@ -142,18 +142,22 @@ function Index() {
               </Link>
             </li>
           </ul>
-          <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} {companyName} ·{" "}
-            <a href={`mailto:${contactEmail}`} className="hover:text-primary">
-              {contactEmail}
-            </a>
-            {" · "}
+          <p className="flex items-center gap-2 text-xs text-muted-foreground">
+            <span>
+              © {new Date().getFullYear()} {companyName} ·{" "}
+              <a href={`mailto:${contactEmail}`} className="hover:text-primary">
+                {contactEmail}
+              </a>
+            </span>
             <Link
               to="/admin"
               rel="nofollow"
-              className="text-muted-foreground/50 transition-colors hover:text-primary"
+              title="Console admin"
+              aria-label="Console d'administration"
+              className="inline-flex items-center gap-1 rounded border border-transparent px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground/60 transition-colors hover:border-primary/40 hover:text-primary"
             >
-              ·
+              <Terminal className="size-3" aria-hidden />
+              admin
             </Link>
           </p>
         </div>
