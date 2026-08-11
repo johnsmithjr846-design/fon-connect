@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Smartphone } from "lucide-react";
+import { Smartphone, Terminal } from "lucide-react";
 import { AdSlot } from "@/components/AdSlot";
 import { LEGAL_LINKS } from "@/components/legal/LegalLayout";
 import { SiteHeader } from "@/components/SiteHeader";
