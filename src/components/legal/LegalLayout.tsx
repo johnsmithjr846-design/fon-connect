@@ -1,5 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import { useSiteSettings } from "@/hooks/useSiteData";
+
 
 export const LEGAL_LINKS = [
   { to: "/conditions-utilisation", label: "Conditions d'utilisation" },
