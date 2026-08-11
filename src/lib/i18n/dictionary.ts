@@ -36,6 +36,9 @@ const fr = {
   "home.feature.phrasebook.title": "Phrasebook",
   "home.feature.phrasebook.desc":
     "Les phrases essentielles du quotidien au Bénin, en français et en anglais.",
+  "home.download.title": "Télécharger l'application",
+  "home.download.desc": "FonConnect sur Android et iOS, pour traduire même en déplacement.",
+
 
   // Legal links
   "legal.terms": "Conditions d'utilisation",
@@ -230,6 +233,9 @@ const en: Record<TranslationKey, string> = {
   "home.feature.phrasebook.title": "Phrasebook",
   "home.feature.phrasebook.desc":
     "Everyday essential phrases in Benin, in French and English.",
+  "home.download.title": "Download the app",
+  "home.download.desc": "FonConnect on Android and iOS, to translate on the go.",
+
 
   "legal.terms": "Terms of use",
   "legal.privacy": "Privacy policy",

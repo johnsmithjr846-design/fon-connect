@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ConditionsUtilisationRouteImport } from './routes/conditions-utilisation'
@@ -20,6 +21,7 @@ import { Route as PhrasebookRouteImport } from './routes/phrasebook'
 import { Route as PolitiqueConfidentialiteRouteImport } from './routes/politique-confidentialite'
 import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as TelechargerRouteImport } from './routes/telecharger'
 import { Route as TraducteurRouteImport } from './routes/traducteur'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiLessonChatRouteImport } from './routes/api/lesson-chat'
@@ -29,10 +31,16 @@ import { Route as LeconsIndexRouteImport } from './routes/lecons.index'
 import { Route as LeconsModuleIdIndexRouteImport } from './routes/lecons.$moduleId.index'
 import { Route as LeconsModuleIdLessonIdRouteImport } from './routes/lecons.$moduleId.$lessonId'
 import { Route as LeconsModuleIdQuizRouteImport } from './routes/lecons.$moduleId.quiz'
+import { Route as ApiPublicTelechargementPlatformRouteImport } from './routes/api/public/telechargement.$platform'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AssistantRoute = AssistantRouteImport.update({
@@ -86,6 +94,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TelechargerRoute = TelechargerRouteImport.update({
+  id: '/telecharger',
+  path: '/telecharger',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TraducteurRoute = TraducteurRouteImport.update({
   id: '/traducteur',
   path: '/traducteur',
@@ -131,9 +144,16 @@ const LeconsModuleIdQuizRoute = LeconsModuleIdQuizRouteImport.update({
   path: '/lecons/$moduleId/quiz',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicTelechargementPlatformRoute =
+  ApiPublicTelechargementPlatformRouteImport.update({
+    id: '/api/public/telechargement/$platform',
+    path: '/api/public/telechargement/$platform',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/assistant': typeof AssistantRoute
   '/auth': typeof AuthRoute
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
@@ -144,6 +164,7 @@ export interface FileRoutesByFullPath {
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
   '/profil': typeof ProfilRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/telecharger': typeof TelechargerRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
   '/api/lesson-chat': typeof ApiLessonChatRoute
@@ -153,9 +174,11 @@ export interface FileRoutesByFullPath {
   '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
   '/lecons/$moduleId/quiz': typeof LeconsModuleIdQuizRoute
   '/lecons/$moduleId/': typeof LeconsModuleIdIndexRoute
+  '/api/public/telechargement/$platform': typeof ApiPublicTelechargementPlatformRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/assistant': typeof AssistantRoute
   '/auth': typeof AuthRoute
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
@@ -166,6 +189,7 @@ export interface FileRoutesByTo {
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
   '/profil': typeof ProfilRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/telecharger': typeof TelechargerRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
   '/api/lesson-chat': typeof ApiLessonChatRoute
@@ -175,10 +199,12 @@ export interface FileRoutesByTo {
   '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
   '/lecons/$moduleId/quiz': typeof LeconsModuleIdQuizRoute
   '/lecons/$moduleId': typeof LeconsModuleIdIndexRoute
+  '/api/public/telechargement/$platform': typeof ApiPublicTelechargementPlatformRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/assistant': typeof AssistantRoute
   '/auth': typeof AuthRoute
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
@@ -189,6 +215,7 @@ export interface FileRoutesById {
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
   '/profil': typeof ProfilRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/telecharger': typeof TelechargerRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
   '/api/lesson-chat': typeof ApiLessonChatRoute
@@ -198,11 +225,13 @@ export interface FileRoutesById {
   '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
   '/lecons/$moduleId/quiz': typeof LeconsModuleIdQuizRoute
   '/lecons/$moduleId/': typeof LeconsModuleIdIndexRoute
+  '/api/public/telechargement/$platform': typeof ApiPublicTelechargementPlatformRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/assistant'
     | '/auth'
     | '/conditions-utilisation'
@@ -213,6 +242,7 @@ export interface FileRouteTypes {
     | '/politique-confidentialite'
     | '/profil'
     | '/reset-password'
+    | '/telecharger'
     | '/traducteur'
     | '/api/chat'
     | '/api/lesson-chat'
@@ -222,9 +252,11 @@ export interface FileRouteTypes {
     | '/lecons/$moduleId/$lessonId'
     | '/lecons/$moduleId/quiz'
     | '/lecons/$moduleId/'
+    | '/api/public/telechargement/$platform'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/assistant'
     | '/auth'
     | '/conditions-utilisation'
@@ -235,6 +267,7 @@ export interface FileRouteTypes {
     | '/politique-confidentialite'
     | '/profil'
     | '/reset-password'
+    | '/telecharger'
     | '/traducteur'
     | '/api/chat'
     | '/api/lesson-chat'
@@ -244,9 +277,11 @@ export interface FileRouteTypes {
     | '/lecons/$moduleId/$lessonId'
     | '/lecons/$moduleId/quiz'
     | '/lecons/$moduleId'
+    | '/api/public/telechargement/$platform'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/assistant'
     | '/auth'
     | '/conditions-utilisation'
@@ -257,6 +292,7 @@ export interface FileRouteTypes {
     | '/politique-confidentialite'
     | '/profil'
     | '/reset-password'
+    | '/telecharger'
     | '/traducteur'
     | '/api/chat'
     | '/api/lesson-chat'
@@ -266,10 +302,12 @@ export interface FileRouteTypes {
     | '/lecons/$moduleId/$lessonId'
     | '/lecons/$moduleId/quiz'
     | '/lecons/$moduleId/'
+    | '/api/public/telechargement/$platform'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   AssistantRoute: typeof AssistantRoute
   AuthRoute: typeof AuthRoute
   ConditionsUtilisationRoute: typeof ConditionsUtilisationRoute
@@ -280,6 +318,7 @@ export interface RootRouteChildren {
   PolitiqueConfidentialiteRoute: typeof PolitiqueConfidentialiteRoute
   ProfilRoute: typeof ProfilRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  TelechargerRoute: typeof TelechargerRoute
   TraducteurRoute: typeof TraducteurRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiLessonChatRoute: typeof ApiLessonChatRoute
@@ -289,6 +328,7 @@ export interface RootRouteChildren {
   LeconsModuleIdLessonIdRoute: typeof LeconsModuleIdLessonIdRoute
   LeconsModuleIdQuizRoute: typeof LeconsModuleIdQuizRoute
   LeconsModuleIdIndexRoute: typeof LeconsModuleIdIndexRoute
+  ApiPublicTelechargementPlatformRoute: typeof ApiPublicTelechargementPlatformRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -298,6 +338,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/assistant': {
@@ -370,6 +417,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/telecharger': {
+      id: '/telecharger'
+      path: '/telecharger'
+      fullPath: '/telecharger'
+      preLoaderRoute: typeof TelechargerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/traducteur': {
       id: '/traducteur'
       path: '/traducteur'
@@ -433,11 +487,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeconsModuleIdQuizRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/telechargement/$platform': {
+      id: '/api/public/telechargement/$platform'
+      path: '/api/public/telechargement/$platform'
+      fullPath: '/api/public/telechargement/$platform'
+      preLoaderRoute: typeof ApiPublicTelechargementPlatformRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   AssistantRoute: AssistantRoute,
   AuthRoute: AuthRoute,
   ConditionsUtilisationRoute: ConditionsUtilisationRoute,
@@ -448,6 +510,7 @@ const rootRouteChildren: RootRouteChildren = {
   PolitiqueConfidentialiteRoute: PolitiqueConfidentialiteRoute,
   ProfilRoute: ProfilRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  TelechargerRoute: TelechargerRoute,
   TraducteurRoute: TraducteurRoute,
   ApiChatRoute: ApiChatRoute,
   ApiLessonChatRoute: ApiLessonChatRoute,
@@ -457,17 +520,8 @@ const rootRouteChildren: RootRouteChildren = {
   LeconsModuleIdLessonIdRoute: LeconsModuleIdLessonIdRoute,
   LeconsModuleIdQuizRoute: LeconsModuleIdQuizRoute,
   LeconsModuleIdIndexRoute: LeconsModuleIdIndexRoute,
+  ApiPublicTelechargementPlatformRoute: ApiPublicTelechargementPlatformRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

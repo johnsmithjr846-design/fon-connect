@@ -1,5 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import { useSiteSettings } from "@/hooks/useSiteData";
+
 
 export const LEGAL_LINKS = [
   { to: "/conditions-utilisation", label: "Conditions d'utilisation" },
@@ -19,7 +21,9 @@ export function LegalLayout({
   intro: string;
   children: ReactNode;
 }) {
+  const { contactEmail } = useSiteSettings();
   return (
+
     <div className="min-h-screen bg-background">
       <header className="border-b border-border">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-5 py-4">
@@ -53,7 +57,14 @@ export function LegalLayout({
               </li>
             ))}
           </ul>
+          <p className="mt-4 text-sm text-muted-foreground">
+            Contact :{" "}
+            <a href={`mailto:${contactEmail}`} className="text-primary hover:underline">
+              {contactEmail}
+            </a>
+          </p>
         </nav>
+
       </main>
     </div>
   );

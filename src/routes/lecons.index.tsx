@@ -3,6 +3,9 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SignInBanner } from "@/components/lessons/SignInBanner";
 import { StatsBar } from "@/components/lessons/StatsBar";
 import { LEARNING_PATHS } from "@/lib/lessons";
+import { PATH_EMOJI, pathIllustration } from "@/lib/lessons/illustrations";
+import { AdSlot } from "@/components/AdSlot";
+
 import { useLessonProgress } from "@/hooks/useLessonProgress";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 
@@ -60,8 +63,18 @@ function LessonsIndex() {
                 ? pathDoneCount(previous.id) >= Math.ceil(previous.lessons.length * 0.8)
                 : true);
 
+            const illustration = pathIllustration(path.id);
+
             const inner = (
               <>
+                {illustration && (
+                  <img
+                    src={illustration}
+                    alt=""
+                    loading="lazy"
+                    className="mb-4 h-32 w-full rounded-lg object-cover"
+                  />
+                )}
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <span
@@ -69,7 +82,7 @@ function LessonsIndex() {
                       style={{ backgroundColor: path.color }}
                       aria-hidden
                     >
-                      {path.index}
+                      {PATH_EMOJI[path.id] ?? path.index}
                     </span>
                     <h3 className="text-base font-semibold text-card-foreground">
                       {lang === "en" ? path.titleEn : path.title}
@@ -91,6 +104,7 @@ function LessonsIndex() {
               </>
             );
 
+
             return unlocked ? (
               <Link
                 key={path.id}
@@ -110,7 +124,9 @@ function LessonsIndex() {
             );
           })}
         </div>
+        <AdSlot placement="lessons" />
       </main>
+
     </div>
   );
 }

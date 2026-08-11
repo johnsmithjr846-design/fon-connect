@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SpeakButton } from "@/components/voice/SpeakButton";
@@ -39,6 +39,15 @@ export function ExercisePlayer({ exercise, onResult }: ExercisePlayerProps) {
         ? exercise.item.en
         : exercise.item.fr;
 
+  const promptId = `prompt-${exercise.id}`;
+  const speakPrompt = speech.speak;
+  const stopSpeech = speech.stop;
+
+  useEffect(() => {
+    void speakPrompt(promptId, prompt, lang === "en" ? "en" : "fr");
+    return () => stopSpeech();
+  }, [promptId, prompt, lang, speakPrompt, stopSpeech]);
+
   function submit(answer: string) {
     const correct = checkAnswer(exercise, answer);
     setVerdict({ correct, expected: target });
@@ -54,7 +63,16 @@ export function ExercisePlayer({ exercise, onResult }: ExercisePlayerProps) {
 
   return (
     <div className="flex flex-1 flex-col">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">{prompt}</p>
+      <div className="flex items-center gap-2">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">{prompt}</p>
+        <SpeakButton
+          speaking={speech.speakingId === promptId}
+          onSpeak={() => void speakPrompt(promptId, prompt, lang === "en" ? "en" : "fr")}
+          onStop={stopSpeech}
+          label=""
+        />
+      </div>
+
 
       {exercise.kind === "discover" && (
         <ul className="mt-5 divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">

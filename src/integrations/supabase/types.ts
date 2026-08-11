@@ -14,6 +14,105 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_config: {
+        Row: {
+          code_hash: string | null
+          id: boolean
+          updated_at: string
+        }
+        Insert: {
+          code_hash?: string | null
+          id?: boolean
+          updated_at?: string
+        }
+        Update: {
+          code_hash?: string | null
+          id?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ads: {
+        Row: {
+          active: boolean
+          body: string
+          created_at: string
+          ends_at: string | null
+          id: string
+          image_url: string
+          link_url: string
+          placement: string
+          starts_at: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          body?: string
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          image_url?: string
+          link_url?: string
+          placement?: string
+          starts_at?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          body?: string
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          image_url?: string
+          link_url?: string
+          placement?: string
+          starts_at?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      app_releases: {
+        Row: {
+          created_at: string
+          download_url: string
+          id: string
+          notes: string
+          platform: string
+          published: boolean
+          released_at: string
+          size_label: string
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          created_at?: string
+          download_url?: string
+          id?: string
+          notes?: string
+          platform: string
+          published?: boolean
+          released_at?: string
+          size_label?: string
+          updated_at?: string
+          version?: string
+        }
+        Update: {
+          created_at?: string
+          download_url?: string
+          id?: string
+          notes?: string
+          platform?: string
+          published?: boolean
+          released_at?: string
+          size_label?: string
+          updated_at?: string
+          version?: string
+        }
+        Relationships: []
+      }
       chest_rewards: {
         Row: {
           chest_id: string
@@ -83,6 +182,36 @@ export type Database = {
         }
         Relationships: []
       }
+      page_views: {
+        Row: {
+          created_at: string
+          day: string
+          id: string
+          path: string
+          updated_at: string
+          views: number
+          visitors: number
+        }
+        Insert: {
+          created_at?: string
+          day?: string
+          id?: string
+          path: string
+          updated_at?: string
+          views?: number
+          visitors?: number
+        }
+        Update: {
+          created_at?: string
+          day?: string
+          id?: string
+          path?: string
+          updated_at?: string
+          views?: number
+          visitors?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -140,6 +269,27 @@ export type Database = {
         }
         Relationships: []
       }
+      site_settings: {
+        Row: {
+          created_at: string
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          key: string
+          updated_at?: string
+          value?: string
+        }
+        Update: {
+          created_at?: string
+          key?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
       user_badges: {
         Row: {
           badge_id: string
@@ -163,6 +313,27 @@ export type Database = {
           earned_at?: string
           id?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
         }
         Relationships: []
@@ -208,10 +379,43 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      admin_code_is_set: { Args: never; Returns: boolean }
+      admin_exists: { Args: never; Returns: boolean }
+      admin_list_users: {
+        Args: never
+        Returns: {
+          created_at: string
+          current_streak: number
+          email: string
+          last_active_day: string
+          last_sign_in_at: string
+          preferred_language: string
+          pseudo: string
+          user_id: string
+          xp_total: number
+        }[]
+      }
+      admin_set_role_by_email: {
+        Args: { _email: string; _grant: boolean }
+        Returns: boolean
+      }
+      claim_first_admin: { Args: never; Returns: boolean }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      set_admin_code: { Args: { _code: string }; Returns: boolean }
+      track_page_view: {
+        Args: { _new_visitor?: boolean; _path: string }
+        Returns: undefined
+      }
+      verify_admin_code: { Args: { _code: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -338,6 +542,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
