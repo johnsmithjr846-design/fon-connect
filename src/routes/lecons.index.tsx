@@ -3,6 +3,9 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SignInBanner } from "@/components/lessons/SignInBanner";
 import { StatsBar } from "@/components/lessons/StatsBar";
 import { LEARNING_PATHS } from "@/lib/lessons";
+import { PATH_EMOJI, pathIllustration } from "@/lib/lessons/illustrations";
+import { AdSlot } from "@/components/AdSlot";
+
 import { useLessonProgress } from "@/hooks/useLessonProgress";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 
