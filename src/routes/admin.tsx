@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthUser } from "@/hooks/useAuthUser";
+import { claimFirstAdmin, getAdminAccess, verifyAdminCode } from "@/lib/admin.functions";
 import {
   AdsPanel,
   ContentPanel,
@@ -56,16 +57,7 @@ function AdminConsole() {
     queryKey: ["admin", "access", user?.id],
     enabled: Boolean(user),
     queryFn: async () => {
-      const [isAdmin, exists, codeSet] = await Promise.all([
-        supabase.rpc("has_role", { _user_id: user!.id, _role: "admin" }),
-        supabase.rpc("admin_exists"),
-        supabase.rpc("admin_code_is_set"),
-      ]);
-      return {
-        isAdmin: Boolean(isAdmin.data),
-        adminExists: Boolean(exists.data),
-        codeSet: Boolean(codeSet.data),
-      };
+      return await getAdminAccess();
     },
   });
 
@@ -222,9 +214,12 @@ function ClaimGate({ adminExists, onClaimed }: { adminExists: boolean; onClaimed
       <Button
         className="mt-4"
         onClick={async () => {
-          const { data, error: err } = await supabase.rpc("claim_first_admin");
-          if (err || !data) setError(err?.message ?? "Un administrateur existe déjà.");
-          else onClaimed();
+          try {
+            await claimFirstAdmin();
+            onClaimed();
+          } catch (err) {
+            setError(err instanceof Error ? err.message : "Un administrateur existe déjà.");
+          }
         }}
       >
         <ShieldCheck className="mr-1.5 size-4" aria-hidden />
@@ -244,11 +239,15 @@ function CodeGate({ onUnlock }: { onUnlock: () => void }) {
     e.preventDefault();
     setBusy(true);
     setError(null);
-    const { data, error: err } = await supabase.rpc("verify_admin_code", { _code: code });
-    setBusy(false);
-    if (err) setError(err.message);
-    else if (data) onUnlock();
-    else setError("Code incorrect.");
+    try {
+      const { valid } = await verifyAdminCode({ data: { code } });
+      if (valid) onUnlock();
+      else setError("Code incorrect.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur de vérification.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (

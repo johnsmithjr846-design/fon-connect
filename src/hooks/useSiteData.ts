@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { trackPageView } from "@/lib/analytics.functions";
 
 export type SiteSettings = Record<string, string>;
 
@@ -87,6 +88,6 @@ export function usePageView(path: string) {
     } catch {
       /* stockage indisponible */
     }
-    void supabase.rpc("track_page_view", { _path: path, _new_visitor: !seen });
+    void trackPageView({ data: { path, newVisitor: !seen } }).catch(() => {});
   }, [path]);
 }
