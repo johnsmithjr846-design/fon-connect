@@ -380,6 +380,7 @@ export type Database = {
     }
     Functions: {
       admin_code_is_set: { Args: never; Returns: boolean }
+      admin_exists: { Args: never; Returns: boolean }
       admin_list_users: {
         Args: never
         Returns: {
@@ -394,6 +395,11 @@ export type Database = {
           xp_total: number
         }[]
       }
+      admin_set_role_by_email: {
+        Args: { _email: string; _grant: boolean }
+        Returns: boolean
+      }
+      claim_first_admin: { Args: never; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
