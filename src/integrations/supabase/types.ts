@@ -382,7 +382,7 @@ export type Database = {
       admin_code_is_set: { Args: never; Returns: boolean }
       admin_exists: { Args: never; Returns: boolean }
       admin_list_users: {
-        Args: never
+        Args: { _actor: string }
         Returns: {
           created_at: string
           current_streak: number
@@ -396,23 +396,22 @@ export type Database = {
         }[]
       }
       admin_set_role_by_email: {
-        Args: { _email: string; _grant: boolean }
+        Args: { _actor: string; _email: string; _grant: boolean }
         Returns: boolean
       }
-      claim_first_admin: { Args: never; Returns: boolean }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
+      claim_first_admin: { Args: { _actor: string }; Returns: boolean }
+      set_admin_code: {
+        Args: { _actor: string; _code: string }
         Returns: boolean
       }
-      set_admin_code: { Args: { _code: string }; Returns: boolean }
       track_page_view: {
         Args: { _new_visitor?: boolean; _path: string }
         Returns: undefined
       }
-      verify_admin_code: { Args: { _code: string }; Returns: boolean }
+      verify_admin_code: {
+        Args: { _actor: string; _code: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

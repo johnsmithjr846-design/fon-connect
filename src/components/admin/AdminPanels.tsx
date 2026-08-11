@@ -20,6 +20,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  listAdminUsers,
+  setAdminCode,
+  setAdminRoleByEmail,
+} from "@/lib/admin.functions";
 
 const CHART_COLORS = ["#22c55e", "#06b6d4", "#eab308", "#f97316", "#a855f7"];
 
@@ -61,9 +66,7 @@ export function DashboardPanel() {
   const users = useQuery({
     queryKey: ["admin", "users"],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("admin_list_users");
-      if (error) throw error;
-      return data ?? [];
+      return await listAdminUsers();
     },
   });
 
@@ -206,9 +209,7 @@ export function UsersPanel() {
   const users = useQuery({
     queryKey: ["admin", "users"],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("admin_list_users");
-      if (error) throw error;
-      return data ?? [];
+      return await listAdminUsers();
     },
   });
 
@@ -701,23 +702,24 @@ export function SecurityPanel() {
   const [status, setStatus] = useState<string | null>(null);
 
   async function saveCode() {
-    const { error } = await supabase.rpc("set_admin_code", { _code: code });
-    setStatus(error ? error.message : code ? "Code d'accès mis à jour." : "Code d'accès supprimé.");
+    try {
+      await setAdminCode({ data: { code } });
+      setStatus(code ? "Code d'accès mis à jour." : "Code d'accès supprimé.");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Échec de la mise à jour.");
+    }
     setCode("");
   }
 
   async function setRole(grant: boolean) {
-    const { error } = await supabase.rpc("admin_set_role_by_email", {
-      _email: email,
-      _grant: grant,
-    });
-    setStatus(
-      error
-        ? error.message
-        : grant
-          ? `${email} est désormais administrateur.`
-          : `${email} n'est plus administrateur.`,
-    );
+    try {
+      await setAdminRoleByEmail({ data: { email, grant } });
+      setStatus(
+        grant ? `${email} est désormais administrateur.` : `${email} n'est plus administrateur.`,
+      );
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Échec de la mise à jour du rôle.");
+    }
   }
 
   return (
