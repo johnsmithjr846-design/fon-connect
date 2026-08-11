@@ -145,3 +145,61 @@
     color: var(--color-foreground);
   }
 }
+
+/* ---------- Espace administrateur : thème terminal ---------- */
+.admin-shell {
+  --background: oklch(0.16 0.02 160);
+  --foreground: oklch(0.92 0.14 150);
+  --card: oklch(0.19 0.025 165);
+  --card-foreground: oklch(0.92 0.12 150);
+  --popover: oklch(0.19 0.025 165);
+  --popover-foreground: oklch(0.92 0.12 150);
+  --primary: oklch(0.82 0.2 150);
+  --primary-foreground: oklch(0.16 0.02 160);
+  --secondary: oklch(0.26 0.04 190);
+  --secondary-foreground: oklch(0.9 0.14 190);
+  --muted: oklch(0.24 0.02 170);
+  --muted-foreground: oklch(0.72 0.07 160);
+  --accent: oklch(0.28 0.06 190);
+  --accent-foreground: oklch(0.92 0.14 190);
+  --destructive: oklch(0.62 0.22 25);
+  --destructive-foreground: oklch(0.97 0.01 0);
+  --border: oklch(0.82 0.2 150 / 22%);
+  --input: oklch(0.82 0.2 150 / 28%);
+  --ring: oklch(0.82 0.2 150 / 60%);
+  --chart-1: oklch(0.82 0.2 150);
+  --chart-2: oklch(0.82 0.15 195);
+  --chart-3: oklch(0.85 0.16 100);
+  --chart-4: oklch(0.72 0.19 300);
+  --chart-5: oklch(0.7 0.2 25);
+
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, monospace;
+  position: relative;
+}
+
+.admin-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    oklch(0.82 0.2 150 / 4%) 0px,
+    oklch(0.82 0.2 150 / 4%) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+.admin-shell > * {
+  position: relative;
+  z-index: 1;
+}
+
+.admin-prompt::before {
+  content: "root@fonconnect:~$ ";
+  color: oklch(0.82 0.15 195);
+}
