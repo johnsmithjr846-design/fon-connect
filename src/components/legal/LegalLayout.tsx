@@ -21,7 +21,9 @@ export function LegalLayout({
   intro: string;
   children: ReactNode;
 }) {
+  const { contactEmail } = useSiteSettings();
   return (
+
     <div className="min-h-screen bg-background">
       <header className="border-b border-border">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-5 py-4">
