@@ -82,6 +82,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "FonConnect — Traduire et apprendre le fon du Bénin" },
       { name: "description", content: "FonConnect supprime la barrière de la langue : traduction instantanée français ↔ fon, assistant IA, leçons et guide de conversation." },
       { name: "author", content: "Lovable" },
+      { name: "google-site-verification", content: "zYkCpRjswfK8n09qGXra6I5BleWJ62gut2IhNb76-RI" },
       { property: "og:title", content: "FonConnect — Traduire et apprendre le fon du Bénin" },
       { property: "og:description", content: "FonConnect supprime la barrière de la langue : traduction instantanée français ↔ fon, assistant IA, leçons et guide de conversation." },
       { property: "og:type", content: "website" },

@@ -21,6 +21,7 @@ import { Route as PhrasebookRouteImport } from './routes/phrasebook'
 import { Route as PolitiqueConfidentialiteRouteImport } from './routes/politique-confidentialite'
 import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TelechargerRouteImport } from './routes/telecharger'
 import { Route as TraducteurRouteImport } from './routes/traducteur'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
@@ -94,6 +95,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TelechargerRoute = TelechargerRouteImport.update({
   id: '/telecharger',
   path: '/telecharger',
@@ -164,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
   '/profil': typeof ProfilRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/telecharger': typeof TelechargerRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
@@ -189,6 +196,7 @@ export interface FileRoutesByTo {
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
   '/profil': typeof ProfilRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/telecharger': typeof TelechargerRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
@@ -215,6 +223,7 @@ export interface FileRoutesById {
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
   '/profil': typeof ProfilRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/telecharger': typeof TelechargerRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
@@ -242,6 +251,7 @@ export interface FileRouteTypes {
     | '/politique-confidentialite'
     | '/profil'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/telecharger'
     | '/traducteur'
     | '/api/chat'
@@ -267,6 +277,7 @@ export interface FileRouteTypes {
     | '/politique-confidentialite'
     | '/profil'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/telecharger'
     | '/traducteur'
     | '/api/chat'
@@ -292,6 +303,7 @@ export interface FileRouteTypes {
     | '/politique-confidentialite'
     | '/profil'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/telecharger'
     | '/traducteur'
     | '/api/chat'
@@ -318,6 +330,7 @@ export interface RootRouteChildren {
   PolitiqueConfidentialiteRoute: typeof PolitiqueConfidentialiteRoute
   ProfilRoute: typeof ProfilRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TelechargerRoute: typeof TelechargerRoute
   TraducteurRoute: typeof TraducteurRoute
   ApiChatRoute: typeof ApiChatRoute
@@ -417,6 +430,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/telecharger': {
       id: '/telecharger'
       path: '/telecharger'
@@ -510,6 +530,7 @@ const rootRouteChildren: RootRouteChildren = {
   PolitiqueConfidentialiteRoute: PolitiqueConfidentialiteRoute,
   ProfilRoute: ProfilRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TelechargerRoute: TelechargerRoute,
   TraducteurRoute: TraducteurRoute,
   ApiChatRoute: ApiChatRoute,
