@@ -654,36 +654,7 @@ export function AdsPanel() {
       <Panel title={`encarts existants (${(ads.data ?? []).length})`}>
         <ul className="space-y-3">
           {(ads.data ?? []).map((ad) => (
-            <li
-              key={ad.id}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border p-3"
-            >
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-card-foreground">{ad.title}</p>
-                <p className="text-xs text-muted-foreground">
-                  {ad.placement} · {ad.active ? "actif" : "inactif"}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch
-                  checked={ad.active}
-                  onCheckedChange={async (v) => {
-                    await supabase.from("ads").update({ active: v }).eq("id", ad.id);
-                    await refresh();
-                  }}
-                />
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={async () => {
-                    await supabase.from("ads").delete().eq("id", ad.id);
-                    await refresh();
-                  }}
-                >
-                  Supprimer
-                </Button>
-              </div>
-            </li>
+            <AdEditor key={ad.id} ad={ad} onChanged={refresh} />
           ))}
           {(ads.data ?? []).length === 0 && (
             <li className="text-sm text-muted-foreground">Aucun encart pour le moment.</li>
@@ -691,6 +662,130 @@ export function AdsPanel() {
         </ul>
       </Panel>
     </div>
+  );
+}
+
+function AdEditor({ ad, onChanged }: { ad: AdRow; onChanged: () => Promise<void> }) {
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState(ad);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    setForm(ad);
+  }, [ad]);
+
+  async function save() {
+    setBusy(true);
+    setMsg(null);
+    const { error } = await supabase
+      .from("ads")
+      .update({
+        title: form.title,
+        body: form.body,
+        image_url: form.image_url,
+        link_url: form.link_url,
+        placement: form.placement,
+        active: form.active,
+      })
+      .eq("id", ad.id);
+    setBusy(false);
+    if (error) {
+      setMsg(error.message);
+      return;
+    }
+    setMsg("Encart mis à jour.");
+    await onChanged();
+  }
+
+  return (
+    <li className="rounded-lg border border-border p-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-card-foreground">{ad.title}</p>
+          <p className="text-xs text-muted-foreground">
+            {ad.placement} · {ad.active ? "actif" : "inactif"}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Switch
+            checked={ad.active}
+            onCheckedChange={async (v) => {
+              await supabase.from("ads").update({ active: v }).eq("id", ad.id);
+              await onChanged();
+            }}
+          />
+          <Button variant="outline" size="sm" onClick={() => setOpen((o) => !o)}>
+            {open ? "Fermer" : "Modifier"}
+          </Button>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={async () => {
+              await supabase.from("ads").delete().eq("id", ad.id);
+              await onChanged();
+            }}
+          >
+            Supprimer
+          </Button>
+        </div>
+      </div>
+
+      {open && (
+        <div className="mt-3 grid gap-3 border-t border-border pt-3">
+          <div className="grid gap-1.5">
+            <Label>Titre</Label>
+            <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+          </div>
+          <div className="grid gap-1.5">
+            <Label>Texte</Label>
+            <Textarea
+              rows={2}
+              value={form.body ?? ""}
+              onChange={(e) => setForm({ ...form, body: e.target.value })}
+            />
+          </div>
+          <div className="grid gap-1.5">
+            <Label>Image (URL)</Label>
+            <Input
+              value={form.image_url ?? ""}
+              onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+            />
+          </div>
+          <div className="grid gap-1.5">
+            <Label>Lien</Label>
+            <Input
+              value={form.link_url ?? ""}
+              onChange={(e) => setForm({ ...form, link_url: e.target.value })}
+            />
+          </div>
+          <div className="grid gap-1.5">
+            <Label>Emplacement</Label>
+            <select
+              value={form.placement}
+              onChange={(e) => setForm({ ...form, placement: e.target.value })}
+              className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+            >
+              <option value="home">Accueil</option>
+              <option value="lessons">Leçons</option>
+              <option value="translator">Traducteur</option>
+              <option value="all">Partout</option>
+            </select>
+          </div>
+          <div className="flex items-center gap-3">
+            <Switch
+              checked={form.active}
+              onCheckedChange={(v) => setForm({ ...form, active: v })}
+            />
+            <Label>Actif</Label>
+          </div>
+          <Button onClick={save} disabled={busy || !form.title}>
+            Enregistrer
+          </Button>
+          {msg && <p className="text-sm text-primary">{msg}</p>}
+        </div>
+      )}
+    </li>
   );
 }
 
