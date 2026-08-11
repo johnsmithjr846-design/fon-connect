@@ -124,7 +124,9 @@ function LessonsIndex() {
             );
           })}
         </div>
+        <AdSlot placement="lessons" />
       </main>
+
     </div>
   );
 }
