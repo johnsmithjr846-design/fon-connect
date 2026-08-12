@@ -5,9 +5,10 @@ export { LEARNING_PATHS, FON_ALPHABET };
 export type * from "./types";
 
 export const XP_PER_LESSON = 10;
-export const MAX_HEARTS = 5;
-export const HEART_REFILL_MINUTES = 20;
+/** Offre gratuite : 4 cœurs par jour, réinitialisés à 00:00 (Europe/Paris). */
+export const MAX_HEARTS = 4;
 export const CHEST_EVERY = 5;
+
 
 export function getPath(pathId: string): LearningPath | undefined {
   return LEARNING_PATHS.find((p) => p.id === pathId);
