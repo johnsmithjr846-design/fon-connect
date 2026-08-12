@@ -16,6 +16,7 @@ import {
   SecurityPanel,
   UsersPanel,
 } from "@/components/admin/AdminPanels";
+import { PromotionsPanel, SubscriptionsPanel } from "@/components/admin/PromotionsPanel";
 
 export const Route = createFileRoute("/admin")({
   head: () => {
@@ -40,6 +41,8 @@ export const Route = createFileRoute("/admin")({
 const TABS = [
   { id: "dashboard", label: "dashboard" },
   { id: "users", label: "utilisateurs" },
+  { id: "subscriptions", label: "abonnements" },
+  { id: "promotions", label: "promotions" },
   { id: "downloads", label: "téléchargements" },
   { id: "content", label: "contenu" },
   { id: "ads", label: "publicités" },

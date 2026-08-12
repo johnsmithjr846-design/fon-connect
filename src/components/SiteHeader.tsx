@@ -2,6 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthUser } from "@/hooks/useAuthUser";
+import { NotificationsBell } from "@/components/NotificationsBell";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 import { UI_LANGS, type TranslationKey, type UiLang } from "@/lib/i18n/dictionary";
 
