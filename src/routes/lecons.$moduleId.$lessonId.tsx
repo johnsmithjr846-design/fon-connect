@@ -8,6 +8,8 @@ import { Send } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SignInBanner } from "@/components/lessons/SignInBanner";
 import { LessonHud } from "@/components/lessons/LessonHud";
+import { HeartsEmptyState } from "@/components/lessons/HeartsEmptyState";
+import { useEntitlements } from "@/hooks/useEntitlements";
 import { ExercisePlayer } from "@/components/lessons/ExercisePlayer";
 import { BadgeChip } from "@/components/lessons/BadgeGrid";
 import { Button } from "@/components/ui/button";
@@ -87,7 +89,7 @@ function LessonPage() {
     const nextMistakes = correct ? mistakes : mistakes + 1;
     if (!correct) {
       setMistakes(nextMistakes);
-      if (user) heartMutation.mutate();
+      if (user && !unlimitedHearts) heartMutation.mutate();
     }
     if (step + 1 >= exercises.length) {
       finish(nextMistakes, Math.max(1, exercises.length));
@@ -96,7 +98,9 @@ function LessonPage() {
     setStep(step + 1);
   }
 
-  const hearts = user ? stats.hearts : MAX_HEARTS;
+  const { entitlements } = useEntitlements();
+  const unlimitedHearts = entitlements.unlimitedHearts;
+  const hearts = user && !unlimitedHearts ? stats.hearts : MAX_HEARTS;
   const isAi = lesson.kind === "ai";
 
   if (result) {
@@ -139,13 +143,14 @@ function LessonPage() {
   }
 
   const exercise = exercises[step]!;
-  const outOfHearts = user && hearts <= 0;
+  const outOfHearts = Boolean(user) && !unlimitedHearts && hearts <= 0;
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <LessonHud
         progress={step / exercises.length}
         hearts={hearts}
+        unlimited={unlimitedHearts}
         onQuit={() => void navigate({ to: "/lecons/$moduleId", params: { moduleId } })}
       />
       <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-5 py-6">
@@ -154,15 +159,16 @@ function LessonPage() {
         </p>
         <SignInBanner messageKey="lessons.signInLesson" />
         {outOfHearts ? (
-          <div className="mt-8 rounded-xl border border-destructive/40 bg-destructive/10 p-5">
-            <p className="text-sm text-destructive">{t("lessons.outOfHearts")}</p>
-            <Button
-              className="mt-4"
-              onClick={() => void navigate({ to: "/lecons/$moduleId", params: { moduleId } })}
-            >
-              {t("lessons.backToPath")}
-            </Button>
-          </div>
+          <HeartsEmptyState
+            backTo={
+              <Button
+                variant="outline"
+                onClick={() => void navigate({ to: "/lecons/$moduleId", params: { moduleId } })}
+              >
+                {t("lessons.backToPath")}
+              </Button>
+            }
+          />
         ) : (
           <div className="mt-4 flex flex-1 flex-col">
             <ExercisePlayer key={exercise.id} exercise={exercise} onResult={onResult} />

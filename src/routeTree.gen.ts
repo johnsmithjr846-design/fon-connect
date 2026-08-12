@@ -16,12 +16,14 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ConditionsUtilisationRouteImport } from './routes/conditions-utilisation'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
+import { Route as MonAbonnementRouteImport } from './routes/mon-abonnement'
 import { Route as MotDePasseOublieRouteImport } from './routes/mot-de-passe-oublie'
 import { Route as PhrasebookRouteImport } from './routes/phrasebook'
 import { Route as PolitiqueConfidentialiteRouteImport } from './routes/politique-confidentialite'
 import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TarifsRouteImport } from './routes/tarifs'
 import { Route as TelechargerRouteImport } from './routes/telecharger'
 import { Route as TraducteurRouteImport } from './routes/traducteur'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
@@ -32,6 +34,7 @@ import { Route as LeconsIndexRouteImport } from './routes/lecons.index'
 import { Route as LeconsModuleIdIndexRouteImport } from './routes/lecons.$moduleId.index'
 import { Route as LeconsModuleIdLessonIdRouteImport } from './routes/lecons.$moduleId.$lessonId'
 import { Route as LeconsModuleIdQuizRouteImport } from './routes/lecons.$moduleId.quiz'
+import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as ApiPublicTelechargementPlatformRouteImport } from './routes/api/public/telechargement.$platform'
 
 const IndexRoute = IndexRouteImport.update({
@@ -69,6 +72,11 @@ const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
   path: '/mentions-legales',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MonAbonnementRoute = MonAbonnementRouteImport.update({
+  id: '/mon-abonnement',
+  path: '/mon-abonnement',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MotDePasseOublieRoute = MotDePasseOublieRouteImport.update({
   id: '/mot-de-passe-oublie',
   path: '/mot-de-passe-oublie',
@@ -98,6 +106,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TarifsRoute = TarifsRouteImport.update({
+  id: '/tarifs',
+  path: '/tarifs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TelechargerRoute = TelechargerRouteImport.update({
@@ -150,6 +163,12 @@ const LeconsModuleIdQuizRoute = LeconsModuleIdQuizRouteImport.update({
   path: '/lecons/$moduleId/quiz',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPaymentsWebhookRoute =
+  ApiPublicPaymentsWebhookRouteImport.update({
+    id: '/api/public/payments/webhook',
+    path: '/api/public/payments/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicTelechargementPlatformRoute =
   ApiPublicTelechargementPlatformRouteImport.update({
     id: '/api/public/telechargement/$platform',
@@ -165,12 +184,14 @@ export interface FileRoutesByFullPath {
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/mon-abonnement': typeof MonAbonnementRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/phrasebook': typeof PhrasebookRoute
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
   '/profil': typeof ProfilRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/tarifs': typeof TarifsRoute
   '/telecharger': typeof TelechargerRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
@@ -181,6 +202,7 @@ export interface FileRoutesByFullPath {
   '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
   '/lecons/$moduleId/quiz': typeof LeconsModuleIdQuizRoute
   '/lecons/$moduleId/': typeof LeconsModuleIdIndexRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/telechargement/$platform': typeof ApiPublicTelechargementPlatformRoute
 }
 export interface FileRoutesByTo {
@@ -191,12 +213,14 @@ export interface FileRoutesByTo {
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/mon-abonnement': typeof MonAbonnementRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/phrasebook': typeof PhrasebookRoute
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
   '/profil': typeof ProfilRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/tarifs': typeof TarifsRoute
   '/telecharger': typeof TelechargerRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
@@ -207,6 +231,7 @@ export interface FileRoutesByTo {
   '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
   '/lecons/$moduleId/quiz': typeof LeconsModuleIdQuizRoute
   '/lecons/$moduleId': typeof LeconsModuleIdIndexRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/telechargement/$platform': typeof ApiPublicTelechargementPlatformRoute
 }
 export interface FileRoutesById {
@@ -218,12 +243,14 @@ export interface FileRoutesById {
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/mon-abonnement': typeof MonAbonnementRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/phrasebook': typeof PhrasebookRoute
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
   '/profil': typeof ProfilRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/tarifs': typeof TarifsRoute
   '/telecharger': typeof TelechargerRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
@@ -234,6 +261,7 @@ export interface FileRoutesById {
   '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
   '/lecons/$moduleId/quiz': typeof LeconsModuleIdQuizRoute
   '/lecons/$moduleId/': typeof LeconsModuleIdIndexRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/telechargement/$platform': typeof ApiPublicTelechargementPlatformRoute
 }
 export interface FileRouteTypes {
@@ -246,12 +274,14 @@ export interface FileRouteTypes {
     | '/conditions-utilisation'
     | '/cookies'
     | '/mentions-legales'
+    | '/mon-abonnement'
     | '/mot-de-passe-oublie'
     | '/phrasebook'
     | '/politique-confidentialite'
     | '/profil'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/tarifs'
     | '/telecharger'
     | '/traducteur'
     | '/api/chat'
@@ -262,6 +292,7 @@ export interface FileRouteTypes {
     | '/lecons/$moduleId/$lessonId'
     | '/lecons/$moduleId/quiz'
     | '/lecons/$moduleId/'
+    | '/api/public/payments/webhook'
     | '/api/public/telechargement/$platform'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -272,12 +303,14 @@ export interface FileRouteTypes {
     | '/conditions-utilisation'
     | '/cookies'
     | '/mentions-legales'
+    | '/mon-abonnement'
     | '/mot-de-passe-oublie'
     | '/phrasebook'
     | '/politique-confidentialite'
     | '/profil'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/tarifs'
     | '/telecharger'
     | '/traducteur'
     | '/api/chat'
@@ -288,6 +321,7 @@ export interface FileRouteTypes {
     | '/lecons/$moduleId/$lessonId'
     | '/lecons/$moduleId/quiz'
     | '/lecons/$moduleId'
+    | '/api/public/payments/webhook'
     | '/api/public/telechargement/$platform'
   id:
     | '__root__'
@@ -298,12 +332,14 @@ export interface FileRouteTypes {
     | '/conditions-utilisation'
     | '/cookies'
     | '/mentions-legales'
+    | '/mon-abonnement'
     | '/mot-de-passe-oublie'
     | '/phrasebook'
     | '/politique-confidentialite'
     | '/profil'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/tarifs'
     | '/telecharger'
     | '/traducteur'
     | '/api/chat'
@@ -314,6 +350,7 @@ export interface FileRouteTypes {
     | '/lecons/$moduleId/$lessonId'
     | '/lecons/$moduleId/quiz'
     | '/lecons/$moduleId/'
+    | '/api/public/payments/webhook'
     | '/api/public/telechargement/$platform'
   fileRoutesById: FileRoutesById
 }
@@ -325,12 +362,14 @@ export interface RootRouteChildren {
   ConditionsUtilisationRoute: typeof ConditionsUtilisationRoute
   CookiesRoute: typeof CookiesRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
+  MonAbonnementRoute: typeof MonAbonnementRoute
   MotDePasseOublieRoute: typeof MotDePasseOublieRoute
   PhrasebookRoute: typeof PhrasebookRoute
   PolitiqueConfidentialiteRoute: typeof PolitiqueConfidentialiteRoute
   ProfilRoute: typeof ProfilRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TarifsRoute: typeof TarifsRoute
   TelechargerRoute: typeof TelechargerRoute
   TraducteurRoute: typeof TraducteurRoute
   ApiChatRoute: typeof ApiChatRoute
@@ -341,6 +380,7 @@ export interface RootRouteChildren {
   LeconsModuleIdLessonIdRoute: typeof LeconsModuleIdLessonIdRoute
   LeconsModuleIdQuizRoute: typeof LeconsModuleIdQuizRoute
   LeconsModuleIdIndexRoute: typeof LeconsModuleIdIndexRoute
+  ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   ApiPublicTelechargementPlatformRoute: typeof ApiPublicTelechargementPlatformRoute
 }
 
@@ -395,6 +435,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MentionsLegalesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mon-abonnement': {
+      id: '/mon-abonnement'
+      path: '/mon-abonnement'
+      fullPath: '/mon-abonnement'
+      preLoaderRoute: typeof MonAbonnementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mot-de-passe-oublie': {
       id: '/mot-de-passe-oublie'
       path: '/mot-de-passe-oublie'
@@ -435,6 +482,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tarifs': {
+      id: '/tarifs'
+      path: '/tarifs'
+      fullPath: '/tarifs'
+      preLoaderRoute: typeof TarifsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/telecharger': {
@@ -507,6 +561,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeconsModuleIdQuizRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/payments/webhook': {
+      id: '/api/public/payments/webhook'
+      path: '/api/public/payments/webhook'
+      fullPath: '/api/public/payments/webhook'
+      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/telechargement/$platform': {
       id: '/api/public/telechargement/$platform'
       path: '/api/public/telechargement/$platform'
@@ -525,12 +586,14 @@ const rootRouteChildren: RootRouteChildren = {
   ConditionsUtilisationRoute: ConditionsUtilisationRoute,
   CookiesRoute: CookiesRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
+  MonAbonnementRoute: MonAbonnementRoute,
   MotDePasseOublieRoute: MotDePasseOublieRoute,
   PhrasebookRoute: PhrasebookRoute,
   PolitiqueConfidentialiteRoute: PolitiqueConfidentialiteRoute,
   ProfilRoute: ProfilRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TarifsRoute: TarifsRoute,
   TelechargerRoute: TelechargerRoute,
   TraducteurRoute: TraducteurRoute,
   ApiChatRoute: ApiChatRoute,
@@ -541,6 +604,7 @@ const rootRouteChildren: RootRouteChildren = {
   LeconsModuleIdLessonIdRoute: LeconsModuleIdLessonIdRoute,
   LeconsModuleIdQuizRoute: LeconsModuleIdQuizRoute,
   LeconsModuleIdIndexRoute: LeconsModuleIdIndexRoute,
+  ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   ApiPublicTelechargementPlatformRoute: ApiPublicTelechargementPlatformRoute,
 }
 export const routeTree = rootRouteImport
