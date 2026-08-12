@@ -6,7 +6,7 @@ import { streakBonus } from "@/lib/lessons/gamification";
 import {
   DEFAULT_STATS,
   nextStreak,
-  refillHearts,
+  resetHeartsIfNewDay,
   todayKey,
   type UserStats,
 } from "@/lib/lessons/stats";
@@ -46,7 +46,7 @@ export const getLessonProgress = createServerFn({ method: "GET" })
     return {
       lessons: lessons.data ?? [],
       quizzes: quizzes.data ?? [],
-      stats: refillHearts(raw),
+      stats: resetHeartsIfNewDay(raw),
       badges: (badges.data ?? []).map((b) => b.badge_id),
       chests: (chests.data ?? []).map((c) => c.chest_id),
     };
@@ -86,7 +86,7 @@ export const completeLesson = createServerFn({ method: "POST" })
         .eq("user_id", userId),
     ]);
 
-    const prev = refillHearts((statsRes.data as UserStats | null) ?? DEFAULT_STATS);
+    const prev = resetHeartsIfNewDay((statsRes.data as UserStats | null) ?? DEFAULT_STATS);
     const day = todayKey();
     const streak = nextStreak(prev.current_streak, prev.last_active_day);
 
@@ -121,6 +121,7 @@ export const completeLesson = createServerFn({ method: "POST" })
         best_streak: Math.max(prev.best_streak, streak),
         last_active_day: day,
         hearts: prev.hearts,
+        hearts_day: prev.hearts_day,
         hearts_updated_at: prev.hearts_updated_at,
       },
       { onConflict: "user_id" },
@@ -173,7 +174,7 @@ export const loseHeart = createServerFn({ method: "POST" })
   .handler(async ({ context }): Promise<{ hearts: number }> => {
     const { supabase, userId } = context;
     const { data } = await supabase.from("user_stats").select("*").eq("user_id", userId).maybeSingle();
-    const prev = refillHearts((data as UserStats | null) ?? DEFAULT_STATS);
+    const prev = resetHeartsIfNewDay((data as UserStats | null) ?? DEFAULT_STATS);
     const hearts = Math.max(0, prev.hearts - 1);
     const { error } = await supabase.from("user_stats").upsert(
       {
@@ -183,7 +184,8 @@ export const loseHeart = createServerFn({ method: "POST" })
         best_streak: prev.best_streak,
         last_active_day: prev.last_active_day,
         hearts,
-        hearts_updated_at: prev.hearts < MAX_HEARTS ? prev.hearts_updated_at : new Date().toISOString(),
+        hearts_day: prev.hearts_day,
+        hearts_updated_at: new Date().toISOString(),
       },
       { onConflict: "user_id" },
     );
@@ -226,6 +228,7 @@ export const openChest = createServerFn({ method: "POST" })
         best_streak: prev.best_streak,
         last_active_day: prev.last_active_day,
         hearts: prev.hearts,
+        hearts_day: prev.hearts_day,
         hearts_updated_at: prev.hearts_updated_at,
       },
       { onConflict: "user_id" },
