@@ -290,6 +290,78 @@ export type Database = {
         }
         Relationships: []
       }
+      subscriptions: {
+        Row: {
+          auto_renew: boolean
+          cancel_at_period_end: boolean
+          created_at: string
+          expires_at: string | null
+          id: string
+          plan_id: string
+          provider: string
+          provider_ref: string | null
+          start_at: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_renew?: boolean
+          cancel_at_period_end?: boolean
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          plan_id: string
+          provider?: string
+          provider_ref?: string | null
+          start_at?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_renew?: boolean
+          cancel_at_period_end?: boolean
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          plan_id?: string
+          provider?: string
+          provider_ref?: string | null
+          start_at?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      usage_daily: {
+        Row: {
+          created_at: string
+          day: string
+          id: string
+          updated_at: string
+          user_id: string
+          voice_seconds: number
+        }
+        Insert: {
+          created_at?: string
+          day?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+          voice_seconds?: number
+        }
+        Update: {
+          created_at?: string
+          day?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+          voice_seconds?: number
+        }
+        Relationships: []
+      }
       user_badges: {
         Row: {
           badge_id: string
@@ -344,6 +416,7 @@ export type Database = {
           created_at: string
           current_streak: number
           hearts: number
+          hearts_day: string | null
           hearts_updated_at: string
           last_active_day: string | null
           updated_at: string
@@ -355,6 +428,7 @@ export type Database = {
           created_at?: string
           current_streak?: number
           hearts?: number
+          hearts_day?: string | null
           hearts_updated_at?: string
           last_active_day?: string | null
           updated_at?: string
@@ -366,6 +440,7 @@ export type Database = {
           created_at?: string
           current_streak?: number
           hearts?: number
+          hearts_day?: string | null
           hearts_updated_at?: string
           last_active_day?: string | null
           updated_at?: string
@@ -379,6 +454,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      active_plans: {
+        Args: { _user_id: string }
+        Returns: {
+          auto_renew: boolean
+          cancel_at_period_end: boolean
+          expires_at: string
+          plan_id: string
+          status: string
+        }[]
+      }
       admin_code_is_set: { Args: never; Returns: boolean }
       admin_exists: { Args: never; Returns: boolean }
       admin_list_users: {
