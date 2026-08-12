@@ -64,14 +64,19 @@ export function SiteHeader() {
             </select>
           </li>
           {!loading && user && (
-            <li>
-              <Link
-                to="/profil"
-                className="text-muted-foreground transition-colors hover:text-primary [&.active]:font-semibold [&.active]:text-primary"
-              >
-                {t("nav.profile")}
-              </Link>
-            </li>
+            <>
+              <li>
+                <NotificationsBell />
+              </li>
+              <li>
+                <Link
+                  to="/profil"
+                  className="text-muted-foreground transition-colors hover:text-primary [&.active]:font-semibold [&.active]:text-primary"
+                >
+                  {t("nav.profile")}
+                </Link>
+              </li>
+            </>
           )}
           <li>
             {loading ? null : user ? (
