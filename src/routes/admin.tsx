@@ -127,6 +127,8 @@ function AdminConsole() {
             </nav>
             {tab === "dashboard" && <DashboardPanel />}
             {tab === "users" && <UsersPanel />}
+            {tab === "subscriptions" && <SubscriptionsPanel />}
+            {tab === "promotions" && <PromotionsPanel />}
             {tab === "downloads" && <DownloadsPanel />}
             {tab === "content" && <ContentPanel />}
             {tab === "ads" && <AdsPanel />}
