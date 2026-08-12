@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { PaymentTestModeBanner } from "@/components/payments/PaymentTestModeBanner";
 import { CheckoutDialog, type CheckoutRequest } from "@/components/payments/CheckoutDialog";
 import { PaymentIssueBanner } from "@/components/payments/PaymentIssueBanner";
+import { PromoBanner } from "@/components/payments/PromoBanner";
 import { changePlan } from "@/lib/payments.functions";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { toast } from "sonner";
@@ -114,6 +115,8 @@ function PricingPage() {
             ? "Prices include VAT. Every detail below is shown before payment: what is included, how long it lasts and whether it renews."
             : "Prix TTC. Tout est indiqué avant le paiement : ce qui est inclus, la durée et la reconduction éventuelle."}
         </p>
+
+        <PromoBanner />
 
         <PlanCard plan={free} en={en} current={!entitlements.plans.length} />
 
