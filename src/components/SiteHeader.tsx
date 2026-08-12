@@ -11,6 +11,7 @@ const NAV: { to: "/" | "/traducteur" | "/lecons" | "/phrasebook" | "/assistant";
   { to: "/lecons", key: "nav.lessons" },
   { to: "/phrasebook", key: "nav.phrasebook" },
   { to: "/assistant", key: "nav.assistant" },
+  { to: "/tarifs", key: "nav.pricing" },
 ];
 
 export function SiteHeader() {
