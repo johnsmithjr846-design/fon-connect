@@ -125,3 +125,72 @@ export const createPortalSession = createServerFn({ method: "POST" })
       return { error: getStripeErrorMessage(error) };
     }
   });
+
+type ActionResult = { ok: true } | { error: string };
+
+/** Recherche l'abonnement Stripe en cours de l'utilisateur. */
+async function findActiveSubscription(
+  stripe: ReturnType<typeof createStripeClient>,
+  userId: string,
+) {
+  const found = await stripe.subscriptions.search({
+    query: `metadata['userId']:'${userId}'`,
+    limit: 20,
+  });
+  return (
+    found.data.find((s) => ["active", "trialing", "past_due"].includes(s.status)) ?? null
+  );
+}
+
+/** Résiliation : coupure immédiate, sans attendre la fin de la période. */
+export const cancelSubscriptionNow = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { environment: StripeEnv }) => data)
+  .handler(async ({ data, context }): Promise<ActionResult> => {
+    try {
+      const stripe = createStripeClient(data.environment);
+      const subscription = await findActiveSubscription(stripe, context.userId);
+      if (!subscription) throw new Error("Aucun abonnement en cours");
+      await stripe.subscriptions.cancel(subscription.id, { prorate: true });
+      return { ok: true };
+    } catch (error) {
+      return { error: getStripeErrorMessage(error) };
+    }
+  });
+
+/** Changement d'offre immédiat, montant ajusté au prorata. */
+export const changePlan = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { priceId: string; planId: string; environment: StripeEnv }) => {
+    if (!/^[a-zA-Z0-9_-]+$/.test(data.priceId)) throw new Error("Invalid priceId");
+    if (!/^[A-Z0-9_]+$/.test(data.planId)) throw new Error("Invalid planId");
+    return data;
+  })
+  .handler(async ({ data, context }): Promise<ActionResult> => {
+    try {
+      const stripe = createStripeClient(data.environment);
+      const subscription = await findActiveSubscription(stripe, context.userId);
+      if (!subscription) throw new Error("Aucun abonnement en cours");
+
+      const prices = await stripe.prices.list({ lookup_keys: [data.priceId] });
+      const price = prices.data[0];
+      if (!price || price.type !== "recurring") throw new Error("Offre non compatible");
+
+      const item = subscription.items.data[0]!;
+      if (item.price.id === price.id) return { ok: true };
+
+      await stripe.subscriptions.update(subscription.id, {
+        items: [{ id: item.id, price: price.id }],
+        proration_behavior: "create_prorations",
+        payment_behavior: "pending_if_incomplete",
+        metadata: {
+          ...subscription.metadata,
+          planId: data.planId,
+          priceId: data.priceId,
+        },
+      });
+      return { ok: true };
+    } catch (error) {
+      return { error: getStripeErrorMessage(error) };
+    }
+  });
