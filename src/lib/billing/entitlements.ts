@@ -6,6 +6,8 @@ export type ActiveSubscription = {
   expires_at: string | null;
   auto_renew: boolean;
   cancel_at_period_end: boolean;
+  payment_state?: string | null;
+  grace_until?: string | null;
 };
 
 export type Entitlements = {
@@ -14,6 +16,9 @@ export type Entitlements = {
   unlimitedHearts: boolean;
   plans: string[];
   subscriptions: ActiveSubscription[];
+  /** Un prélèvement a échoué : accès maintenu pendant le délai de grâce. */
+  paymentIssue: boolean;
+  graceUntil: string | null;
 };
 
 export const FREE_ENTITLEMENTS: Entitlements = {
@@ -22,4 +27,6 @@ export const FREE_ENTITLEMENTS: Entitlements = {
   unlimitedHearts: false,
   plans: [],
   subscriptions: [],
+  paymentIssue: false,
+  graceUntil: null,
 };
