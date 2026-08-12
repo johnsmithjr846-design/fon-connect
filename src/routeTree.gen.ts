@@ -22,6 +22,7 @@ import { Route as PolitiqueConfidentialiteRouteImport } from './routes/politique
 import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TarifsRouteImport } from './routes/tarifs'
 import { Route as TelechargerRouteImport } from './routes/telecharger'
 import { Route as TraducteurRouteImport } from './routes/traducteur'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
@@ -101,6 +102,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TarifsRoute = TarifsRouteImport.update({
+  id: '/tarifs',
+  path: '/tarifs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TelechargerRoute = TelechargerRouteImport.update({
   id: '/telecharger',
   path: '/telecharger',
@@ -178,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/profil': typeof ProfilRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/tarifs': typeof TarifsRoute
   '/telecharger': typeof TelechargerRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
@@ -205,6 +212,7 @@ export interface FileRoutesByTo {
   '/profil': typeof ProfilRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/tarifs': typeof TarifsRoute
   '/telecharger': typeof TelechargerRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
@@ -233,6 +241,7 @@ export interface FileRoutesById {
   '/profil': typeof ProfilRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/tarifs': typeof TarifsRoute
   '/telecharger': typeof TelechargerRoute
   '/traducteur': typeof TraducteurRoute
   '/api/chat': typeof ApiChatRoute
@@ -262,6 +271,7 @@ export interface FileRouteTypes {
     | '/profil'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/tarifs'
     | '/telecharger'
     | '/traducteur'
     | '/api/chat'
@@ -289,6 +299,7 @@ export interface FileRouteTypes {
     | '/profil'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/tarifs'
     | '/telecharger'
     | '/traducteur'
     | '/api/chat'
@@ -316,6 +327,7 @@ export interface FileRouteTypes {
     | '/profil'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/tarifs'
     | '/telecharger'
     | '/traducteur'
     | '/api/chat'
@@ -344,6 +356,7 @@ export interface RootRouteChildren {
   ProfilRoute: typeof ProfilRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TarifsRoute: typeof TarifsRoute
   TelechargerRoute: typeof TelechargerRoute
   TraducteurRoute: typeof TraducteurRoute
   ApiChatRoute: typeof ApiChatRoute
@@ -451,6 +464,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tarifs': {
+      id: '/tarifs'
+      path: '/tarifs'
+      fullPath: '/tarifs'
+      preLoaderRoute: typeof TarifsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/telecharger': {
       id: '/telecharger'
       path: '/telecharger'
@@ -552,6 +572,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfilRoute: ProfilRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TarifsRoute: TarifsRoute,
   TelechargerRoute: TelechargerRoute,
   TraducteurRoute: TraducteurRoute,
   ApiChatRoute: ApiChatRoute,
