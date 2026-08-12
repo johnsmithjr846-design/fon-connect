@@ -80,7 +80,7 @@ export async function sendTemplateEmail(
         purpose: 'transactional',
         label: templateName,
         idempotency_key: options.idempotencyKey || crypto.randomUUID(),
-        reply_to: options.replyTo,
+        reply_to: options.replyTo ?? REPLY_TO,
       },
       { apiKey, sendUrl: process.env['LOVABLE_SEND_URL'] }
     )
