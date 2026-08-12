@@ -182,6 +182,53 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          kind: string
+          link: string
+          promotion_id: string | null
+          read_at: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          link?: string
+          promotion_id?: string | null
+          read_at?: string | null
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          link?: string
+          promotion_id?: string | null
+          read_at?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_promotion_id_fkey"
+            columns: ["promotion_id"]
+            isOneToOne: false
+            referencedRelation: "promotions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       page_views: {
         Row: {
           created_at: string
@@ -232,6 +279,86 @@ export type Database = {
           id?: string
           preferred_language?: string
           pseudo?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      promotion_targets: {
+        Row: {
+          created_at: string
+          id: string
+          promotion_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          promotion_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          promotion_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promotion_targets_promotion_id_fkey"
+            columns: ["promotion_id"]
+            isOneToOne: false
+            referencedRelation: "promotions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      promotions: {
+        Row: {
+          active: boolean
+          audience: string
+          code: string | null
+          created_at: string
+          created_by: string | null
+          description: string
+          discount_type: string
+          discount_value: number
+          ends_at: string | null
+          id: string
+          plan_ids: string[]
+          starts_at: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          audience?: string
+          code?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          discount_type?: string
+          discount_value?: number
+          ends_at?: string | null
+          id?: string
+          plan_ids?: string[]
+          starts_at?: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          audience?: string
+          code?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          discount_type?: string
+          discount_value?: number
+          ends_at?: string | null
+          id?: string
+          plan_ids?: string[]
+          starts_at?: string
+          title?: string
           updated_at?: string
         }
         Relationships: []
@@ -472,6 +599,26 @@ export type Database = {
       }
       admin_code_is_set: { Args: never; Returns: boolean }
       admin_exists: { Args: never; Returns: boolean }
+      admin_list_subscriptions: {
+        Args: { _actor: string }
+        Returns: {
+          auto_renew: boolean
+          cancel_at_period_end: boolean
+          created_at: string
+          email: string
+          expires_at: string
+          grace_until: string
+          id: string
+          payment_state: string
+          plan_id: string
+          provider: string
+          pseudo: string
+          start_at: string
+          status: string
+          updated_at: string
+          user_id: string
+        }[]
+      }
       admin_list_users: {
         Args: { _actor: string }
         Returns: {
@@ -485,6 +632,10 @@ export type Database = {
           user_id: string
           xp_total: number
         }[]
+      }
+      admin_send_promotion: {
+        Args: { _actor: string; _promotion_id: string }
+        Returns: number
       }
       admin_set_role_by_email: {
         Args: { _actor: string; _email: string; _grant: boolean }
