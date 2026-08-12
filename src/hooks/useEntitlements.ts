@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getEntitlements } from "@/lib/entitlements.functions";
-import { FREE_ENTITLEMENTS, type Entitlements } from "@/lib/entitlements.server.types";
+import { FREE_ENTITLEMENTS, type Entitlements } from "@/lib/billing/entitlements";
 import { useAuthUser } from "@/hooks/useAuthUser";
 
 /** Affichage uniquement : les droits font foi côté serveur. */
