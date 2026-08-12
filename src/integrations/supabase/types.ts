@@ -296,7 +296,9 @@ export type Database = {
           cancel_at_period_end: boolean
           created_at: string
           expires_at: string | null
+          grace_until: string | null
           id: string
+          payment_state: string
           plan_id: string
           provider: string
           provider_ref: string | null
@@ -310,7 +312,9 @@ export type Database = {
           cancel_at_period_end?: boolean
           created_at?: string
           expires_at?: string | null
+          grace_until?: string | null
           id?: string
+          payment_state?: string
           plan_id: string
           provider?: string
           provider_ref?: string | null
@@ -324,7 +328,9 @@ export type Database = {
           cancel_at_period_end?: boolean
           created_at?: string
           expires_at?: string | null
+          grace_until?: string | null
           id?: string
+          payment_state?: string
           plan_id?: string
           provider?: string
           provider_ref?: string | null
