@@ -16,6 +16,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ConditionsUtilisationRouteImport } from './routes/conditions-utilisation'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
+import { Route as MerciRouteImport } from './routes/merci'
 import { Route as MonAbonnementRouteImport } from './routes/mon-abonnement'
 import { Route as MotDePasseOublieRouteImport } from './routes/mot-de-passe-oublie'
 import { Route as PhrasebookRouteImport } from './routes/phrasebook'
@@ -70,6 +71,11 @@ const CookiesRoute = CookiesRouteImport.update({
 const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
   id: '/mentions-legales',
   path: '/mentions-legales',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MerciRoute = MerciRouteImport.update({
+  id: '/merci',
+  path: '/merci',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MonAbonnementRoute = MonAbonnementRouteImport.update({
@@ -184,6 +190,7 @@ export interface FileRoutesByFullPath {
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/merci': typeof MerciRoute
   '/mon-abonnement': typeof MonAbonnementRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/phrasebook': typeof PhrasebookRoute
@@ -213,6 +220,7 @@ export interface FileRoutesByTo {
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/merci': typeof MerciRoute
   '/mon-abonnement': typeof MonAbonnementRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/phrasebook': typeof PhrasebookRoute
@@ -243,6 +251,7 @@ export interface FileRoutesById {
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/merci': typeof MerciRoute
   '/mon-abonnement': typeof MonAbonnementRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/phrasebook': typeof PhrasebookRoute
@@ -274,6 +283,7 @@ export interface FileRouteTypes {
     | '/conditions-utilisation'
     | '/cookies'
     | '/mentions-legales'
+    | '/merci'
     | '/mon-abonnement'
     | '/mot-de-passe-oublie'
     | '/phrasebook'
@@ -303,6 +313,7 @@ export interface FileRouteTypes {
     | '/conditions-utilisation'
     | '/cookies'
     | '/mentions-legales'
+    | '/merci'
     | '/mon-abonnement'
     | '/mot-de-passe-oublie'
     | '/phrasebook'
@@ -332,6 +343,7 @@ export interface FileRouteTypes {
     | '/conditions-utilisation'
     | '/cookies'
     | '/mentions-legales'
+    | '/merci'
     | '/mon-abonnement'
     | '/mot-de-passe-oublie'
     | '/phrasebook'
@@ -362,6 +374,7 @@ export interface RootRouteChildren {
   ConditionsUtilisationRoute: typeof ConditionsUtilisationRoute
   CookiesRoute: typeof CookiesRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
+  MerciRoute: typeof MerciRoute
   MonAbonnementRoute: typeof MonAbonnementRoute
   MotDePasseOublieRoute: typeof MotDePasseOublieRoute
   PhrasebookRoute: typeof PhrasebookRoute
@@ -433,6 +446,13 @@ declare module '@tanstack/react-router' {
       path: '/mentions-legales'
       fullPath: '/mentions-legales'
       preLoaderRoute: typeof MentionsLegalesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/merci': {
+      id: '/merci'
+      path: '/merci'
+      fullPath: '/merci'
+      preLoaderRoute: typeof MerciRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mon-abonnement': {
@@ -586,6 +606,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConditionsUtilisationRoute: ConditionsUtilisationRoute,
   CookiesRoute: CookiesRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
+  MerciRoute: MerciRoute,
   MonAbonnementRoute: MonAbonnementRoute,
   MotDePasseOublieRoute: MotDePasseOublieRoute,
   PhrasebookRoute: PhrasebookRoute,

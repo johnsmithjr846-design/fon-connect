@@ -22,7 +22,7 @@ export function CheckoutDialog({
       data: {
         priceId: request!.priceId,
         planId: request!.planId,
-        returnUrl: `${window.location.origin}/mon-abonnement?checkout=done`,
+        returnUrl: `${window.location.origin}/merci`,
         environment: getStripeEnvironment(),
       },
     });
