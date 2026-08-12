@@ -5,7 +5,10 @@ import { useAuthUser } from "@/hooks/useAuthUser";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 import { UI_LANGS, type TranslationKey, type UiLang } from "@/lib/i18n/dictionary";
 
-const NAV: { to: "/" | "/traducteur" | "/lecons" | "/phrasebook" | "/assistant"; key: TranslationKey }[] = [
+const NAV: {
+  to: "/" | "/traducteur" | "/lecons" | "/phrasebook" | "/assistant" | "/tarifs";
+  key: TranslationKey;
+}[] = [
   { to: "/", key: "nav.home" },
   { to: "/traducteur", key: "nav.translator" },
   { to: "/lecons", key: "nav.lessons" },
