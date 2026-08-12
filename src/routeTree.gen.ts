@@ -16,6 +16,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ConditionsUtilisationRouteImport } from './routes/conditions-utilisation'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
+import { Route as MonAbonnementRouteImport } from './routes/mon-abonnement'
 import { Route as MotDePasseOublieRouteImport } from './routes/mot-de-passe-oublie'
 import { Route as PhrasebookRouteImport } from './routes/phrasebook'
 import { Route as PolitiqueConfidentialiteRouteImport } from './routes/politique-confidentialite'
@@ -69,6 +70,11 @@ const CookiesRoute = CookiesRouteImport.update({
 const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
   id: '/mentions-legales',
   path: '/mentions-legales',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MonAbonnementRoute = MonAbonnementRouteImport.update({
+  id: '/mon-abonnement',
+  path: '/mon-abonnement',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MotDePasseOublieRoute = MotDePasseOublieRouteImport.update({
@@ -178,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/mon-abonnement': typeof MonAbonnementRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/phrasebook': typeof PhrasebookRoute
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
@@ -206,6 +213,7 @@ export interface FileRoutesByTo {
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/mon-abonnement': typeof MonAbonnementRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/phrasebook': typeof PhrasebookRoute
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
@@ -235,6 +243,7 @@ export interface FileRoutesById {
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/mon-abonnement': typeof MonAbonnementRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/phrasebook': typeof PhrasebookRoute
   '/politique-confidentialite': typeof PolitiqueConfidentialiteRoute
@@ -265,6 +274,7 @@ export interface FileRouteTypes {
     | '/conditions-utilisation'
     | '/cookies'
     | '/mentions-legales'
+    | '/mon-abonnement'
     | '/mot-de-passe-oublie'
     | '/phrasebook'
     | '/politique-confidentialite'
@@ -293,6 +303,7 @@ export interface FileRouteTypes {
     | '/conditions-utilisation'
     | '/cookies'
     | '/mentions-legales'
+    | '/mon-abonnement'
     | '/mot-de-passe-oublie'
     | '/phrasebook'
     | '/politique-confidentialite'
@@ -321,6 +332,7 @@ export interface FileRouteTypes {
     | '/conditions-utilisation'
     | '/cookies'
     | '/mentions-legales'
+    | '/mon-abonnement'
     | '/mot-de-passe-oublie'
     | '/phrasebook'
     | '/politique-confidentialite'
@@ -350,6 +362,7 @@ export interface RootRouteChildren {
   ConditionsUtilisationRoute: typeof ConditionsUtilisationRoute
   CookiesRoute: typeof CookiesRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
+  MonAbonnementRoute: typeof MonAbonnementRoute
   MotDePasseOublieRoute: typeof MotDePasseOublieRoute
   PhrasebookRoute: typeof PhrasebookRoute
   PolitiqueConfidentialiteRoute: typeof PolitiqueConfidentialiteRoute
@@ -420,6 +433,13 @@ declare module '@tanstack/react-router' {
       path: '/mentions-legales'
       fullPath: '/mentions-legales'
       preLoaderRoute: typeof MentionsLegalesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mon-abonnement': {
+      id: '/mon-abonnement'
+      path: '/mon-abonnement'
+      fullPath: '/mon-abonnement'
+      preLoaderRoute: typeof MonAbonnementRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mot-de-passe-oublie': {
@@ -566,6 +586,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConditionsUtilisationRoute: ConditionsUtilisationRoute,
   CookiesRoute: CookiesRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
+  MonAbonnementRoute: MonAbonnementRoute,
   MotDePasseOublieRoute: MotDePasseOublieRoute,
   PhrasebookRoute: PhrasebookRoute,
   PolitiqueConfidentialiteRoute: PolitiqueConfidentialiteRoute,
