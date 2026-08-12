@@ -8,7 +8,8 @@ import { PaymentTestModeBanner } from "@/components/payments/PaymentTestModeBann
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 import { useAuthUser } from "@/hooks/useAuthUser";
 import { useEntitlements } from "@/hooks/useEntitlements";
-import { createPortalSession } from "@/lib/payments.functions";
+import { createPortalSession, cancelSubscriptionNow } from "@/lib/payments.functions";
+import { PaymentIssueBanner } from "@/components/payments/PaymentIssueBanner";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { getPlan, formatPrice, planDuration } from "@/lib/billing/plans";
 
@@ -41,6 +42,28 @@ function SubscriptionPage() {
   const { entitlements, isLoading, refetch } = useEntitlements();
   const [busy, setBusy] = useState(false);
 
+  const cancelNow = async () => {
+    const ok = window.confirm(
+      en
+        ? "Cancel now? Access stops immediately, with a prorated refund of the unused time."
+        : "Résilier maintenant ? L'accès est coupé immédiatement, avec remboursement au prorata du temps non utilisé.",
+    );
+    if (!ok) return;
+    setBusy(true);
+    try {
+      const result = await cancelSubscriptionNow({
+        data: { environment: getStripeEnvironment() },
+      });
+      if ("error" in result) throw new Error(result.error);
+      toast.success(en ? "Subscription cancelled." : "Abonnement résilié.");
+      await refetch();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erreur");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const openPortal = async () => {
     setBusy(true);
     try {
@@ -63,6 +86,7 @@ function SubscriptionPage() {
     <div className="flex min-h-screen flex-col bg-background">
       <PaymentTestModeBanner />
       <SiteHeader />
+      <PaymentIssueBanner />
       <main className="mx-auto w-full max-w-2xl flex-1 px-5 py-10">
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
           {en ? "My subscription" : "Mon abonnement"}
@@ -139,6 +163,11 @@ function SubscriptionPage() {
                 <ExternalLink className="mr-2 size-4" aria-hidden />
                 {en ? "Manage billing" : "Gérer mon paiement"}
               </Button>
+              {entitlements.subscriptions.some((s) => s.auto_renew) ? (
+                <Button variant="destructive" onClick={() => void cancelNow()} disabled={busy}>
+                  {en ? "Cancel now" : "Résilier maintenant"}
+                </Button>
+              ) : null}
               <Button variant="outline" onClick={() => refetch()}>
                 {en ? "Refresh" : "Actualiser"}
               </Button>
@@ -148,8 +177,8 @@ function SubscriptionPage() {
             </div>
             <p className="text-xs text-muted-foreground">
               {en
-                ? "Cancelling keeps your access until the end of the period already paid."
-                : "En cas de résiliation, l'accès reste actif jusqu'à la fin de la période déjà payée."}
+                ? "Cancelling stops access immediately, with a prorated refund of the unused time. Changing plan also applies immediately with a prorated amount."
+                : "La résiliation coupe l'accès immédiatement, avec remboursement au prorata du temps non utilisé. Un changement d'offre s'applique aussi immédiatement, au prorata."}
             </p>
           </div>
         )}
