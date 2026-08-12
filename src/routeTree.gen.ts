@@ -32,6 +32,7 @@ import { Route as LeconsIndexRouteImport } from './routes/lecons.index'
 import { Route as LeconsModuleIdIndexRouteImport } from './routes/lecons.$moduleId.index'
 import { Route as LeconsModuleIdLessonIdRouteImport } from './routes/lecons.$moduleId.$lessonId'
 import { Route as LeconsModuleIdQuizRouteImport } from './routes/lecons.$moduleId.quiz'
+import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as ApiPublicTelechargementPlatformRouteImport } from './routes/api/public/telechargement.$platform'
 
 const IndexRoute = IndexRouteImport.update({
@@ -150,6 +151,12 @@ const LeconsModuleIdQuizRoute = LeconsModuleIdQuizRouteImport.update({
   path: '/lecons/$moduleId/quiz',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPaymentsWebhookRoute =
+  ApiPublicPaymentsWebhookRouteImport.update({
+    id: '/api/public/payments/webhook',
+    path: '/api/public/payments/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicTelechargementPlatformRoute =
   ApiPublicTelechargementPlatformRouteImport.update({
     id: '/api/public/telechargement/$platform',
@@ -181,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
   '/lecons/$moduleId/quiz': typeof LeconsModuleIdQuizRoute
   '/lecons/$moduleId/': typeof LeconsModuleIdIndexRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/telechargement/$platform': typeof ApiPublicTelechargementPlatformRoute
 }
 export interface FileRoutesByTo {
@@ -207,6 +215,7 @@ export interface FileRoutesByTo {
   '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
   '/lecons/$moduleId/quiz': typeof LeconsModuleIdQuizRoute
   '/lecons/$moduleId': typeof LeconsModuleIdIndexRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/telechargement/$platform': typeof ApiPublicTelechargementPlatformRoute
 }
 export interface FileRoutesById {
@@ -234,6 +243,7 @@ export interface FileRoutesById {
   '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
   '/lecons/$moduleId/quiz': typeof LeconsModuleIdQuizRoute
   '/lecons/$moduleId/': typeof LeconsModuleIdIndexRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/telechargement/$platform': typeof ApiPublicTelechargementPlatformRoute
 }
 export interface FileRouteTypes {
@@ -262,6 +272,7 @@ export interface FileRouteTypes {
     | '/lecons/$moduleId/$lessonId'
     | '/lecons/$moduleId/quiz'
     | '/lecons/$moduleId/'
+    | '/api/public/payments/webhook'
     | '/api/public/telechargement/$platform'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -288,6 +299,7 @@ export interface FileRouteTypes {
     | '/lecons/$moduleId/$lessonId'
     | '/lecons/$moduleId/quiz'
     | '/lecons/$moduleId'
+    | '/api/public/payments/webhook'
     | '/api/public/telechargement/$platform'
   id:
     | '__root__'
@@ -314,6 +326,7 @@ export interface FileRouteTypes {
     | '/lecons/$moduleId/$lessonId'
     | '/lecons/$moduleId/quiz'
     | '/lecons/$moduleId/'
+    | '/api/public/payments/webhook'
     | '/api/public/telechargement/$platform'
   fileRoutesById: FileRoutesById
 }
@@ -341,6 +354,7 @@ export interface RootRouteChildren {
   LeconsModuleIdLessonIdRoute: typeof LeconsModuleIdLessonIdRoute
   LeconsModuleIdQuizRoute: typeof LeconsModuleIdQuizRoute
   LeconsModuleIdIndexRoute: typeof LeconsModuleIdIndexRoute
+  ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   ApiPublicTelechargementPlatformRoute: typeof ApiPublicTelechargementPlatformRoute
 }
 
@@ -507,6 +521,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeconsModuleIdQuizRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/payments/webhook': {
+      id: '/api/public/payments/webhook'
+      path: '/api/public/payments/webhook'
+      fullPath: '/api/public/payments/webhook'
+      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/telechargement/$platform': {
       id: '/api/public/telechargement/$platform'
       path: '/api/public/telechargement/$platform'
@@ -541,6 +562,7 @@ const rootRouteChildren: RootRouteChildren = {
   LeconsModuleIdLessonIdRoute: LeconsModuleIdLessonIdRoute,
   LeconsModuleIdQuizRoute: LeconsModuleIdQuizRoute,
   LeconsModuleIdIndexRoute: LeconsModuleIdIndexRoute,
+  ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   ApiPublicTelechargementPlatformRoute: ApiPublicTelechargementPlatformRoute,
 }
 export const routeTree = rootRouteImport
