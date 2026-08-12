@@ -39,6 +39,14 @@ export type BadgeDef = {
 
 export const BADGES: BadgeDef[] = [
   {
+    id: "supporter",
+    icon: "💚",
+    title: "Soutien",
+    titleEn: "Supporter",
+    description: "Soutenir FonConnect avec une offre payante.",
+    descriptionEn: "Support FonConnect with a paid plan.",
+  },
+  {
     id: "first-lesson",
     icon: "🌱",
     title: "Premiers pas",

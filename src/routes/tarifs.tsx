@@ -6,6 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { PaymentTestModeBanner } from "@/components/payments/PaymentTestModeBanner";
 import { CheckoutDialog, type CheckoutRequest } from "@/components/payments/CheckoutDialog";
+import { PaymentIssueBanner } from "@/components/payments/PaymentIssueBanner";
+import { changePlan } from "@/lib/payments.functions";
+import { getStripeEnvironment } from "@/lib/stripe";
+import { toast } from "sonner";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 import { useAuthUser } from "@/hooks/useAuthUser";
 import { useEntitlements } from "@/hooks/useEntitlements";
@@ -53,16 +57,42 @@ function PricingPage() {
   const { lang } = useI18n();
   const en = lang === "en";
   const { user } = useAuthUser();
-  const { entitlements } = useEntitlements();
+  const { entitlements, refetch } = useEntitlements();
   const [autoRenew, setAutoRenew] = useState(true);
   const [checkout, setCheckout] = useState<CheckoutRequest | null>(null);
+  const [switching, setSwitching] = useState<string | null>(null);
   usePageView("/tarifs");
 
   const free = PLANS.find((p) => p.id === "FREE")!;
 
-  const start = (plan: Plan) => {
+  // Un abonnement récurrent est déjà en cours : le changement se fait au prorata.
+  const currentRecurring = entitlements.subscriptions.find((s) => s.auto_renew);
+
+  const start = async (plan: Plan) => {
     const priceId = priceIdFor(plan.id, plan.renewalOptional ? autoRenew : true);
     if (!priceId) return;
+
+    if (currentRecurring && plan.recurring && currentRecurring.plan_id !== plan.id) {
+      setSwitching(plan.id);
+      try {
+        const result = await changePlan({
+          data: { priceId, planId: plan.id, environment: getStripeEnvironment() },
+        });
+        if ("error" in result) throw new Error(result.error);
+        toast.success(
+          en
+            ? "Plan changed. The amount is adjusted automatically."
+            : "Offre modifiée. Le montant est ajusté au prorata.",
+        );
+        await refetch();
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Erreur");
+      } finally {
+        setSwitching(null);
+      }
+      return;
+    }
+
     setCheckout({
       priceId,
       planId: plan.id,
@@ -74,6 +104,7 @@ function PricingPage() {
     <div className="flex min-h-screen flex-col bg-background">
       <PaymentTestModeBanner />
       <SiteHeader />
+      <PaymentIssueBanner />
       <main className="mx-auto w-full max-w-5xl flex-1 px-5 py-10">
         <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
           {en ? "FonConnect plans and pricing" : "Offres et tarifs FonConnect"}
@@ -104,8 +135,22 @@ function PricingPage() {
                     </label>
                   ) : null}
                   {user ? (
-                    <Button className="w-full" onClick={() => start(plan)}>
-                      {en ? "Choose this plan" : "Choisir cette offre"}
+                    <Button
+                      className="w-full"
+                      disabled={switching !== null || entitlements.plans.includes(plan.id)}
+                      onClick={() => void start(plan)}
+                    >
+                      {entitlements.plans.includes(plan.id)
+                        ? en
+                          ? "Your current plan"
+                          : "Votre offre actuelle"
+                        : currentRecurring && plan.recurring
+                          ? en
+                            ? "Switch to this plan"
+                            : "Passer à cette offre"
+                          : en
+                            ? "Choose this plan"
+                            : "Choisir cette offre"}
                     </Button>
                   ) : (
                     <Button asChild className="w-full" variant="secondary">
@@ -132,13 +177,13 @@ function PricingPage() {
             </li>
             <li>
               {en
-                ? "Monthly and yearly plans renew automatically until you cancel; you keep access until the end of the paid period."
-                : "Les offres mensuelles et annuelles se renouvellent jusqu'à résiliation ; l'accès reste actif jusqu'à la fin de la période payée."}
+                ? "Monthly and yearly plans renew automatically until you cancel. Cancelling stops access immediately, with a prorated refund of the unused time."
+                : "Les offres mensuelles et annuelles se renouvellent jusqu'à résiliation. La résiliation coupe l'accès immédiatement, avec remboursement au prorata du temps non utilisé."}
             </li>
             <li>
               {en
-                ? "Manage, change or cancel your plan any time from your subscription page."
-                : "Gérez, changez ou résiliez votre offre à tout moment depuis votre page abonnement."}
+                ? "Changing plan takes effect immediately and the amount is adjusted automatically. If a renewal payment fails, you keep access for 7 more days."
+                : "Un changement d'offre prend effet immédiatement, le montant est ajusté au prorata. Si un renouvellement échoue, l'accès reste ouvert 7 jours."}
             </li>
           </ul>
           <Button asChild variant="outline" className="mt-4">
