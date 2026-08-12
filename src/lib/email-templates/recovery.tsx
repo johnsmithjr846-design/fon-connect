@@ -37,6 +37,12 @@ export const RecoveryEmail = ({
           If you didn't request a password reset, you can safely ignore this
           email. Your password will not be changed.
         </Text>
+        <Text style={contact}>
+          Questions ? Contact us at{' '}
+          <Link href="mailto:fonconnect@outlook.fr" style={link}>
+            fonconnect@outlook.fr
+          </Link>
+        </Text>
       </Container>
     </Body>
   </Html>
