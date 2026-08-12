@@ -51,6 +51,12 @@ export const SignupEmail = ({
         <Text style={footer}>
           If you didn't create an account, you can safely ignore this email.
         </Text>
+        <Text style={contact}>
+          Questions ? Contact us at{' '}
+          <Link href="mailto:fonconnect@outlook.fr" style={link}>
+            fonconnect@outlook.fr
+          </Link>
+        </Text>
       </Container>
     </Body>
   </Html>
@@ -82,3 +88,4 @@ const button = {
   textDecoration: 'none',
 }
 const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+const contact = { fontSize: '12px', color: '#999999', margin: '15px 0 0' }

@@ -7,6 +7,7 @@ import {
   Head,
   Heading,
   Html,
+  Link,
   Preview,
   Text,
 } from '@react-email/components'
@@ -35,6 +36,12 @@ export const MagicLinkEmail = ({
         </Button>
         <Text style={footer}>
           If you didn't request this link, you can safely ignore this email.
+        </Text>
+        <Text style={contact}>
+          Questions ? Contact us at{' '}
+          <Link href="mailto:fonconnect@outlook.fr" style={link}>
+            fonconnect@outlook.fr
+          </Link>
         </Text>
       </Container>
     </Body>
@@ -66,3 +73,5 @@ const button = {
   textDecoration: 'none',
 }
 const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+const link = { color: 'inherit', textDecoration: 'underline' }
+const contact = { fontSize: '12px', color: '#999999', margin: '15px 0 0' }

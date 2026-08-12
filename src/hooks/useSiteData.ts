@@ -20,7 +20,7 @@ export function useSiteSettings() {
 
   return {
     settings: query.data ?? {},
-    contactEmail: query.data?.["contact_email"] || "contact@fonconnect.app",
+    contactEmail: query.data?.["contact_email"] || "fonconnect@outlook.fr",
     companyName: query.data?.["company_name"] || "FonConnect",
     announcement: query.data?.["announcement"] ?? "",
   };

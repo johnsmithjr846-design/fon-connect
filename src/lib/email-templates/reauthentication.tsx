@@ -6,6 +6,7 @@ import {
   Head,
   Heading,
   Html,
+  Link,
   Preview,
   Text,
 } from '@react-email/components'
@@ -26,6 +27,12 @@ export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => 
         <Text style={footer}>
           This code will expire shortly. If you didn't request this, you can
           safely ignore this email.
+        </Text>
+        <Text style={contact}>
+          Questions ? Contact us at{' '}
+          <Link href="mailto:fonconnect@outlook.fr" style={link}>
+            fonconnect@outlook.fr
+          </Link>
         </Text>
       </Container>
     </Body>
@@ -56,3 +63,5 @@ const codeStyle = {
   margin: '0 0 30px',
 }
 const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+const link = { color: 'inherit', textDecoration: 'underline' }
+const contact = { fontSize: '12px', color: '#999999', margin: '15px 0 0' }

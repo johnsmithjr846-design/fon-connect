@@ -57,6 +57,12 @@ export const EmailChangeEmail = ({
           If you didn't request this change, please secure your account
           immediately.
         </Text>
+        <Text style={contact}>
+          Questions ? Contact us at{' '}
+          <Link href="mailto:fonconnect@outlook.fr" style={link}>
+            fonconnect@outlook.fr
+          </Link>
+        </Text>
       </Container>
     </Body>
   </Html>
@@ -88,3 +94,4 @@ const button = {
   textDecoration: 'none',
 }
 const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+const contact = { fontSize: '12px', color: '#999999', margin: '15px 0 0' }
