@@ -1,9 +1,11 @@
-import { Flame, Heart, Star } from "lucide-react";
+import { Flame, Heart, Infinity as InfinityIcon, Star } from "lucide-react";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 import { useLessonProgress } from "@/hooks/useLessonProgress";
+import { useEntitlements } from "@/hooks/useEntitlements";
 
 export function StatsBar() {
   const { user, stats, level } = useLessonProgress();
+  const { entitlements } = useEntitlements();
   const { t, lang } = useI18n();
   if (!user) return null;
   return (
@@ -18,7 +20,7 @@ export function StatsBar() {
       </span>
       <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground">
         <Heart className="size-3.5" aria-hidden />
-        {stats.hearts}
+        {entitlements.unlimitedHearts ? <InfinityIcon className="size-3.5" aria-hidden /> : stats.hearts}
       </span>
       <span className="rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
         {t("lessons.level", {
