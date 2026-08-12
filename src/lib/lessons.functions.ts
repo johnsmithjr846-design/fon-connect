@@ -195,7 +195,7 @@ export const loseHeart = createServerFn({ method: "POST" })
       { onConflict: "user_id" },
     );
     if (error) throw new Error(error.message);
-    return { hearts };
+    return { hearts, unlimited: false };
   });
 
 const ChestSchema = z.object({ chestId: z.string().min(1).max(64) });
