@@ -171,11 +171,16 @@ export const completeLesson = createServerFn({ method: "POST" })
 
 export const loseHeart = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<{ hearts: number }> => {
+  .handler(async ({ context }): Promise<{ hearts: number; unlimited: boolean }> => {
     const { supabase, userId } = context;
+    const { computeEntitlements } = await import("@/lib/entitlements.server");
+    const entitlements = await computeEntitlements(supabase as never, userId);
+    if (entitlements.unlimitedHearts) return { hearts: MAX_HEARTS, unlimited: true };
+
     const { data } = await supabase.from("user_stats").select("*").eq("user_id", userId).maybeSingle();
     const prev = resetHeartsIfNewDay((data as UserStats | null) ?? DEFAULT_STATS);
     const hearts = Math.max(0, prev.hearts - 1);
+
     const { error } = await supabase.from("user_stats").upsert(
       {
         user_id: userId,
