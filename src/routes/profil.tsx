@@ -11,6 +11,8 @@ import { useAuthUser } from "@/hooks/useAuthUser";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 import { UI_LANGS, type UiLang } from "@/lib/i18n/dictionary";
 import { getMyProfile, updateMyProfile } from "@/lib/profile.functions";
+import { fileToAvatarDataUrl } from "@/lib/avatar";
+import { MemberAvatar } from "@/components/social/MemberAvatar";
 import { BadgeGrid } from "@/components/lessons/BadgeGrid";
 import { StatsBar } from "@/components/lessons/StatsBar";
 import { useLessonProgress } from "@/hooks/useLessonProgress";
