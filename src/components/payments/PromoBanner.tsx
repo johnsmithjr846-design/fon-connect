@@ -1,34 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
 import { Sparkles } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { getPlan } from "@/lib/billing/plans";
+import { usePromotions } from "@/hooks/usePromotions";
 
-type PromoRow = {
-  id: string;
-  title: string;
-  description: string;
-  plan_ids: string[];
-  discount_type: string;
-  discount_value: number;
-  code: string | null;
-  ends_at: string | null;
-};
-
-/** Promotions publiques en cours (les promos ciblées arrivent par notification). */
+/** Promotions en cours : publiques, plus celles ciblées sur l'utilisateur connecté. */
 export function PromoBanner() {
-  const promos = useQuery({
-    queryKey: ["promotions", "public"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("promotions")
-        .select("id, title, description, plan_ids, discount_type, discount_value, code, ends_at")
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return (data ?? []) as PromoRow[];
-    },
-  });
-
-  const rows = promos.data ?? [];
+  const { promotions } = usePromotions();
+  const rows = promotions;
   if (rows.length === 0) return null;
 
   return (
