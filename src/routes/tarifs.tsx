@@ -204,11 +204,13 @@ function PlanCard({
   en,
   current,
   action,
+  promo,
 }: {
   plan: Plan;
   en: boolean;
   current?: boolean;
   action?: React.ReactNode;
+  promo?: { promo: PublicPromotion; finalCents: number } | null;
 }) {
   const Icon = FAMILY_ICON[plan.family];
   return (
