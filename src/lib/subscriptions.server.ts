@@ -1,6 +1,6 @@
 import type Stripe from "stripe";
 import { PLAN_BY_PRICE } from "@/lib/billing/prices";
-import { getPlan } from "@/lib/billing/plans";
+import { getPlan, expiresAtFor } from "@/lib/billing/plans";
 
 const GRACE_DAYS = 7;
 
@@ -76,7 +76,7 @@ export async function syncStripeSubscriptions(
   const activePlans: string[] = [];
   const seen = new Set<string>();
 
-  const upsert = async (row: ReturnType<typeof subscriptionRow>) => {
+  const upsert = async (row: { provider_ref: string; status: string; plan_id: string } | null) => {
     if (!row || seen.has(row.provider_ref)) return;
     seen.add(row.provider_ref);
     await supabaseAdmin
