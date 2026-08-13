@@ -22,12 +22,14 @@ export function PromoBanner() {
           </p>
           {p.description && <p className="mt-1 text-muted-foreground">{p.description}</p>}
           <p className="mt-1 text-xs text-muted-foreground">
-            {p.plan_ids.length > 0 &&
-              `Offres : ${p.plan_ids.map((id) => getPlan(id)?.name ?? id).join(", ")}. `}
+            {p.plan_ids.length > 0
+              ? `Offres : ${p.plan_ids.map((id) => getPlan(id)?.name ?? id).join(", ")}. `
+              : "Toutes les offres payantes. "}
             {p.code ? `Code ${p.code}. ` : ""}
             {p.ends_at
-              ? `Jusqu'au ${new Date(p.ends_at).toLocaleDateString("fr-FR", { dateStyle: "long" })}.`
+              ? `Jusqu'au ${new Date(p.ends_at).toLocaleDateString("fr-FR", { dateStyle: "long" })}. `
               : ""}
+            Réduction appliquée automatiquement au paiement.
           </p>
         </div>
       ))}
