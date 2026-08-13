@@ -1,6 +1,15 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { PublicPromotion } from "@/lib/billing/promo";
+
+/** Promotions valables pour l'utilisateur connecté (publiques + ciblées). */
+export const listMyPromotions = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<PublicPromotion[]> => {
+    const { fetchUserPromotions } = await import("@/lib/promotions.server");
+    return fetchUserPromotions(context.userId);
+  });
 
 export type AdminSubscriptionRow = {
   id: string;
