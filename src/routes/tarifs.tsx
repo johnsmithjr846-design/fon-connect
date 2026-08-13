@@ -19,7 +19,11 @@ import {
   PAID_PLANS,
   PLANS,
   formatPrice,
+  monthlyEquivalentCents,
+  netCents,
   planDuration,
+  vatCents,
+  VAT_RATE,
   type Plan,
 } from "@/lib/billing/plans";
 import { priceIdFor } from "@/lib/billing/prices";
@@ -117,8 +121,8 @@ function PricingPage() {
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
           {en
-            ? "Prices include VAT. Every detail below is shown before payment: what is included, how long it lasts and whether it renews."
-            : "Prix TTC. Tout est indiqué avant le paiement : ce qui est inclus, la durée et la reconduction éventuelle."}
+            ? "Every price is shown both including and excluding VAT (20%). Nothing is hidden before payment: what you get, how long it lasts, and whether it renews."
+            : "Chaque prix est affiché en TTC et en HT (TVA 20 %). Rien n'est caché avant le paiement : ce que vous obtenez, la durée, et la reconduction éventuelle."}
         </p>
 
         <PromoBanner />
@@ -219,6 +223,9 @@ function PlanCard({
   promo?: { promo: PublicPromotion; finalCents: number } | null;
 }) {
   const Icon = FAMILY_ICON[plan.family];
+  const l = en ? "en" : "fr";
+  const gross = promo ? promo.finalCents : plan.priceCents;
+  const monthly = monthlyEquivalentCents(plan);
   return (
     <article
       className={`mt-6 rounded-xl border bg-card p-5 ${
@@ -249,17 +256,29 @@ function PlanCard({
         ) : promo ? (
           <>
             <span className="mr-2 text-base font-normal text-muted-foreground line-through">
-              {formatPrice(plan.priceCents, en ? "en" : "fr")}
+              {formatPrice(plan.priceCents, l)}
             </span>
-            <span className="text-primary">{formatPrice(promo.finalCents, en ? "en" : "fr")}</span>
+            <span className="text-primary">{formatPrice(gross, l)}</span>
           </>
         ) : (
-          formatPrice(plan.priceCents, en ? "en" : "fr")
+          formatPrice(gross, l)
         )}
         <span className="ml-1 text-sm font-normal text-muted-foreground">
-          {planDuration(plan, en ? "en" : "fr")}
+          {plan.priceCents === 0 ? null : en ? " incl. VAT" : " TTC"} {planDuration(plan, l)}
         </span>
       </p>
+      {plan.priceCents > 0 ? (
+        <p className="mt-1 text-xs text-muted-foreground">
+          {en
+            ? `${formatPrice(netCents(gross), l)} excl. VAT + ${formatPrice(vatCents(gross), l)} VAT (${VAT_RATE * 100}%)`
+            : `Soit ${formatPrice(netCents(gross), l)} HT + ${formatPrice(vatCents(gross), l)} de TVA (${VAT_RATE * 100} %)`}
+          {monthly
+            ? en
+              ? ` — ${formatPrice(monthly, l)} incl. VAT per month`
+              : ` — ${formatPrice(monthly, l)} TTC par mois`
+            : ""}
+        </p>
+      ) : null}
       {promo ? (
         <p className="mt-1 text-xs font-semibold text-primary">
           {en
@@ -267,6 +286,10 @@ function PlanCard({
             : `Promotion « ${promo.promo.title} » appliquée automatiquement au paiement.`}
         </p>
       ) : null}
+      <p className="mt-3 text-sm text-foreground">{en ? plan.benefitEn : plan.benefit}</p>
+      <p className="mt-2 rounded-lg bg-secondary/60 px-3 py-2 text-xs font-medium text-secondary-foreground">
+        {en ? plan.anchorEn : plan.anchor}
+      </p>
       <ul className="mt-4 space-y-2">
         {(en ? plan.featuresEn : plan.features).map((f) => (
           <li key={f} className="flex gap-2 text-sm text-foreground">
@@ -275,6 +298,10 @@ function PlanCard({
           </li>
         ))}
       </ul>
+      <p className="mt-3 text-xs text-muted-foreground">{en ? plan.lossEn : plan.loss}</p>
+      <p className="mt-1 text-xs font-medium text-muted-foreground">
+        {en ? plan.bestForEn : plan.bestFor}
+      </p>
       {action}
     </article>
   );

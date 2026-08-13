@@ -15,7 +15,7 @@ import {
 } from "@/lib/payments.functions";
 import { PaymentIssueBanner } from "@/components/payments/PaymentIssueBanner";
 import { getStripeEnvironment } from "@/lib/stripe";
-import { getPlan, formatPrice, planDuration } from "@/lib/billing/plans";
+import { getPlan, formatPrice, netCents, vatCents, planDuration } from "@/lib/billing/plans";
 
 export const Route = createFileRoute("/mon-abonnement")({
   component: SubscriptionPage,
@@ -140,8 +140,16 @@ function SubscriptionPage() {
                   </h2>
                   {plan ? (
                     <p className="mt-1 text-sm text-muted-foreground">
-                      {formatPrice(plan.priceCents, en ? "en" : "fr")}{" "}
+                      {formatPrice(plan.priceCents, en ? "en" : "fr")}
+                      {en ? " incl. VAT " : " TTC "}
                       {planDuration(plan, en ? "en" : "fr")}
+                      {plan.priceCents > 0 ? (
+                        <span className="block text-xs">
+                          {en
+                            ? `${formatPrice(netCents(plan.priceCents), "en")} excl. VAT + ${formatPrice(vatCents(plan.priceCents), "en")} VAT`
+                            : `Soit ${formatPrice(netCents(plan.priceCents), "fr")} HT + ${formatPrice(vatCents(plan.priceCents), "fr")} de TVA`}
+                        </span>
+                      ) : null}
                     </p>
                   ) : null}
                   <dl className="mt-3 space-y-1 text-sm text-muted-foreground">
