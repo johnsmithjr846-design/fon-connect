@@ -205,6 +205,8 @@ export const cancelSubscriptionNow = createServerFn({ method: "POST" })
       const subscription = await findActiveSubscription(stripe, context.userId);
       if (!subscription) throw new Error("Aucun abonnement en cours");
       await stripe.subscriptions.cancel(subscription.id, { prorate: true });
+      const { syncStripeSubscriptions } = await import("@/lib/subscriptions.server");
+      await syncStripeSubscriptions(stripe, context.userId);
       return { ok: true };
     } catch (error) {
       return { error: getStripeErrorMessage(error) };
