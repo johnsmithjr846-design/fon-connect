@@ -64,6 +64,7 @@ function PricingPage() {
   const [autoRenew, setAutoRenew] = useState(true);
   const [checkout, setCheckout] = useState<CheckoutRequest | null>(null);
   const [switching, setSwitching] = useState<string | null>(null);
+  const { promoFor } = usePromotions();
   usePageView("/tarifs");
 
   const free = PLANS.find((p) => p.id === "FREE")!;
