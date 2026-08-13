@@ -219,6 +219,9 @@ function PlanCard({
   promo?: { promo: PublicPromotion; finalCents: number } | null;
 }) {
   const Icon = FAMILY_ICON[plan.family];
+  const l = en ? "en" : "fr";
+  const gross = promo ? promo.finalCents : plan.priceCents;
+  const monthly = monthlyEquivalentCents(plan);
   return (
     <article
       className={`mt-6 rounded-xl border bg-card p-5 ${
