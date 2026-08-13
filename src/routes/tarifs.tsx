@@ -121,8 +121,8 @@ function PricingPage() {
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
           {en
-            ? "Prices include VAT. Every detail below is shown before payment: what is included, how long it lasts and whether it renews."
-            : "Prix TTC. Tout est indiqué avant le paiement : ce qui est inclus, la durée et la reconduction éventuelle."}
+            ? "Every price is shown both including and excluding VAT (20%). Nothing is hidden before payment: what you get, how long it lasts, and whether it renews."
+            : "Chaque prix est affiché en TTC et en HT (TVA 20 %). Rien n'est caché avant le paiement : ce que vous obtenez, la durée, et la reconduction éventuelle."}
         </p>
 
         <PromoBanner />
