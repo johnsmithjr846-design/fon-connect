@@ -7,6 +7,8 @@ import { useI18n } from "@/lib/i18n/LanguageProvider";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import { getPlan } from "@/lib/billing/plans";
 import { usePageView } from "@/hooks/useSiteData";
+import { syncMySubscriptions } from "@/lib/payments.functions";
+import { getStripeEnvironment } from "@/lib/stripe";
 
 export const Route = createFileRoute("/merci")({
   component: ThankYouPage,
@@ -36,9 +38,19 @@ function ThankYouPage() {
   const { entitlements, isLoading, refetch } = useEntitlements();
   usePageView("/merci");
 
-  // Le paiement est confirmé par le prestataire quelques secondes après le retour.
+  // Le paiement est confirmé par le prestataire quelques secondes après le retour :
+  // on recale nous-mêmes les droits au lieu d'attendre uniquement la notification.
   useEffect(() => {
-    const id = setInterval(() => void refetch(), 3000);
+    const sync = async () => {
+      try {
+        await syncMySubscriptions({ data: { environment: getStripeEnvironment() } });
+      } catch {
+        // Silencieux : la notification du prestataire prendra le relais.
+      }
+      await refetch();
+    };
+    void sync();
+    const id = setInterval(() => void sync(), 3000);
     const stop = setTimeout(() => clearInterval(id), 30_000);
     return () => {
       clearInterval(id);

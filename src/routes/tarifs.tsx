@@ -23,6 +23,8 @@ import {
   type Plan,
 } from "@/lib/billing/plans";
 import { priceIdFor } from "@/lib/billing/prices";
+import type { PublicPromotion } from "@/lib/billing/promo";
+import { usePromotions } from "@/hooks/usePromotions";
 
 export const Route = createFileRoute("/tarifs")({
   component: PricingPage,
@@ -62,12 +64,15 @@ function PricingPage() {
   const [autoRenew, setAutoRenew] = useState(true);
   const [checkout, setCheckout] = useState<CheckoutRequest | null>(null);
   const [switching, setSwitching] = useState<string | null>(null);
+  const { promoFor } = usePromotions();
   usePageView("/tarifs");
 
   const free = PLANS.find((p) => p.id === "FREE")!;
 
   // Un abonnement récurrent est déjà en cours : le changement se fait au prorata.
-  const currentRecurring = entitlements.subscriptions.find((s) => s.auto_renew);
+  const currentRecurring = entitlements.subscriptions.find(
+    (s) => s.status !== "CANCELLED" && PLANS.find((p) => p.id === s.plan_id)?.recurring,
+  );
 
   const start = async (plan: Plan) => {
     const priceId = priceIdFor(plan.id, plan.renewalOptional ? autoRenew : true);
@@ -126,6 +131,7 @@ function PricingPage() {
               key={plan.id}
               plan={plan}
               en={en}
+              promo={promoFor(plan.id, plan.priceCents)}
               current={entitlements.plans.includes(plan.id)}
               action={
                 <div className="mt-4 space-y-3">
@@ -204,11 +210,13 @@ function PlanCard({
   en,
   current,
   action,
+  promo,
 }: {
   plan: Plan;
   en: boolean;
   current?: boolean;
   action?: React.ReactNode;
+  promo?: { promo: PublicPromotion; finalCents: number } | null;
 }) {
   const Icon = FAMILY_ICON[plan.family];
   return (
@@ -232,15 +240,33 @@ function PlanCard({
         ) : null}
       </div>
       <p className="mt-4 text-2xl font-bold text-foreground">
-        {plan.priceCents === 0
-          ? en
-            ? "Free"
-            : "Gratuit"
-          : formatPrice(plan.priceCents, en ? "en" : "fr")}
+        {plan.priceCents === 0 ? (
+          en ? (
+            "Free"
+          ) : (
+            "Gratuit"
+          )
+        ) : promo ? (
+          <>
+            <span className="mr-2 text-base font-normal text-muted-foreground line-through">
+              {formatPrice(plan.priceCents, en ? "en" : "fr")}
+            </span>
+            <span className="text-primary">{formatPrice(promo.finalCents, en ? "en" : "fr")}</span>
+          </>
+        ) : (
+          formatPrice(plan.priceCents, en ? "en" : "fr")
+        )}
         <span className="ml-1 text-sm font-normal text-muted-foreground">
           {planDuration(plan, en ? "en" : "fr")}
         </span>
       </p>
+      {promo ? (
+        <p className="mt-1 text-xs font-semibold text-primary">
+          {en
+            ? `Promotion “${promo.promo.title}” applied automatically at checkout.`
+            : `Promotion « ${promo.promo.title} » appliquée automatiquement au paiement.`}
+        </p>
+      ) : null}
       <ul className="mt-4 space-y-2">
         {(en ? plan.featuresEn : plan.features).map((f) => (
           <li key={f} className="flex gap-2 text-sm text-foreground">

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -8,7 +8,11 @@ import { PaymentTestModeBanner } from "@/components/payments/PaymentTestModeBann
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 import { useAuthUser } from "@/hooks/useAuthUser";
 import { useEntitlements } from "@/hooks/useEntitlements";
-import { createPortalSession, cancelSubscriptionNow } from "@/lib/payments.functions";
+import {
+  createPortalSession,
+  cancelSubscriptionNow,
+  syncMySubscriptions,
+} from "@/lib/payments.functions";
 import { PaymentIssueBanner } from "@/components/payments/PaymentIssueBanner";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { getPlan, formatPrice, planDuration } from "@/lib/billing/plans";
@@ -41,6 +45,19 @@ function SubscriptionPage() {
   const { user } = useAuthUser();
   const { entitlements, isLoading, refetch } = useEntitlements();
   const [busy, setBusy] = useState(false);
+
+  // Recale l'offre affichée sur l'état réel chez le prestataire de paiement.
+  useEffect(() => {
+    if (!user) return;
+    void (async () => {
+      try {
+        await syncMySubscriptions({ data: { environment: getStripeEnvironment() } });
+        await refetch();
+      } catch {
+        // L'affichage reste sur les données déjà connues.
+      }
+    })();
+  }, [user, refetch]);
 
   const cancelNow = async () => {
     const ok = window.confirm(

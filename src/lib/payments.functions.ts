@@ -6,8 +6,54 @@ import {
   getStripeErrorMessage,
 } from "@/lib/stripe.server";
 
+import { bestPromoFor } from "@/lib/billing/promo";
+import { getPlan } from "@/lib/billing/plans";
+
 type CheckoutSessionResult = { clientSecret: string } | { error: string };
 type PortalSessionResult = { url: string } | { error: string };
+
+/**
+ * Traduit une promotion FonConnect en bon de réduction chez le prestataire.
+ * L'identifiant est déterministe : la même promo réutilise le même bon.
+ */
+async function couponForPlan(
+  stripe: ReturnType<typeof createStripeClient>,
+  options: { userId: string; planId: string; recurring: boolean },
+): Promise<string | null> {
+  const plan = getPlan(options.planId);
+  if (!plan || plan.priceCents <= 0) return null;
+
+  const { fetchUserPromotions } = await import("@/lib/promotions.server");
+  const promos = await fetchUserPromotions(options.userId);
+  const best = bestPromoFor(promos, options.planId, plan.priceCents);
+  if (!best) return null;
+
+  const { promo } = best;
+  const duration = options.recurring ? "forever" : "once";
+  const couponId = `fc_${promo.id.replace(/-/g, "").slice(0, 24)}_${promo.discount_type}_${promo.discount_value}_${duration}`;
+
+  try {
+    const existing = await stripe.coupons.retrieve(couponId);
+    if (existing && !existing.deleted) return couponId;
+  } catch {
+    // Le bon n'existe pas encore : on le crée ci-dessous.
+  }
+
+  try {
+    await stripe.coupons.create({
+      id: couponId,
+      name: (promo.title || "Promotion FonConnect").slice(0, 40),
+      duration,
+      ...(promo.discount_type === "percent"
+        ? { percent_off: Math.min(100, Math.max(1, promo.discount_value)) }
+        : { amount_off: Math.round(promo.discount_value * 100), currency: "eur" }),
+      metadata: { promotionId: promo.id },
+    });
+    return couponId;
+  } catch {
+    return null;
+  }
+}
 
 async function resolveOrCreateCustomer(
   stripe: ReturnType<typeof createStripeClient>,
@@ -77,8 +123,15 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
         productDescription = (product as { name?: string }).name;
       }
 
+      const coupon = await couponForPlan(stripe, {
+        userId,
+        planId: data.planId,
+        recurring: isRecurring,
+      });
+
       const session = await stripe.checkout.sessions.create({
         line_items: [{ price: stripePrice.id, quantity: 1 }],
+        ...(coupon && { discounts: [{ coupon }] }),
         mode: isRecurring ? "subscription" : "payment",
         ui_mode: "embedded_page",
         return_url: data.returnUrl,
@@ -126,7 +179,7 @@ export const createPortalSession = createServerFn({ method: "POST" })
     }
   });
 
-type ActionResult = { ok: true } | { error: string };
+type ActionResult = { ok: true; planId?: string } | { error: string };
 
 /** Recherche l'abonnement Stripe en cours de l'utilisateur. */
 async function findActiveSubscription(
@@ -152,6 +205,8 @@ export const cancelSubscriptionNow = createServerFn({ method: "POST" })
       const subscription = await findActiveSubscription(stripe, context.userId);
       if (!subscription) throw new Error("Aucun abonnement en cours");
       await stripe.subscriptions.cancel(subscription.id, { prorate: true });
+      const { syncStripeSubscriptions } = await import("@/lib/subscriptions.server");
+      await syncStripeSubscriptions(stripe, context.userId);
       return { ok: true };
     } catch (error) {
       return { error: getStripeErrorMessage(error) };
@@ -177,19 +232,50 @@ export const changePlan = createServerFn({ method: "POST" })
       if (!price || price.type !== "recurring") throw new Error("Offre non compatible");
 
       const item = subscription.items.data[0]!;
-      if (item.price.id === price.id) return { ok: true };
-
-      await stripe.subscriptions.update(subscription.id, {
-        items: [{ id: item.id, price: price.id }],
-        proration_behavior: "create_prorations",
-        payment_behavior: "pending_if_incomplete",
-        metadata: {
-          ...subscription.metadata,
-          planId: data.planId,
-          priceId: data.priceId,
-        },
+      const coupon = await couponForPlan(stripe, {
+        userId: context.userId,
+        planId: data.planId,
+        recurring: true,
       });
-      return { ok: true };
+
+      if (item.price.id !== price.id) {
+        // Facturation immédiate du prorata : le changement n'est jamais laissé « en attente ».
+        const updated = await stripe.subscriptions.update(subscription.id, {
+          items: [{ id: item.id, price: price.id }],
+          proration_behavior: "always_invoice",
+          payment_behavior: "error_if_incomplete",
+          ...(coupon && { discounts: [{ coupon }] }),
+          metadata: {
+            ...subscription.metadata,
+            userId: context.userId,
+            planId: data.planId,
+            priceId: data.priceId,
+          },
+        });
+
+        if (updated.items.data[0]?.price.id !== price.id) {
+          throw new Error("Le changement d'offre n'a pas pu être appliqué");
+        }
+      }
+
+      // Mise à jour immédiate des droits, sans attendre la notification du prestataire.
+      const { syncStripeSubscriptions } = await import("@/lib/subscriptions.server");
+      await syncStripeSubscriptions(stripe, context.userId);
+      return { ok: true, planId: data.planId };
+    } catch (error) {
+      return { error: getStripeErrorMessage(error) };
+    }
+  });
+
+/** Recale les droits depuis le prestataire (retour de paiement, page « Mon abonnement »). */
+export const syncMySubscriptions = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { environment: StripeEnv }) => data)
+  .handler(async ({ data, context }): Promise<{ plans: string[] } | { error: string }> => {
+    try {
+      const stripe = createStripeClient(data.environment);
+      const { syncStripeSubscriptions } = await import("@/lib/subscriptions.server");
+      return { plans: await syncStripeSubscriptions(stripe, context.userId) };
     } catch (error) {
       return { error: getStripeErrorMessage(error) };
     }
