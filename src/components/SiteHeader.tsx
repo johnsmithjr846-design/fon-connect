@@ -67,6 +67,23 @@ export function SiteHeader() {
           {!loading && user && (
             <>
               <li>
+                <Link
+                  to="/amis"
+                  className="text-muted-foreground transition-colors hover:text-primary [&.active]:font-semibold [&.active]:text-primary"
+                >
+                  {lang === "en" ? "Friends" : "Amis"}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/messages"
+                  search={{}}
+                  className="text-muted-foreground transition-colors hover:text-primary [&.active]:font-semibold [&.active]:text-primary"
+                >
+                  Messages
+                </Link>
+              </li>
+              <li>
                 <NotificationsBell />
               </li>
               <li>

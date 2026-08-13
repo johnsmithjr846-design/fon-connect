@@ -49,6 +49,8 @@ function ProfilePage() {
 
   const [pseudo, setPseudo] = useState("");
   const [language, setLanguage] = useState<UiLang>("fr");
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [avatarError, setAvatarError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
   const profileQuery = useQuery({
@@ -66,10 +68,22 @@ function ProfilePage() {
     if (!data) return;
     setPseudo(data.pseudo ?? "");
     setLanguage(data.preferredLanguage);
+    setAvatarUrl(data.avatarUrl ?? "");
   }, [profileQuery.data]);
 
+  async function onPickAvatar(file: File | undefined) {
+    if (!file) return;
+    setAvatarError(null);
+    try {
+      const dataUrl = await fileToAvatarDataUrl(file);
+      setAvatarUrl(dataUrl);
+    } catch {
+      setAvatarError(t("profile.avatarFailed"));
+    }
+  }
+
   const mutation = useMutation({
-    mutationFn: () => saveProfile({ data: { pseudo, preferredLanguage: language } }),
+    mutationFn: () => saveProfile({ data: { pseudo, preferredLanguage: language, avatarUrl } }),
     onSuccess: async () => {
       setSaved(true);
       setLang(language);
