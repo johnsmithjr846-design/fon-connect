@@ -15,7 +15,7 @@ import {
 } from "@/lib/payments.functions";
 import { PaymentIssueBanner } from "@/components/payments/PaymentIssueBanner";
 import { getStripeEnvironment } from "@/lib/stripe";
-import { getPlan, formatPrice, planDuration } from "@/lib/billing/plans";
+import { getPlan, formatPrice, netCents, vatCents, planDuration } from "@/lib/billing/plans";
 
 export const Route = createFileRoute("/mon-abonnement")({
   component: SubscriptionPage,
