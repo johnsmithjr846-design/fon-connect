@@ -230,19 +230,50 @@ export const changePlan = createServerFn({ method: "POST" })
       if (!price || price.type !== "recurring") throw new Error("Offre non compatible");
 
       const item = subscription.items.data[0]!;
-      if (item.price.id === price.id) return { ok: true };
-
-      await stripe.subscriptions.update(subscription.id, {
-        items: [{ id: item.id, price: price.id }],
-        proration_behavior: "create_prorations",
-        payment_behavior: "pending_if_incomplete",
-        metadata: {
-          ...subscription.metadata,
-          planId: data.planId,
-          priceId: data.priceId,
-        },
+      const coupon = await couponForPlan(stripe, {
+        userId: context.userId,
+        planId: data.planId,
+        recurring: true,
       });
-      return { ok: true };
+
+      if (item.price.id !== price.id) {
+        // Facturation immédiate du prorata : le changement n'est jamais laissé « en attente ».
+        const updated = await stripe.subscriptions.update(subscription.id, {
+          items: [{ id: item.id, price: price.id }],
+          proration_behavior: "always_invoice",
+          payment_behavior: "error_if_incomplete",
+          ...(coupon && { discounts: [{ coupon }] }),
+          metadata: {
+            ...subscription.metadata,
+            userId: context.userId,
+            planId: data.planId,
+            priceId: data.priceId,
+          },
+        });
+
+        if (updated.items.data[0]?.price.id !== price.id) {
+          throw new Error("Le changement d'offre n'a pas pu être appliqué");
+        }
+      }
+
+      // Mise à jour immédiate des droits, sans attendre la notification du prestataire.
+      const { syncStripeSubscriptions } = await import("@/lib/subscriptions.server");
+      await syncStripeSubscriptions(stripe, context.userId);
+      return { ok: true, planId: data.planId };
+    } catch (error) {
+      return { error: getStripeErrorMessage(error) };
+    }
+  });
+
+/** Recale les droits depuis le prestataire (retour de paiement, page « Mon abonnement »). */
+export const syncMySubscriptions = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { environment: StripeEnv }) => data)
+  .handler(async ({ data, context }): Promise<{ plans: string[] } | { error: string }> => {
+    try {
+      const stripe = createStripeClient(data.environment);
+      const { syncStripeSubscriptions } = await import("@/lib/subscriptions.server");
+      return { plans: await syncStripeSubscriptions(stripe, context.userId) };
     } catch (error) {
       return { error: getStripeErrorMessage(error) };
     }
