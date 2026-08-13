@@ -11,6 +11,8 @@ import { useAuthUser } from "@/hooks/useAuthUser";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 import { UI_LANGS, type UiLang } from "@/lib/i18n/dictionary";
 import { getMyProfile, updateMyProfile } from "@/lib/profile.functions";
+import { fileToAvatarDataUrl } from "@/lib/avatar";
+import { MemberAvatar } from "@/components/social/MemberAvatar";
 import { BadgeGrid } from "@/components/lessons/BadgeGrid";
 import { StatsBar } from "@/components/lessons/StatsBar";
 import { useLessonProgress } from "@/hooks/useLessonProgress";
@@ -49,6 +51,8 @@ function ProfilePage() {
 
   const [pseudo, setPseudo] = useState("");
   const [language, setLanguage] = useState<UiLang>("fr");
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [avatarError, setAvatarError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
   const profileQuery = useQuery({
@@ -66,10 +70,22 @@ function ProfilePage() {
     if (!data) return;
     setPseudo(data.pseudo ?? "");
     setLanguage(data.preferredLanguage);
+    setAvatarUrl(data.avatarUrl ?? "");
   }, [profileQuery.data]);
 
+  async function onPickAvatar(file: File | undefined) {
+    if (!file) return;
+    setAvatarError(null);
+    try {
+      const dataUrl = await fileToAvatarDataUrl(file);
+      setAvatarUrl(dataUrl);
+    } catch {
+      setAvatarError(t("profile.avatarFailed"));
+    }
+  }
+
   const mutation = useMutation({
-    mutationFn: () => saveProfile({ data: { pseudo, preferredLanguage: language } }),
+    mutationFn: () => saveProfile({ data: { pseudo, preferredLanguage: language, avatarUrl } }),
     onSuccess: async () => {
       setSaved(true);
       setLang(language);
@@ -100,6 +116,33 @@ function ProfilePage() {
                 {t("profile.signedInAs", { email: user.email })}
               </p>
             )}
+
+            <div className="space-y-2">
+              <Label htmlFor="avatar">{t("profile.avatar")}</Label>
+              <div className="flex items-center gap-4">
+                <MemberAvatar pseudo={pseudo} avatarUrl={avatarUrl || null} size={64} />
+                <div className="space-y-1">
+                  <input
+                    id="avatar"
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    className="block w-full text-xs text-muted-foreground file:mr-3 file:rounded-md file:border file:border-input file:bg-secondary file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-secondary-foreground"
+                    onChange={(e) => void onPickAvatar(e.target.files?.[0])}
+                  />
+                  {avatarUrl && (
+                    <button
+                      type="button"
+                      className="text-xs text-muted-foreground underline-offset-4 hover:text-destructive hover:underline"
+                      onClick={() => setAvatarUrl("")}
+                    >
+                      {t("profile.avatarRemove")}
+                    </button>
+                  )}
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">{t("profile.avatarHint")}</p>
+              {avatarError && <p className="text-sm text-destructive">{avatarError}</p>}
+            </div>
 
             <div className="space-y-1.5">
               <Label htmlFor="pseudo">{t("profile.pseudo")}</Label>

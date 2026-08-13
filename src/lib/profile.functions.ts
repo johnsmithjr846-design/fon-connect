@@ -5,10 +5,21 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 export type ProfileData = {
   pseudo: string | null;
   preferredLanguage: "fr" | "en";
+  avatarUrl: string | null;
 };
 
 function normalizeLanguage(value: unknown): "fr" | "en" {
   return value === "en" ? "en" : "fr";
+}
+
+type ProfileRow = { pseudo?: string | null; preferred_language?: string; avatar_url?: string | null };
+
+function toProfile(row: ProfileRow | null): ProfileData {
+  return {
+    pseudo: row?.pseudo ?? null,
+    preferredLanguage: normalizeLanguage(row?.preferred_language),
+    avatarUrl: row?.avatar_url ?? null,
+  };
 }
 
 export const getMyProfile = createServerFn({ method: "GET" })
@@ -20,16 +31,17 @@ export const getMyProfile = createServerFn({ method: "GET" })
       .eq("id", context.userId)
       .maybeSingle();
     if (error) throw new Error(error.message);
-    const row = data as { pseudo?: string | null; preferred_language?: string } | null;
-    return {
-      pseudo: row?.pseudo ?? null,
-      preferredLanguage: normalizeLanguage(row?.preferred_language),
-    };
+    return toProfile(data as ProfileRow | null);
   });
 
 const UpdateSchema = z.object({
   pseudo: z.string().trim().max(60).optional(),
   preferredLanguage: z.enum(["fr", "en"]).optional(),
+  avatarUrl: z
+    .string()
+    .max(400_000)
+    .refine((v) => v === "" || /^data:image\/(png|jpeg|webp);base64,/.test(v), "invalid image")
+    .optional(),
 });
 
 export const updateMyProfile = createServerFn({ method: "POST" })
@@ -39,6 +51,7 @@ export const updateMyProfile = createServerFn({ method: "POST" })
     const patch: Record<string, unknown> = { id: context.userId };
     if (data.pseudo !== undefined) patch['pseudo'] = data.pseudo || null;
     if (data.preferredLanguage !== undefined) patch['preferred_language'] = data.preferredLanguage;
+    if (data.avatarUrl !== undefined) patch['avatar_url'] = data.avatarUrl || null;
 
     const { data: saved, error } = await context.supabase
       .from("profiles")
@@ -46,9 +59,5 @@ export const updateMyProfile = createServerFn({ method: "POST" })
       .select("*")
       .maybeSingle();
     if (error) throw new Error(error.message);
-    const row = saved as { pseudo?: string | null; preferred_language?: string } | null;
-    return {
-      pseudo: row?.pseudo ?? null,
-      preferredLanguage: normalizeLanguage(row?.preferred_language),
-    };
+    return toProfile(saved as ProfileRow | null);
   });

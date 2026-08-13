@@ -140,6 +140,33 @@ export type Database = {
         }
         Relationships: []
       }
+      friendships: {
+        Row: {
+          addressee_id: string
+          created_at: string
+          id: string
+          requester_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          addressee_id: string
+          created_at?: string
+          id?: string
+          requester_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          addressee_id?: string
+          created_at?: string
+          id?: string
+          requester_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       lesson_progress: {
         Row: {
           attempts: number
@@ -179,6 +206,36 @@ export type Database = {
           updated_at?: string
           user_id?: string
           xp_earned?: number
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          read_at: string | null
+          recipient_id: string
+          sender_id: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          recipient_id: string
+          sender_id: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          recipient_id?: string
+          sender_id?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -261,6 +318,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_url: string | null
           created_at: string
           id: string
           preferred_language: string
@@ -268,6 +326,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          avatar_url?: string | null
           created_at?: string
           id: string
           preferred_language?: string
@@ -275,6 +334,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          avatar_url?: string | null
           created_at?: string
           id?: string
           preferred_language?: string
@@ -641,7 +701,54 @@ export type Database = {
         Args: { _actor: string; _email: string; _grant: boolean }
         Returns: boolean
       }
+      are_friends: { Args: { _a: string; _b: string }; Returns: boolean }
       claim_first_admin: { Args: { _actor: string }; Returns: boolean }
+      get_public_profile: {
+        Args: { _target: string }
+        Returns: {
+          avatar_url: string
+          current_streak: number
+          is_friend: boolean
+          pseudo: string
+          user_id: string
+          xp_total: number
+        }[]
+      }
+      list_conversations: {
+        Args: never
+        Returns: {
+          avatar_url: string
+          last_at: string
+          last_body: string
+          pseudo: string
+          unread: number
+          user_id: string
+          xp_total: number
+        }[]
+      }
+      list_friendships: {
+        Args: never
+        Returns: {
+          avatar_url: string
+          created_at: string
+          direction: string
+          friendship_id: string
+          pseudo: string
+          status: string
+          user_id: string
+          xp_total: number
+        }[]
+      }
+      search_profiles: {
+        Args: { _q: string }
+        Returns: {
+          avatar_url: string
+          friend_status: string
+          pseudo: string
+          user_id: string
+          xp_total: number
+        }[]
+      }
       set_admin_code: {
         Args: { _actor: string; _code: string }
         Returns: boolean

@@ -205,6 +205,11 @@ const fr = {
   "profile.loading": "Chargement…",
   "profile.signedInAs": "Connecté avec {email}",
   "profile.signOut": "Se déconnecter",
+  "profile.avatar": "Photo de profil",
+  "profile.avatarHint": "Visible par les autres membres avec votre pseudo et votre niveau.",
+  "profile.avatarChange": "Choisir une photo",
+  "profile.avatarRemove": "Retirer la photo",
+  "profile.avatarFailed": "Impossible de lire cette image.",
 
   "common.back": "Retour à l'accueil",
 } as const;
@@ -397,6 +402,11 @@ const en: Record<TranslationKey, string> = {
   "profile.loading": "Loading…",
   "profile.signedInAs": "Signed in as {email}",
   "profile.signOut": "Sign out",
+  "profile.avatar": "Profile photo",
+  "profile.avatarHint": "Visible to other members along with your nickname and level.",
+  "profile.avatarChange": "Choose a photo",
+  "profile.avatarRemove": "Remove photo",
+  "profile.avatarFailed": "This image could not be read.",
 
   "common.back": "Back to home",
 };

@@ -11,12 +11,14 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AmisRouteImport } from './routes/amis'
 import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ConditionsUtilisationRouteImport } from './routes/conditions-utilisation'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as MerciRouteImport } from './routes/merci'
+import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as MonAbonnementRouteImport } from './routes/mon-abonnement'
 import { Route as MotDePasseOublieRouteImport } from './routes/mot-de-passe-oublie'
 import { Route as PhrasebookRouteImport } from './routes/phrasebook'
@@ -51,6 +53,11 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AmisRoute = AmisRouteImport.update({
+  id: '/amis',
+  path: '/amis',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AssistantRoute = AssistantRouteImport.update({
   id: '/assistant',
   path: '/assistant',
@@ -79,6 +86,11 @@ const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
 const MerciRoute = MerciRouteImport.update({
   id: '/merci',
   path: '/merci',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MessagesRoute = MessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MonAbonnementRoute = MonAbonnementRouteImport.update({
@@ -204,12 +216,14 @@ const LovableEmailTransactionalPreviewRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/amis': typeof AmisRoute
   '/assistant': typeof AssistantRoute
   '/auth': typeof AuthRoute
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/merci': typeof MerciRoute
+  '/messages': typeof MessagesRoute
   '/mon-abonnement': typeof MonAbonnementRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/phrasebook': typeof PhrasebookRoute
@@ -237,12 +251,14 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/amis': typeof AmisRoute
   '/assistant': typeof AssistantRoute
   '/auth': typeof AuthRoute
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/merci': typeof MerciRoute
+  '/messages': typeof MessagesRoute
   '/mon-abonnement': typeof MonAbonnementRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/phrasebook': typeof PhrasebookRoute
@@ -271,12 +287,14 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/amis': typeof AmisRoute
   '/assistant': typeof AssistantRoute
   '/auth': typeof AuthRoute
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/merci': typeof MerciRoute
+  '/messages': typeof MessagesRoute
   '/mon-abonnement': typeof MonAbonnementRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/phrasebook': typeof PhrasebookRoute
@@ -306,12 +324,14 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/amis'
     | '/assistant'
     | '/auth'
     | '/conditions-utilisation'
     | '/cookies'
     | '/mentions-legales'
     | '/merci'
+    | '/messages'
     | '/mon-abonnement'
     | '/mot-de-passe-oublie'
     | '/phrasebook'
@@ -339,12 +359,14 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/amis'
     | '/assistant'
     | '/auth'
     | '/conditions-utilisation'
     | '/cookies'
     | '/mentions-legales'
     | '/merci'
+    | '/messages'
     | '/mon-abonnement'
     | '/mot-de-passe-oublie'
     | '/phrasebook'
@@ -372,12 +394,14 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/amis'
     | '/assistant'
     | '/auth'
     | '/conditions-utilisation'
     | '/cookies'
     | '/mentions-legales'
     | '/merci'
+    | '/messages'
     | '/mon-abonnement'
     | '/mot-de-passe-oublie'
     | '/phrasebook'
@@ -406,12 +430,14 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  AmisRoute: typeof AmisRoute
   AssistantRoute: typeof AssistantRoute
   AuthRoute: typeof AuthRoute
   ConditionsUtilisationRoute: typeof ConditionsUtilisationRoute
   CookiesRoute: typeof CookiesRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   MerciRoute: typeof MerciRoute
+  MessagesRoute: typeof MessagesRoute
   MonAbonnementRoute: typeof MonAbonnementRoute
   MotDePasseOublieRoute: typeof MotDePasseOublieRoute
   PhrasebookRoute: typeof PhrasebookRoute
@@ -451,6 +477,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/amis': {
+      id: '/amis'
+      path: '/amis'
+      fullPath: '/amis'
+      preLoaderRoute: typeof AmisRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/assistant': {
@@ -493,6 +526,13 @@ declare module '@tanstack/react-router' {
       path: '/merci'
       fullPath: '/merci'
       preLoaderRoute: typeof MerciRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/messages': {
+      id: '/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof MessagesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mon-abonnement': {
@@ -662,12 +702,14 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  AmisRoute: AmisRoute,
   AssistantRoute: AssistantRoute,
   AuthRoute: AuthRoute,
   ConditionsUtilisationRoute: ConditionsUtilisationRoute,
   CookiesRoute: CookiesRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
   MerciRoute: MerciRoute,
+  MessagesRoute: MessagesRoute,
   MonAbonnementRoute: MonAbonnementRoute,
   MotDePasseOublieRoute: MotDePasseOublieRoute,
   PhrasebookRoute: PhrasebookRoute,
