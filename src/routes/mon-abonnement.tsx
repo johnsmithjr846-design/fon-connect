@@ -46,6 +46,19 @@ function SubscriptionPage() {
   const { entitlements, isLoading, refetch } = useEntitlements();
   const [busy, setBusy] = useState(false);
 
+  // Recale l'offre affichée sur l'état réel chez le prestataire de paiement.
+  useEffect(() => {
+    if (!user) return;
+    void (async () => {
+      try {
+        await syncMySubscriptions({ data: { environment: getStripeEnvironment() } });
+        await refetch();
+      } catch {
+        // L'affichage reste sur les données déjà connues.
+      }
+    })();
+  }, [user, refetch]);
+
   const cancelNow = async () => {
     const ok = window.confirm(
       en
