@@ -7,6 +7,8 @@ import { useI18n } from "@/lib/i18n/LanguageProvider";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import { getPlan } from "@/lib/billing/plans";
 import { usePageView } from "@/hooks/useSiteData";
+import { syncMySubscriptions } from "@/lib/payments.functions";
+import { getStripeEnvironment } from "@/lib/stripe";
 
 export const Route = createFileRoute("/merci")({
   component: ThankYouPage,
