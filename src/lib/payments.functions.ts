@@ -179,7 +179,7 @@ export const createPortalSession = createServerFn({ method: "POST" })
     }
   });
 
-type ActionResult = { ok: true } | { error: string };
+type ActionResult = { ok: true; planId?: string } | { error: string };
 
 /** Recherche l'abonnement Stripe en cours de l'utilisateur. */
 async function findActiveSubscription(
