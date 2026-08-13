@@ -234,15 +234,33 @@ function PlanCard({
         ) : null}
       </div>
       <p className="mt-4 text-2xl font-bold text-foreground">
-        {plan.priceCents === 0
-          ? en
-            ? "Free"
-            : "Gratuit"
-          : formatPrice(plan.priceCents, en ? "en" : "fr")}
+        {plan.priceCents === 0 ? (
+          en ? (
+            "Free"
+          ) : (
+            "Gratuit"
+          )
+        ) : promo ? (
+          <>
+            <span className="mr-2 text-base font-normal text-muted-foreground line-through">
+              {formatPrice(plan.priceCents, en ? "en" : "fr")}
+            </span>
+            <span className="text-primary">{formatPrice(promo.finalCents, en ? "en" : "fr")}</span>
+          </>
+        ) : (
+          formatPrice(plan.priceCents, en ? "en" : "fr")
+        )}
         <span className="ml-1 text-sm font-normal text-muted-foreground">
           {planDuration(plan, en ? "en" : "fr")}
         </span>
       </p>
+      {promo ? (
+        <p className="mt-1 text-xs font-semibold text-primary">
+          {en
+            ? `Promotion “${promo.promo.title}” applied automatically at checkout.`
+            : `Promotion « ${promo.promo.title} » appliquée automatiquement au paiement.`}
+        </p>
+      ) : null}
       <ul className="mt-4 space-y-2">
         {(en ? plan.featuresEn : plan.features).map((f) => (
           <li key={f} className="flex gap-2 text-sm text-foreground">
