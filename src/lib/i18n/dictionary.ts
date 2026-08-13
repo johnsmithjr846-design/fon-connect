@@ -402,6 +402,11 @@ const en: Record<TranslationKey, string> = {
   "profile.loading": "Loading…",
   "profile.signedInAs": "Signed in as {email}",
   "profile.signOut": "Sign out",
+  "profile.avatar": "Profile photo",
+  "profile.avatarHint": "Visible to other members along with your nickname and level.",
+  "profile.avatarChange": "Choose a photo",
+  "profile.avatarRemove": "Remove photo",
+  "profile.avatarFailed": "This image could not be read.",
 
   "common.back": "Back to home",
 };
