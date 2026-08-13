@@ -129,6 +129,7 @@ function PricingPage() {
               key={plan.id}
               plan={plan}
               en={en}
+              promo={promoFor(plan.id, plan.priceCents)}
               current={entitlements.plans.includes(plan.id)}
               action={
                 <div className="mt-4 space-y-3">
