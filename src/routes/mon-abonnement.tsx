@@ -8,7 +8,11 @@ import { PaymentTestModeBanner } from "@/components/payments/PaymentTestModeBann
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 import { useAuthUser } from "@/hooks/useAuthUser";
 import { useEntitlements } from "@/hooks/useEntitlements";
-import { createPortalSession, cancelSubscriptionNow } from "@/lib/payments.functions";
+import {
+  createPortalSession,
+  cancelSubscriptionNow,
+  syncMySubscriptions,
+} from "@/lib/payments.functions";
 import { PaymentIssueBanner } from "@/components/payments/PaymentIssueBanner";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { getPlan, formatPrice, planDuration } from "@/lib/billing/plans";
