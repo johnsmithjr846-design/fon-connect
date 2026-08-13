@@ -123,8 +123,15 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
         productDescription = (product as { name?: string }).name;
       }
 
+      const coupon = await couponForPlan(stripe, {
+        userId,
+        planId: data.planId,
+        recurring: isRecurring,
+      });
+
       const session = await stripe.checkout.sessions.create({
         line_items: [{ price: stripePrice.id, quantity: 1 }],
+        ...(coupon && { discounts: [{ coupon }] }),
         mode: isRecurring ? "subscription" : "payment",
         ui_mode: "embedded_page",
         return_url: data.returnUrl,
