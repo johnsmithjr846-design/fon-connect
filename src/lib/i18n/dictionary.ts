@@ -205,6 +205,11 @@ const fr = {
   "profile.loading": "Chargement…",
   "profile.signedInAs": "Connecté avec {email}",
   "profile.signOut": "Se déconnecter",
+  "profile.avatar": "Photo de profil",
+  "profile.avatarHint": "Visible par les autres membres avec votre pseudo et votre niveau.",
+  "profile.avatarChange": "Choisir une photo",
+  "profile.avatarRemove": "Retirer la photo",
+  "profile.avatarFailed": "Impossible de lire cette image.",
 
   "common.back": "Retour à l'accueil",
 } as const;
