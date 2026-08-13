@@ -6,8 +6,54 @@ import {
   getStripeErrorMessage,
 } from "@/lib/stripe.server";
 
+import { bestPromoFor } from "@/lib/billing/promo";
+import { getPlan } from "@/lib/billing/plans";
+
 type CheckoutSessionResult = { clientSecret: string } | { error: string };
 type PortalSessionResult = { url: string } | { error: string };
+
+/**
+ * Traduit une promotion FonConnect en bon de réduction chez le prestataire.
+ * L'identifiant est déterministe : la même promo réutilise le même bon.
+ */
+async function couponForPlan(
+  stripe: ReturnType<typeof createStripeClient>,
+  options: { userId: string; planId: string; recurring: boolean },
+): Promise<string | null> {
+  const plan = getPlan(options.planId);
+  if (!plan || plan.priceCents <= 0) return null;
+
+  const { fetchUserPromotions } = await import("@/lib/promotions.server");
+  const promos = await fetchUserPromotions(options.userId);
+  const best = bestPromoFor(promos, options.planId, plan.priceCents);
+  if (!best) return null;
+
+  const { promo } = best;
+  const duration = options.recurring ? "forever" : "once";
+  const couponId = `fc_${promo.id.replace(/-/g, "").slice(0, 24)}_${promo.discount_type}_${promo.discount_value}_${duration}`;
+
+  try {
+    const existing = await stripe.coupons.retrieve(couponId);
+    if (existing && !existing.deleted) return couponId;
+  } catch {
+    // Le bon n'existe pas encore : on le crée ci-dessous.
+  }
+
+  try {
+    await stripe.coupons.create({
+      id: couponId,
+      name: (promo.title || "Promotion FonConnect").slice(0, 40),
+      duration,
+      ...(promo.discount_type === "percent"
+        ? { percent_off: Math.min(100, Math.max(1, promo.discount_value)) }
+        : { amount_off: Math.round(promo.discount_value * 100), currency: "eur" }),
+      metadata: { promotionId: promo.id },
+    });
+    return couponId;
+  } catch {
+    return null;
+  }
+}
 
 async function resolveOrCreateCustomer(
   stripe: ReturnType<typeof createStripeClient>,
