@@ -23,6 +23,8 @@ import {
   type Plan,
 } from "@/lib/billing/plans";
 import { priceIdFor } from "@/lib/billing/prices";
+import type { PublicPromotion } from "@/lib/billing/promo";
+import { usePromotions } from "@/hooks/usePromotions";
 
 export const Route = createFileRoute("/tarifs")({
   component: PricingPage,
