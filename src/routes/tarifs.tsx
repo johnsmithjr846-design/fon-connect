@@ -70,7 +70,9 @@ function PricingPage() {
   const free = PLANS.find((p) => p.id === "FREE")!;
 
   // Un abonnement récurrent est déjà en cours : le changement se fait au prorata.
-  const currentRecurring = entitlements.subscriptions.find((s) => s.auto_renew);
+  const currentRecurring = entitlements.subscriptions.find(
+    (s) => s.status !== "CANCELLED" && PLANS.find((p) => p.id === s.plan_id)?.recurring,
+  );
 
   const start = async (plan: Plan) => {
     const priceId = priceIdFor(plan.id, plan.renewalOptional ? autoRenew : true);
