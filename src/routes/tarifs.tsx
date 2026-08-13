@@ -19,7 +19,11 @@ import {
   PAID_PLANS,
   PLANS,
   formatPrice,
+  monthlyEquivalentCents,
+  netCents,
   planDuration,
+  vatCents,
+  VAT_RATE,
   type Plan,
 } from "@/lib/billing/plans";
 import { priceIdFor } from "@/lib/billing/prices";
