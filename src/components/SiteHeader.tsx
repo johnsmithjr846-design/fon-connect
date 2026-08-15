@@ -7,12 +7,13 @@ import { useI18n } from "@/lib/i18n/LanguageProvider";
 import { UI_LANGS, type TranslationKey, type UiLang } from "@/lib/i18n/dictionary";
 
 const NAV: {
-  to: "/" | "/traducteur" | "/lecons" | "/phrasebook" | "/assistant" | "/tarifs";
+  to: "/" | "/traducteur" | "/lecons" | "/explorer" | "/phrasebook" | "/assistant" | "/tarifs";
   key: TranslationKey;
 }[] = [
   { to: "/", key: "nav.home" },
   { to: "/traducteur", key: "nav.translator" },
   { to: "/lecons", key: "nav.lessons" },
+  { to: "/explorer", key: "nav.explore" },
   { to: "/phrasebook", key: "nav.phrasebook" },
   { to: "/assistant", key: "nav.assistant" },
   { to: "/tarifs", key: "nav.pricing" },
