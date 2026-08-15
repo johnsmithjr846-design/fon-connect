@@ -37,8 +37,6 @@ const fr = {
   "home.feature.lessons.desc": "Apprenez pas à pas, de manière interactive.",
   "home.feature.explore.title": "Explorer le Bénin",
   "home.feature.explore.desc": "Carte, lieux, itinéraires et navigation AR.",
-  "home.feature.explore.title": "Explore Benin",
-  "home.feature.explore.desc": "Map, places, routes and AR navigation.",
   "home.feature.phrasebook.title": "Phrasebook",
   "home.feature.phrasebook.desc":
     "Les phrases essentielles du quotidien au Bénin, en français et en anglais.",
