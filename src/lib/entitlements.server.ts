@@ -35,6 +35,7 @@ export async function computeEntitlements(
     lessonsPro: false,
     translationPremium: false,
     unlimitedHearts: false,
+    arNavigation: false,
     plans: [],
     subscriptions: active,
     paymentIssue: active.some((s) => s.payment_state === "past_due"),
