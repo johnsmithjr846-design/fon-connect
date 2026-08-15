@@ -16,6 +16,7 @@ import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ConditionsUtilisationRouteImport } from './routes/conditions-utilisation'
 import { Route as CookiesRouteImport } from './routes/cookies'
+import { Route as ExplorerRouteImport } from './routes/explorer'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as MerciRouteImport } from './routes/merci'
@@ -81,6 +82,11 @@ const ConditionsUtilisationRoute = ConditionsUtilisationRouteImport.update({
 const CookiesRoute = CookiesRouteImport.update({
   id: '/cookies',
   path: '/cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExplorerRoute = ExplorerRouteImport.update({
+  id: '/explorer',
+  path: '/explorer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const McpRoute = McpRouteImport.update({
@@ -254,6 +260,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
+  '/explorer': typeof ExplorerRoute
   '/mcp': typeof McpRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/merci': typeof MerciRoute
@@ -294,6 +301,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
+  '/explorer': typeof ExplorerRoute
   '/mcp': typeof McpRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/merci': typeof MerciRoute
@@ -335,6 +343,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
+  '/explorer': typeof ExplorerRoute
   '/mcp': typeof McpRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/merci': typeof MerciRoute
@@ -377,6 +386,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/conditions-utilisation'
     | '/cookies'
+    | '/explorer'
     | '/mcp'
     | '/mentions-legales'
     | '/merci'
@@ -417,6 +427,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/conditions-utilisation'
     | '/cookies'
+    | '/explorer'
     | '/mcp'
     | '/mentions-legales'
     | '/merci'
@@ -457,6 +468,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/conditions-utilisation'
     | '/cookies'
+    | '/explorer'
     | '/mcp'
     | '/mentions-legales'
     | '/merci'
@@ -498,6 +510,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ConditionsUtilisationRoute: typeof ConditionsUtilisationRoute
   CookiesRoute: typeof CookiesRoute
+  ExplorerRoute: typeof ExplorerRoute
   McpRoute: typeof McpRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   MerciRoute: typeof MerciRoute
@@ -580,6 +593,13 @@ declare module '@tanstack/react-router' {
       path: '/cookies'
       fullPath: '/cookies'
       preLoaderRoute: typeof CookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/explorer': {
+      id: '/explorer'
+      path: '/explorer'
+      fullPath: '/explorer'
+      preLoaderRoute: typeof ExplorerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mcp': {
@@ -810,6 +830,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ConditionsUtilisationRoute: ConditionsUtilisationRoute,
   CookiesRoute: CookiesRoute,
+  ExplorerRoute: ExplorerRoute,
   McpRoute: McpRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
   MerciRoute: MerciRoute,
