@@ -49,7 +49,7 @@ export type Plan = {
   recurring: boolean;
   /** Le client peut choisir oui/non pour le renouvellement automatique. */
   renewalOptional?: boolean;
-  entitlements: { lessonsPro: boolean; translationPremium: boolean };
+  entitlements: { lessonsPro: boolean; translationPremium: boolean; arNavigation: boolean };
   unlimitedHearts: boolean;
   features: string[];
   featuresEn: string[];
@@ -86,7 +86,7 @@ export const PLANS: Plan[] = [
     currency: "EUR",
     interval: "once",
     recurring: false,
-    entitlements: { lessonsPro: false, translationPremium: false },
+    entitlements: { lessonsPro: false, translationPremium: false, arNavigation: false },
     unlimitedHearts: false,
     features: [
       "Vos dix premiers mots dès la première session de 3 minutes",
@@ -124,7 +124,7 @@ export const PLANS: Plan[] = [
     currency: "EUR",
     interval: "month",
     recurring: true,
-    entitlements: { lessonsPro: true, translationPremium: false },
+    entitlements: { lessonsPro: true, translationPremium: false, arNavigation: false },
     unlimitedHearts: true,
     features: [
       "Cœurs illimités : vous apprenez tant que l'envie est là",
@@ -166,7 +166,7 @@ export const PLANS: Plan[] = [
     currency: "EUR",
     interval: "month",
     recurring: true,
-    entitlements: { lessonsPro: true, translationPremium: true },
+    entitlements: { lessonsPro: true, translationPremium: true, arNavigation: true },
     unlimitedHearts: true,
     highlight: true,
     features: [
@@ -208,7 +208,7 @@ export const PLANS: Plan[] = [
     interval: "once",
     durationHours: 24,
     recurring: false,
-    entitlements: { lessonsPro: false, translationPremium: true },
+    entitlements: { lessonsPro: false, translationPremium: true, arNavigation: true },
     unlimitedHearts: false,
     features: [
       "24 heures pleines, décomptées à partir de votre activation, pas de l'achat",
@@ -247,7 +247,7 @@ export const PLANS: Plan[] = [
     interval: "once",
     durationHours: 24 * 7,
     recurring: false,
-    entitlements: { lessonsPro: false, translationPremium: true },
+    entitlements: { lessonsPro: false, translationPremium: true, arNavigation: true },
     unlimitedHearts: false,
     features: [
       "7 jours pleins à partir de votre activation",
@@ -286,7 +286,7 @@ export const PLANS: Plan[] = [
     interval: "year",
     recurring: true,
     renewalOptional: true,
-    entitlements: { lessonsPro: false, translationPremium: true },
+    entitlements: { lessonsPro: false, translationPremium: true, arNavigation: true },
     unlimitedHearts: false,
     features: [
       "Douze mois de traduction Premium, sans compteur ni relance",
@@ -325,7 +325,7 @@ export const PLANS: Plan[] = [
     interval: "month",
     recurring: true,
     highlight: true,
-    entitlements: { lessonsPro: true, translationPremium: true },
+    entitlements: { lessonsPro: true, translationPremium: true, arNavigation: true },
     unlimitedHearts: true,
     features: [
       "Tout Leçons Pro et tout Pro Traduction réunis",
@@ -365,7 +365,7 @@ export const PLANS: Plan[] = [
     currency: "EUR",
     interval: "year",
     recurring: true,
-    entitlements: { lessonsPro: true, translationPremium: true },
+    entitlements: { lessonsPro: true, translationPremium: true, arNavigation: true },
     unlimitedHearts: true,
     features: [
       "Exactement le même accès que Premium GOLD, sur douze mois",
