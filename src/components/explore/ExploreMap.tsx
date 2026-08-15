@@ -1,11 +1,14 @@
-/// <reference types="google.maps" />
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { Map as LeafletMap, Marker, Polyline } from "leaflet";
+import "leaflet/dist/leaflet.css";
 import {
   BENIN_CENTER,
   BENIN_DEFAULT_ZOOM,
   CATEGORY_BY_ID,
   type ExplorePlace,
 } from "@/lib/explore/categories";
+import { decodePolyline } from "@/lib/explore/polyline";
+import { getTileProvider } from "@/lib/explore/tiles";
 
 type ExploreMapProps = {
   places: ExplorePlace[];
@@ -16,36 +19,7 @@ type ExploreMapProps = {
   recenterToken: number;
 };
 
-let loaderPromise: Promise<void> | null = null;
-
-function loadGoogleMaps(): Promise<void> {
-  if (typeof window === "undefined") return Promise.resolve();
-  const w = window as unknown as { google?: { maps?: unknown } };
-  if (w.google?.maps) return Promise.resolve();
-  if (loaderPromise) return loaderPromise;
-
-  const key = import.meta.env["VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY"] as
-    | string
-    | undefined;
-  const channel = import.meta.env["VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_TRACKING_ID"] as
-    | string
-    | undefined;
-  if (!key) return Promise.reject(new Error("La carte n'est pas encore configurée."));
-
-  loaderPromise = new Promise<void>((resolve, reject) => {
-    const callbackName = "__fonconnectInitMap";
-    (window as unknown as Record<string, unknown>)[callbackName] = () => resolve();
-    const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&loading=async&callback=${callbackName}&language=fr&region=BJ${
-      channel ? `&channel=${channel}` : ""
-    }`;
-    script.async = true;
-    script.onerror = () => reject(new Error("La carte n'a pas pu être chargée."));
-    document.head.appendChild(script);
-  });
-  return loaderPromise;
-}
-
+/** Carte Leaflet + OpenStreetMap : aucune clé API, aucun service Google. */
 export default function ExploreMap({
   places,
   selectedId,
@@ -55,30 +29,40 @@ export default function ExploreMap({
   recenterToken,
 }: ExploreMapProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const markersRef = useRef<google.maps.Marker[]>([]);
-  const userMarkerRef = useRef<google.maps.Marker | null>(null);
-  const lineRef = useRef<google.maps.Polyline | null>(null);
+  const mapRef = useRef<LeafletMap | null>(null);
+  const leafletRef = useRef<typeof import("leaflet") | null>(null);
+  const markersRef = useRef<Marker[]>([]);
+  const userMarkerRef = useRef<Marker | null>(null);
+  const lineRef = useRef<Polyline | null>(null);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
-    loadGoogleMaps()
-      .then(() => {
-        if (!active || !containerRef.current) return;
-        mapRef.current = new google.maps.Map(containerRef.current, {
-          center: BENIN_CENTER,
+    import("leaflet")
+      .then((mod) => {
+        const L = (mod as unknown as { default?: typeof import("leaflet") }).default ?? mod;
+        if (!active || !containerRef.current || mapRef.current) return;
+        leafletRef.current = L;
+        const tiles = getTileProvider();
+        const map = L.map(containerRef.current, {
+          center: [BENIN_CENTER.lat, BENIN_CENTER.lng],
           zoom: BENIN_DEFAULT_ZOOM,
-          mapTypeControl: false,
-          streetViewControl: false,
-          fullscreenControl: false,
+          zoomControl: true,
         });
+        L.tileLayer(tiles.urlTemplate, {
+          attribution: tiles.attribution,
+          maxZoom: tiles.maxZoom,
+          ...(tiles.subdomains ? { subdomains: tiles.subdomains } : {}),
+        }).addTo(map);
+        mapRef.current = map;
         setReady(true);
       })
-      .catch((e: Error) => active && setError(e.message));
+      .catch(() => active && setError("La carte n'a pas pu être chargée."));
     return () => {
       active = false;
+      mapRef.current?.remove();
+      mapRef.current = null;
     };
   }, []);
 
@@ -86,28 +70,32 @@ export default function ExploreMap({
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!ready || !map) return;
+    const L = leafletRef.current;
+    if (!ready || !map || !L) return;
 
-    markersRef.current.forEach((m) => m.setMap(null));
+    markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
-    const bounds = new google.maps.LatLngBounds();
+    const points: [number, number][] = [];
     places.forEach((place) => {
-      const marker = new google.maps.Marker({
-        map,
-        position: { lat: place.latitude, lng: place.longitude },
-        title: `${CATEGORY_BY_ID[place.category]?.emoji ?? "📍"} ${place.name}`,
+      const emoji = CATEGORY_BY_ID[place.category]?.emoji ?? "📍";
+      const icon = L.divIcon({
+        className: "",
+        html: `<span style="font-size:22px;line-height:22px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))">${emoji}</span>`,
+        iconSize: [24, 24],
+        iconAnchor: [12, 22],
       });
-      marker.addListener("click", () => onSelect(place));
+      const marker = L.marker([place.latitude, place.longitude], { icon, title: place.name })
+        .addTo(map)
+        .on("click", () => onSelect(place));
       markersRef.current.push(marker);
-      bounds.extend({ lat: place.latitude, lng: place.longitude });
+      points.push([place.latitude, place.longitude]);
     });
 
-    if (places.length === 1) {
-      map.setCenter({ lat: places[0]!.latitude, lng: places[0]!.longitude });
-      map.setZoom(15);
-    } else if (places.length > 1) {
-      map.fitBounds(bounds, 48);
+    if (points.length === 1) {
+      map.setView(points[0]!, 15);
+    } else if (points.length > 1) {
+      map.fitBounds(L.latLngBounds(points), { padding: [40, 40] });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placesKey, ready]);
@@ -117,55 +105,52 @@ export default function ExploreMap({
     if (!ready || !map || !selectedId) return;
     const place = places.find((p) => p.id === selectedId);
     if (!place) return;
-    map.panTo({ lat: place.latitude, lng: place.longitude });
+    map.panTo([place.latitude, place.longitude]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId, ready]);
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!ready || !map || !userPosition) return;
+    const L = leafletRef.current;
+    if (!ready || !map || !L || !userPosition) return;
     if (!userMarkerRef.current) {
-      userMarkerRef.current = new google.maps.Marker({
-        map,
-        title: "Ma position",
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          scale: 8,
-          fillColor: "#1d4ed8",
-          fillOpacity: 1,
-          strokeColor: "#ffffff",
-          strokeWeight: 2,
-        },
-      });
+      userMarkerRef.current = L.circleMarker([userPosition.lat, userPosition.lng], {
+        radius: 8,
+        color: "#ffffff",
+        weight: 2,
+        fillColor: "#1d4ed8",
+        fillOpacity: 1,
+      }).addTo(map) as unknown as Marker;
+    } else {
+      (userMarkerRef.current as unknown as { setLatLng: (v: [number, number]) => void }).setLatLng([
+        userPosition.lat,
+        userPosition.lng,
+      ]);
     }
-    userMarkerRef.current.setPosition(userPosition);
   }, [userPosition, ready]);
 
   useEffect(() => {
     const map = mapRef.current;
     if (!ready || !map || !userPosition) return;
-    map.panTo(userPosition);
-    map.setZoom(14);
+    map.setView([userPosition.lat, userPosition.lng], 14);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recenterToken]);
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!ready || !map) return;
-    lineRef.current?.setMap(null);
+    const L = leafletRef.current;
+    if (!ready || !map || !L) return;
+    lineRef.current?.remove();
     lineRef.current = null;
-    if (!routePolyline || !google.maps.geometry?.encoding) return;
-    const path = google.maps.geometry.encoding.decodePath(routePolyline);
-    lineRef.current = new google.maps.Polyline({
-      map,
-      path,
-      strokeColor: "#15803d",
-      strokeWeight: 5,
-      strokeOpacity: 0.85,
-    });
-    const bounds = new google.maps.LatLngBounds();
-    path.forEach((point) => bounds.extend(point));
-    map.fitBounds(bounds, 48);
+    if (!routePolyline) return;
+    const path = decodePolyline(routePolyline).map((p) => [p.lat, p.lng] as [number, number]);
+    if (!path.length) return;
+    lineRef.current = L.polyline(path, {
+      color: "#15803d",
+      weight: 5,
+      opacity: 0.85,
+    }).addTo(map);
+    map.fitBounds(L.latLngBounds(path), { padding: [40, 40] });
   }, [routePolyline, ready]);
 
   if (error) {
@@ -176,5 +161,11 @@ export default function ExploreMap({
     );
   }
 
-  return <div ref={containerRef} className="h-full w-full rounded-xl" aria-label="Carte du Bénin" />;
+  return (
+    <div
+      ref={containerRef}
+      className="h-full w-full rounded-xl [&_.leaflet-container]:bg-muted"
+      aria-label="Carte du Bénin (OpenStreetMap)"
+    />
+  );
 }
