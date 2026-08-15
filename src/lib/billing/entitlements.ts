@@ -14,6 +14,8 @@ export type Entitlements = {
   lessonsPro: boolean;
   translationPremium: boolean;
   unlimitedHearts: boolean;
+  /** Navigation en réalité augmentée : offres Voyage, Traduc Premium et GOLD. */
+  arNavigation: boolean;
   plans: string[];
   subscriptions: ActiveSubscription[];
   /** Un prélèvement a échoué : accès maintenu pendant le délai de grâce. */
@@ -25,6 +27,7 @@ export const FREE_ENTITLEMENTS: Entitlements = {
   lessonsPro: false,
   translationPremium: false,
   unlimitedHearts: false,
+  arNavigation: false,
   plans: [],
   subscriptions: [],
   paymentIssue: false,
