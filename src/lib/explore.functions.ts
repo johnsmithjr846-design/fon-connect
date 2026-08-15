@@ -112,13 +112,13 @@ export const askExplorer = createServerFn({ method: "POST" })
 
       try {
         const gateway = createLovableAiGatewayProvider(key);
-        const result = await generateText({
+        const { output } = await generateText({
           model: gateway("google/gemini-3.6-flash"),
           system:
             "Tu es le guide touristique de FonConnect au Bénin. À partir de la demande, produis un court conseil (2-3 phrases) et 1 à 4 requêtes de recherche cartographique précises (nom de lieu ou type + ville) à exécuter au Bénin. N'invente jamais d'adresse, d'horaire ni de prix : les fiches viendront de la carte. " +
             (data.lang === "en" ? "Réponds en anglais." : "Réponds en français."),
           prompt: data.question,
-          experimental_output: Output.object({
+          output: Output.object({
             schema: z.object({
               answer: z.string(),
               queries: z.array(z.string()).min(1).max(4),
@@ -126,7 +126,6 @@ export const askExplorer = createServerFn({ method: "POST" })
           }),
         });
 
-        const output = result.experimental_output;
         const seen = new Set<string>();
         const places: ExplorePlace[] = [];
         for (const query of output.queries.slice(0, 3)) {
