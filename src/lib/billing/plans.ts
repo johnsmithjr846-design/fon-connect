@@ -166,7 +166,7 @@ export const PLANS: Plan[] = [
     currency: "EUR",
     interval: "month",
     recurring: true,
-    entitlements: { lessonsPro: true, translationPremium: true, arNavigation: true },
+    entitlements: { lessonsPro: true, translationPremium: true, arNavigation: false },
     unlimitedHearts: true,
     highlight: true,
     features: [
