@@ -17,7 +17,10 @@ function safeNext(value: unknown): string | undefined {
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
-  validateSearch: (s: Record<string, unknown>) => ({ next: safeNext(s["next"]) }),
+  validateSearch: (s: Record<string, unknown>): { next?: string } => {
+    const next = safeNext(s["next"]);
+    return next ? { next } : {};
+  },
   head: () => ({
     meta: [
       { title: "Connexion à FonConnect — sauvegardez votre progression" },
