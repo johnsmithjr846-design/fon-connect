@@ -1,0 +1,25 @@
+REVOKE EXECUTE ON FUNCTION public.admin_list_users(uuid) FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.admin_list_subscriptions(uuid) FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.admin_send_promotion(uuid, uuid) FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.admin_set_role_by_email(uuid, text, boolean) FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.set_admin_code(uuid, text) FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.verify_admin_code(uuid, text) FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.claim_first_admin(uuid) FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.admin_exists() FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.admin_code_is_set() FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.track_page_view(text, boolean) FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.active_plans(uuid) FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.are_friends(uuid, uuid) FROM anon, authenticated, public;
+
+GRANT EXECUTE ON FUNCTION public.admin_list_users(uuid) TO service_role;
+GRANT EXECUTE ON FUNCTION public.admin_list_subscriptions(uuid) TO service_role;
+GRANT EXECUTE ON FUNCTION public.admin_send_promotion(uuid, uuid) TO service_role;
+GRANT EXECUTE ON FUNCTION public.admin_set_role_by_email(uuid, text, boolean) TO service_role;
+GRANT EXECUTE ON FUNCTION public.set_admin_code(uuid, text) TO service_role;
+GRANT EXECUTE ON FUNCTION public.verify_admin_code(uuid, text) TO service_role;
+GRANT EXECUTE ON FUNCTION public.claim_first_admin(uuid) TO service_role;
+GRANT EXECUTE ON FUNCTION public.admin_exists() TO service_role;
+GRANT EXECUTE ON FUNCTION public.admin_code_is_set() TO service_role;
+GRANT EXECUTE ON FUNCTION public.track_page_view(text, boolean) TO service_role;
+GRANT EXECUTE ON FUNCTION public.active_plans(uuid) TO service_role;
+GRANT EXECUTE ON FUNCTION public.are_friends(uuid, uuid) TO service_role;
