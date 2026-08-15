@@ -38,6 +38,7 @@ import { Route as ApiLessonChatRouteImport } from './routes/api/lesson-chat'
 import { Route as ApiSpeechRouteImport } from './routes/api/speech'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 import { Route as ExplorerIndexRouteImport } from './routes/explorer.index'
+import { Route as ExplorerArRouteImport } from './routes/explorer.ar'
 import { Route as LeconsIndexRouteImport } from './routes/lecons.index'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
@@ -198,6 +199,11 @@ const ExplorerIndexRoute = ExplorerIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ExplorerRoute,
 } as any)
+const ExplorerArRoute = ExplorerArRouteImport.update({
+  id: '/ar',
+  path: '/ar',
+  getParentRoute: () => ExplorerRoute,
+} as any)
 const LeconsIndexRoute = LeconsIndexRouteImport.update({
   id: '/lecons/',
   path: '/lecons/',
@@ -287,6 +293,7 @@ export interface FileRoutesByFullPath {
   '/api/lesson-chat': typeof ApiLessonChatRoute
   '/api/speech': typeof ApiSpeechRoute
   '/api/transcribe': typeof ApiTranscribeRoute
+  '/explorer/ar': typeof ExplorerArRoute
   '/explorer/': typeof ExplorerIndexRoute
   '/lecons/': typeof LeconsIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -328,6 +335,7 @@ export interface FileRoutesByTo {
   '/api/lesson-chat': typeof ApiLessonChatRoute
   '/api/speech': typeof ApiSpeechRoute
   '/api/transcribe': typeof ApiTranscribeRoute
+  '/explorer/ar': typeof ExplorerArRoute
   '/explorer': typeof ExplorerIndexRoute
   '/lecons': typeof LeconsIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -371,6 +379,7 @@ export interface FileRoutesById {
   '/api/lesson-chat': typeof ApiLessonChatRoute
   '/api/speech': typeof ApiSpeechRoute
   '/api/transcribe': typeof ApiTranscribeRoute
+  '/explorer/ar': typeof ExplorerArRoute
   '/explorer/': typeof ExplorerIndexRoute
   '/lecons/': typeof LeconsIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -415,6 +424,7 @@ export interface FileRouteTypes {
     | '/api/lesson-chat'
     | '/api/speech'
     | '/api/transcribe'
+    | '/explorer/ar'
     | '/explorer/'
     | '/lecons/'
     | '/.lovable/oauth/consent'
@@ -456,6 +466,7 @@ export interface FileRouteTypes {
     | '/api/lesson-chat'
     | '/api/speech'
     | '/api/transcribe'
+    | '/explorer/ar'
     | '/explorer'
     | '/lecons'
     | '/.lovable/oauth/consent'
@@ -498,6 +509,7 @@ export interface FileRouteTypes {
     | '/api/lesson-chat'
     | '/api/speech'
     | '/api/transcribe'
+    | '/explorer/ar'
     | '/explorer/'
     | '/lecons/'
     | '/.lovable/oauth/consent'
@@ -759,6 +771,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExplorerIndexRouteImport
       parentRoute: typeof ExplorerRoute
     }
+    '/explorer/ar': {
+      id: '/explorer/ar'
+      path: '/ar'
+      fullPath: '/explorer/ar'
+      preLoaderRoute: typeof ExplorerArRouteImport
+      parentRoute: typeof ExplorerRoute
+    }
     '/lecons/': {
       id: '/lecons/'
       path: '/lecons'
@@ -840,10 +859,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface ExplorerRouteChildren {
+  ExplorerArRoute: typeof ExplorerArRoute
   ExplorerIndexRoute: typeof ExplorerIndexRoute
 }
 
 const ExplorerRouteChildren: ExplorerRouteChildren = {
+  ExplorerArRoute: ExplorerArRoute,
   ExplorerIndexRoute: ExplorerIndexRoute,
 }
 
