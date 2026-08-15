@@ -16,6 +16,7 @@ import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ConditionsUtilisationRouteImport } from './routes/conditions-utilisation'
 import { Route as CookiesRouteImport } from './routes/cookies'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as MerciRouteImport } from './routes/merci'
 import { Route as MessagesRouteImport } from './routes/messages'
@@ -29,11 +30,15 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TarifsRouteImport } from './routes/tarifs'
 import { Route as TelechargerRouteImport } from './routes/telecharger'
 import { Route as TraducteurRouteImport } from './routes/traducteur'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiLessonChatRouteImport } from './routes/api/lesson-chat'
 import { Route as ApiSpeechRouteImport } from './routes/api/speech'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 import { Route as LeconsIndexRouteImport } from './routes/lecons.index'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as LeconsModuleIdIndexRouteImport } from './routes/lecons.$moduleId.index'
 import { Route as LeconsModuleIdLessonIdRouteImport } from './routes/lecons.$moduleId.$lessonId'
 import { Route as LeconsModuleIdQuizRouteImport } from './routes/lecons.$moduleId.quiz'
@@ -76,6 +81,11 @@ const ConditionsUtilisationRoute = ConditionsUtilisationRouteImport.update({
 const CookiesRoute = CookiesRouteImport.update({
   id: '/cookies',
   path: '/cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
@@ -144,6 +154,18 @@ const TraducteurRoute = TraducteurRouteImport.update({
   path: '/traducteur',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
@@ -169,6 +191,17 @@ const LeconsIndexRoute = LeconsIndexRouteImport.update({
   path: '/lecons/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const LeconsModuleIdIndexRoute = LeconsModuleIdIndexRouteImport.update({
   id: '/lecons/$moduleId/',
   path: '/lecons/$moduleId/',
@@ -221,6 +254,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
+  '/mcp': typeof McpRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/merci': typeof MerciRoute
   '/messages': typeof MessagesRoute
@@ -234,11 +268,15 @@ export interface FileRoutesByFullPath {
   '/tarifs': typeof TarifsRoute
   '/telecharger': typeof TelechargerRoute
   '/traducteur': typeof TraducteurRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/api/chat': typeof ApiChatRoute
   '/api/lesson-chat': typeof ApiLessonChatRoute
   '/api/speech': typeof ApiSpeechRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/lecons/': typeof LeconsIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
   '/lecons/$moduleId/quiz': typeof LeconsModuleIdQuizRoute
   '/lecons/$moduleId/': typeof LeconsModuleIdIndexRoute
@@ -256,6 +294,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
+  '/mcp': typeof McpRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/merci': typeof MerciRoute
   '/messages': typeof MessagesRoute
@@ -269,11 +308,15 @@ export interface FileRoutesByTo {
   '/tarifs': typeof TarifsRoute
   '/telecharger': typeof TelechargerRoute
   '/traducteur': typeof TraducteurRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/api/chat': typeof ApiChatRoute
   '/api/lesson-chat': typeof ApiLessonChatRoute
   '/api/speech': typeof ApiSpeechRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/lecons': typeof LeconsIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
   '/lecons/$moduleId/quiz': typeof LeconsModuleIdQuizRoute
   '/lecons/$moduleId': typeof LeconsModuleIdIndexRoute
@@ -292,6 +335,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
+  '/mcp': typeof McpRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/merci': typeof MerciRoute
   '/messages': typeof MessagesRoute
@@ -305,11 +349,15 @@ export interface FileRoutesById {
   '/tarifs': typeof TarifsRoute
   '/telecharger': typeof TelechargerRoute
   '/traducteur': typeof TraducteurRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/api/chat': typeof ApiChatRoute
   '/api/lesson-chat': typeof ApiLessonChatRoute
   '/api/speech': typeof ApiSpeechRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/lecons/': typeof LeconsIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
   '/lecons/$moduleId/quiz': typeof LeconsModuleIdQuizRoute
   '/lecons/$moduleId/': typeof LeconsModuleIdIndexRoute
@@ -329,6 +377,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/conditions-utilisation'
     | '/cookies'
+    | '/mcp'
     | '/mentions-legales'
     | '/merci'
     | '/messages'
@@ -342,11 +391,15 @@ export interface FileRouteTypes {
     | '/tarifs'
     | '/telecharger'
     | '/traducteur'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/api/chat'
     | '/api/lesson-chat'
     | '/api/speech'
     | '/api/transcribe'
     | '/lecons/'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/lecons/$moduleId/$lessonId'
     | '/lecons/$moduleId/quiz'
     | '/lecons/$moduleId/'
@@ -364,6 +417,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/conditions-utilisation'
     | '/cookies'
+    | '/mcp'
     | '/mentions-legales'
     | '/merci'
     | '/messages'
@@ -377,11 +431,15 @@ export interface FileRouteTypes {
     | '/tarifs'
     | '/telecharger'
     | '/traducteur'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/api/chat'
     | '/api/lesson-chat'
     | '/api/speech'
     | '/api/transcribe'
     | '/lecons'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/lecons/$moduleId/$lessonId'
     | '/lecons/$moduleId/quiz'
     | '/lecons/$moduleId'
@@ -399,6 +457,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/conditions-utilisation'
     | '/cookies'
+    | '/mcp'
     | '/mentions-legales'
     | '/merci'
     | '/messages'
@@ -412,11 +471,15 @@ export interface FileRouteTypes {
     | '/tarifs'
     | '/telecharger'
     | '/traducteur'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/api/chat'
     | '/api/lesson-chat'
     | '/api/speech'
     | '/api/transcribe'
     | '/lecons/'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/lecons/$moduleId/$lessonId'
     | '/lecons/$moduleId/quiz'
     | '/lecons/$moduleId/'
@@ -435,6 +498,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ConditionsUtilisationRoute: typeof ConditionsUtilisationRoute
   CookiesRoute: typeof CookiesRoute
+  McpRoute: typeof McpRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   MerciRoute: typeof MerciRoute
   MessagesRoute: typeof MessagesRoute
@@ -448,11 +512,15 @@ export interface RootRouteChildren {
   TarifsRoute: typeof TarifsRoute
   TelechargerRoute: typeof TelechargerRoute
   TraducteurRoute: typeof TraducteurRoute
+  Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiLessonChatRoute: typeof ApiLessonChatRoute
   ApiSpeechRoute: typeof ApiSpeechRoute
   ApiTranscribeRoute: typeof ApiTranscribeRoute
   LeconsIndexRoute: typeof LeconsIndexRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   LeconsModuleIdLessonIdRoute: typeof LeconsModuleIdLessonIdRoute
   LeconsModuleIdQuizRoute: typeof LeconsModuleIdQuizRoute
   LeconsModuleIdIndexRoute: typeof LeconsModuleIdIndexRoute
@@ -512,6 +580,13 @@ declare module '@tanstack/react-router' {
       path: '/cookies'
       fullPath: '/cookies'
       preLoaderRoute: typeof CookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mentions-legales': {
@@ -605,6 +680,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TraducteurRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
@@ -638,6 +727,20 @@ declare module '@tanstack/react-router' {
       path: '/lecons'
       fullPath: '/lecons/'
       preLoaderRoute: typeof LeconsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lecons/$moduleId/': {
@@ -707,6 +810,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ConditionsUtilisationRoute: ConditionsUtilisationRoute,
   CookiesRoute: CookiesRoute,
+  McpRoute: McpRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
   MerciRoute: MerciRoute,
   MessagesRoute: MessagesRoute,
@@ -720,11 +824,16 @@ const rootRouteChildren: RootRouteChildren = {
   TarifsRoute: TarifsRoute,
   TelechargerRoute: TelechargerRoute,
   TraducteurRoute: TraducteurRoute,
+  Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   ApiChatRoute: ApiChatRoute,
   ApiLessonChatRoute: ApiLessonChatRoute,
   ApiSpeechRoute: ApiSpeechRoute,
   ApiTranscribeRoute: ApiTranscribeRoute,
   LeconsIndexRoute: LeconsIndexRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   LeconsModuleIdLessonIdRoute: LeconsModuleIdLessonIdRoute,
   LeconsModuleIdQuizRoute: LeconsModuleIdQuizRoute,
   LeconsModuleIdIndexRoute: LeconsModuleIdIndexRoute,

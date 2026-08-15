@@ -1,0 +1,140 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.2",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://jhktwzuqsttbxsbqfnjl.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "fon-connect",
+      "version": "0.1.0",
+      "title": "Fon Connect"
+    },
+    "tools": [
+      {
+        "name": "translate_text",
+        "title": "Traduire un texte (fon / français / anglais)",
+        "description": "Traduit un texte entre le fon (fongbe, Bénin), le français et l'anglais, avec transcription phonétique et notes culturelles.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1500,
+              "description": "Texte à traduire."
+            },
+            "source": {
+              "type": "string",
+              "enum": [
+                "fr",
+                "en",
+                "fon"
+              ],
+              "description": "Langue source."
+            },
+            "target": {
+              "type": "string",
+              "enum": [
+                "fr",
+                "en",
+                "fon"
+              ],
+              "description": "Langue cible."
+            }
+          },
+          "required": [
+            "text",
+            "source",
+            "target"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "search_phrasebook",
+        "title": "Chercher dans le guide de conversation fon",
+        "description": "Recherche des phrases utiles en fon (avec français, anglais et phonétique) dans le guide de conversation FonConnect : salutations, marché, santé, urgence, transport…",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Mot ou phrase à chercher (fon, français ou anglais)."
+            },
+            "category": {
+              "description": "Identifiant de catégorie pour restreindre la recherche.",
+              "type": "string"
+            },
+            "limit": {
+              "default": 10,
+              "description": "Nombre maximum de résultats.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          "required": [
+            "query"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_lessons",
+        "title": "Lister les parcours et leçons de fon",
+        "description": "Liste les parcours d'apprentissage FonConnect et leurs leçons. Fournir pathId pour obtenir le vocabulaire détaillé d'un parcours.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "pathId": {
+              "description": "Identifiant du parcours à détailler.",
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "my_progress",
+        "title": "Ma progression FonConnect",
+        "description": "Retourne la progression de l'utilisateur connecté : leçons terminées, XP gagné et précision moyenne.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
