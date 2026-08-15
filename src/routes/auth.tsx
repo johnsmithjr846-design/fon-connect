@@ -9,8 +9,15 @@ import { Label } from "@/components/ui/label";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 import { UI_LANGS, type UiLang } from "@/lib/i18n/dictionary";
 
+function safeNext(value: unknown): string | undefined {
+  return typeof value === "string" && value.startsWith("/") && !value.startsWith("//")
+    ? value
+    : undefined;
+}
+
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
+  validateSearch: (s: Record<string, unknown>) => ({ next: safeNext(s["next"]) }),
   head: () => ({
     meta: [
       { title: "Connexion à FonConnect — sauvegardez votre progression" },
@@ -33,6 +40,14 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
+  const returnTo = () => {
+    if (next) {
+      window.location.href = next;
+      return true;
+    }
+    return false;
+  };
   const { t, lang, setLang } = useI18n();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
@@ -45,15 +60,18 @@ function AuthPage() {
 
   useEffect(() => {
     void supabase.auth.getSession().then(({ data }) => {
-      if (data.session) void navigate({ to: "/lecons", replace: true });
+      if (data.session) {
+        if (!returnTo()) void navigate({ to: "/lecons", replace: true });
+      }
     });
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (session && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
-        void navigate({ to: "/lecons", replace: true });
+        if (!returnTo()) void navigate({ to: "/lecons", replace: true });
       }
     });
     return () => sub.subscription.unsubscribe();
-  }, [navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigate, next]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -66,7 +84,7 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: window.location.origin,
+            emailRedirectTo: next ? `${window.location.origin}${next}` : window.location.origin,
             data: { pseudo: pseudo.trim() || undefined },
           },
         });
@@ -88,14 +106,14 @@ function AuthPage() {
   async function onGoogle() {
     setError(null);
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: next ? `${window.location.origin}${next}` : window.location.origin,
     });
     if (result.error) {
       setError("La connexion Google a échoué.");
       return;
     }
     if (result.redirected) return;
-    void navigate({ to: "/lecons", replace: true });
+    if (!returnTo()) void navigate({ to: "/lecons", replace: true });
   }
 
   return (
