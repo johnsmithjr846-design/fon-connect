@@ -34,6 +34,7 @@ import { Route as ApiLessonChatRouteImport } from './routes/api/lesson-chat'
 import { Route as ApiSpeechRouteImport } from './routes/api/speech'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 import { Route as LeconsIndexRouteImport } from './routes/lecons.index'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as LeconsModuleIdIndexRouteImport } from './routes/lecons.$moduleId.index'
 import { Route as LeconsModuleIdLessonIdRouteImport } from './routes/lecons.$moduleId.$lessonId'
 import { Route as LeconsModuleIdQuizRouteImport } from './routes/lecons.$moduleId.quiz'
@@ -169,6 +170,11 @@ const LeconsIndexRoute = LeconsIndexRouteImport.update({
   path: '/lecons/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LeconsModuleIdIndexRoute = LeconsModuleIdIndexRouteImport.update({
   id: '/lecons/$moduleId/',
   path: '/lecons/$moduleId/',
@@ -239,6 +245,7 @@ export interface FileRoutesByFullPath {
   '/api/speech': typeof ApiSpeechRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/lecons/': typeof LeconsIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
   '/lecons/$moduleId/quiz': typeof LeconsModuleIdQuizRoute
   '/lecons/$moduleId/': typeof LeconsModuleIdIndexRoute
@@ -274,6 +281,7 @@ export interface FileRoutesByTo {
   '/api/speech': typeof ApiSpeechRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/lecons': typeof LeconsIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
   '/lecons/$moduleId/quiz': typeof LeconsModuleIdQuizRoute
   '/lecons/$moduleId': typeof LeconsModuleIdIndexRoute
@@ -310,6 +318,7 @@ export interface FileRoutesById {
   '/api/speech': typeof ApiSpeechRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/lecons/': typeof LeconsIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/lecons/$moduleId/$lessonId': typeof LeconsModuleIdLessonIdRoute
   '/lecons/$moduleId/quiz': typeof LeconsModuleIdQuizRoute
   '/lecons/$moduleId/': typeof LeconsModuleIdIndexRoute
@@ -347,6 +356,7 @@ export interface FileRouteTypes {
     | '/api/speech'
     | '/api/transcribe'
     | '/lecons/'
+    | '/.lovable/oauth/consent'
     | '/lecons/$moduleId/$lessonId'
     | '/lecons/$moduleId/quiz'
     | '/lecons/$moduleId/'
@@ -382,6 +392,7 @@ export interface FileRouteTypes {
     | '/api/speech'
     | '/api/transcribe'
     | '/lecons'
+    | '/.lovable/oauth/consent'
     | '/lecons/$moduleId/$lessonId'
     | '/lecons/$moduleId/quiz'
     | '/lecons/$moduleId'
@@ -417,6 +428,7 @@ export interface FileRouteTypes {
     | '/api/speech'
     | '/api/transcribe'
     | '/lecons/'
+    | '/.lovable/oauth/consent'
     | '/lecons/$moduleId/$lessonId'
     | '/lecons/$moduleId/quiz'
     | '/lecons/$moduleId/'
@@ -453,6 +465,7 @@ export interface RootRouteChildren {
   ApiSpeechRoute: typeof ApiSpeechRoute
   ApiTranscribeRoute: typeof ApiTranscribeRoute
   LeconsIndexRoute: typeof LeconsIndexRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   LeconsModuleIdLessonIdRoute: typeof LeconsModuleIdLessonIdRoute
   LeconsModuleIdQuizRoute: typeof LeconsModuleIdQuizRoute
   LeconsModuleIdIndexRoute: typeof LeconsModuleIdIndexRoute
@@ -640,6 +653,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeconsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lecons/$moduleId/': {
       id: '/lecons/$moduleId/'
       path: '/lecons/$moduleId'
@@ -725,6 +745,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiSpeechRoute: ApiSpeechRoute,
   ApiTranscribeRoute: ApiTranscribeRoute,
   LeconsIndexRoute: LeconsIndexRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   LeconsModuleIdLessonIdRoute: LeconsModuleIdLessonIdRoute,
   LeconsModuleIdQuizRoute: LeconsModuleIdQuizRoute,
   LeconsModuleIdIndexRoute: LeconsModuleIdIndexRoute,
