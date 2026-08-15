@@ -35,6 +35,7 @@ export async function computeEntitlements(
     lessonsPro: false,
     translationPremium: false,
     unlimitedHearts: false,
+    arNavigation: false,
     plans: [],
     subscriptions: active,
     paymentIssue: active.some((s) => s.payment_state === "past_due"),
@@ -52,6 +53,7 @@ export async function computeEntitlements(
     result.lessonsPro ||= plan.entitlements.lessonsPro;
     result.translationPremium ||= plan.entitlements.translationPremium;
     result.unlimitedHearts ||= plan.unlimitedHearts;
+    result.arNavigation ||= plan.entitlements.arNavigation;
   }
   return result;
 }

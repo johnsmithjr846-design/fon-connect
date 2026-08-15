@@ -16,6 +16,7 @@ import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ConditionsUtilisationRouteImport } from './routes/conditions-utilisation'
 import { Route as CookiesRouteImport } from './routes/cookies'
+import { Route as ExplorerRouteImport } from './routes/explorer'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as MerciRouteImport } from './routes/merci'
@@ -36,6 +37,8 @@ import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiLessonChatRouteImport } from './routes/api/lesson-chat'
 import { Route as ApiSpeechRouteImport } from './routes/api/speech'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
+import { Route as ExplorerIndexRouteImport } from './routes/explorer.index'
+import { Route as ExplorerArRouteImport } from './routes/explorer.ar'
 import { Route as LeconsIndexRouteImport } from './routes/lecons.index'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
@@ -81,6 +84,11 @@ const ConditionsUtilisationRoute = ConditionsUtilisationRouteImport.update({
 const CookiesRoute = CookiesRouteImport.update({
   id: '/cookies',
   path: '/cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExplorerRoute = ExplorerRouteImport.update({
+  id: '/explorer',
+  path: '/explorer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const McpRoute = McpRouteImport.update({
@@ -186,6 +194,16 @@ const ApiTranscribeRoute = ApiTranscribeRouteImport.update({
   path: '/api/transcribe',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExplorerIndexRoute = ExplorerIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ExplorerRoute,
+} as any)
+const ExplorerArRoute = ExplorerArRouteImport.update({
+  id: '/ar',
+  path: '/ar',
+  getParentRoute: () => ExplorerRoute,
+} as any)
 const LeconsIndexRoute = LeconsIndexRouteImport.update({
   id: '/lecons/',
   path: '/lecons/',
@@ -254,6 +272,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
+  '/explorer': typeof ExplorerRouteWithChildren
   '/mcp': typeof McpRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/merci': typeof MerciRoute
@@ -274,6 +293,8 @@ export interface FileRoutesByFullPath {
   '/api/lesson-chat': typeof ApiLessonChatRoute
   '/api/speech': typeof ApiSpeechRoute
   '/api/transcribe': typeof ApiTranscribeRoute
+  '/explorer/ar': typeof ExplorerArRoute
+  '/explorer/': typeof ExplorerIndexRoute
   '/lecons/': typeof LeconsIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -314,6 +335,8 @@ export interface FileRoutesByTo {
   '/api/lesson-chat': typeof ApiLessonChatRoute
   '/api/speech': typeof ApiSpeechRoute
   '/api/transcribe': typeof ApiTranscribeRoute
+  '/explorer/ar': typeof ExplorerArRoute
+  '/explorer': typeof ExplorerIndexRoute
   '/lecons': typeof LeconsIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -335,6 +358,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/conditions-utilisation': typeof ConditionsUtilisationRoute
   '/cookies': typeof CookiesRoute
+  '/explorer': typeof ExplorerRouteWithChildren
   '/mcp': typeof McpRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/merci': typeof MerciRoute
@@ -355,6 +379,8 @@ export interface FileRoutesById {
   '/api/lesson-chat': typeof ApiLessonChatRoute
   '/api/speech': typeof ApiSpeechRoute
   '/api/transcribe': typeof ApiTranscribeRoute
+  '/explorer/ar': typeof ExplorerArRoute
+  '/explorer/': typeof ExplorerIndexRoute
   '/lecons/': typeof LeconsIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -377,6 +403,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/conditions-utilisation'
     | '/cookies'
+    | '/explorer'
     | '/mcp'
     | '/mentions-legales'
     | '/merci'
@@ -397,6 +424,8 @@ export interface FileRouteTypes {
     | '/api/lesson-chat'
     | '/api/speech'
     | '/api/transcribe'
+    | '/explorer/ar'
+    | '/explorer/'
     | '/lecons/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
@@ -437,6 +466,8 @@ export interface FileRouteTypes {
     | '/api/lesson-chat'
     | '/api/speech'
     | '/api/transcribe'
+    | '/explorer/ar'
+    | '/explorer'
     | '/lecons'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
@@ -457,6 +488,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/conditions-utilisation'
     | '/cookies'
+    | '/explorer'
     | '/mcp'
     | '/mentions-legales'
     | '/merci'
@@ -477,6 +509,8 @@ export interface FileRouteTypes {
     | '/api/lesson-chat'
     | '/api/speech'
     | '/api/transcribe'
+    | '/explorer/ar'
+    | '/explorer/'
     | '/lecons/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
@@ -498,6 +532,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ConditionsUtilisationRoute: typeof ConditionsUtilisationRoute
   CookiesRoute: typeof CookiesRoute
+  ExplorerRoute: typeof ExplorerRouteWithChildren
   McpRoute: typeof McpRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   MerciRoute: typeof MerciRoute
@@ -580,6 +615,13 @@ declare module '@tanstack/react-router' {
       path: '/cookies'
       fullPath: '/cookies'
       preLoaderRoute: typeof CookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/explorer': {
+      id: '/explorer'
+      path: '/explorer'
+      fullPath: '/explorer'
+      preLoaderRoute: typeof ExplorerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mcp': {
@@ -722,6 +764,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiTranscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/explorer/': {
+      id: '/explorer/'
+      path: '/'
+      fullPath: '/explorer/'
+      preLoaderRoute: typeof ExplorerIndexRouteImport
+      parentRoute: typeof ExplorerRoute
+    }
+    '/explorer/ar': {
+      id: '/explorer/ar'
+      path: '/ar'
+      fullPath: '/explorer/ar'
+      preLoaderRoute: typeof ExplorerArRouteImport
+      parentRoute: typeof ExplorerRoute
+    }
     '/lecons/': {
       id: '/lecons/'
       path: '/lecons'
@@ -802,6 +858,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ExplorerRouteChildren {
+  ExplorerArRoute: typeof ExplorerArRoute
+  ExplorerIndexRoute: typeof ExplorerIndexRoute
+}
+
+const ExplorerRouteChildren: ExplorerRouteChildren = {
+  ExplorerArRoute: ExplorerArRoute,
+  ExplorerIndexRoute: ExplorerIndexRoute,
+}
+
+const ExplorerRouteWithChildren = ExplorerRoute._addFileChildren(
+  ExplorerRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
@@ -810,6 +880,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ConditionsUtilisationRoute: ConditionsUtilisationRoute,
   CookiesRoute: CookiesRoute,
+  ExplorerRoute: ExplorerRouteWithChildren,
   McpRoute: McpRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
   MerciRoute: MerciRoute,

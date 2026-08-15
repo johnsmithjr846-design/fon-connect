@@ -18,6 +18,7 @@ const fr = {
   "nav.assistant": "Assistant IA",
   "nav.profile": "Profil",
   "nav.pricing": "Tarifs",
+  "nav.explore": "Explorer",
   "nav.signIn": "Se connecter",
   "nav.signOut": "Déconnexion",
   "lang.switchLabel": "Langue de l'interface",
@@ -34,6 +35,8 @@ const fr = {
   "home.feature.assistant.desc": "Posez vos questions et pratiquez la conversation.",
   "home.feature.lessons.title": "Leçons",
   "home.feature.lessons.desc": "Apprenez pas à pas, de manière interactive.",
+  "home.feature.explore.title": "Explorer le Bénin",
+  "home.feature.explore.desc": "Carte, lieux, itinéraires et navigation AR.",
   "home.feature.phrasebook.title": "Phrasebook",
   "home.feature.phrasebook.desc":
     "Les phrases essentielles du quotidien au Bénin, en français et en anglais.",
@@ -224,6 +227,7 @@ const en: Record<TranslationKey, string> = {
   "nav.assistant": "AI Assistant",
   "nav.profile": "Profile",
   "nav.pricing": "Pricing",
+  "nav.explore": "Explore",
   "nav.signIn": "Sign in",
   "nav.signOut": "Sign out",
   "lang.switchLabel": "Interface language",
@@ -239,6 +243,8 @@ const en: Record<TranslationKey, string> = {
   "home.feature.assistant.desc": "Ask your questions and practise conversation.",
   "home.feature.lessons.title": "Lessons",
   "home.feature.lessons.desc": "Learn step by step, interactively.",
+  "home.feature.explore.title": "Explore Benin",
+  "home.feature.explore.desc": "Map, places, routes and AR navigation.",
   "home.feature.phrasebook.title": "Phrasebook",
   "home.feature.phrasebook.desc":
     "Everyday essential phrases in Benin, in French and English.",

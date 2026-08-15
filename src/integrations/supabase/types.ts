@@ -316,6 +316,108 @@ export type Database = {
         }
         Relationships: []
       }
+      place_favorites: {
+        Row: {
+          address: string
+          category: string
+          created_at: string
+          id: string
+          latitude: number | null
+          longitude: number | null
+          name: string
+          place_ref: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string
+          category?: string
+          created_at?: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          place_ref: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string
+          category?: string
+          created_at?: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          place_ref?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      places: {
+        Row: {
+          address: string
+          category: string
+          city: string
+          created_at: string
+          description: string
+          id: string
+          languages: string[]
+          latitude: number
+          longitude: number
+          name: string
+          opening_hours: string
+          phone: string
+          photos: string[]
+          price: string
+          published: boolean
+          source: string
+          updated_at: string
+          website: string
+        }
+        Insert: {
+          address?: string
+          category?: string
+          city?: string
+          created_at?: string
+          description?: string
+          id?: string
+          languages?: string[]
+          latitude: number
+          longitude: number
+          name: string
+          opening_hours?: string
+          phone?: string
+          photos?: string[]
+          price?: string
+          published?: boolean
+          source?: string
+          updated_at?: string
+          website?: string
+        }
+        Update: {
+          address?: string
+          category?: string
+          city?: string
+          created_at?: string
+          description?: string
+          id?: string
+          languages?: string[]
+          latitude?: number
+          longitude?: number
+          name?: string
+          opening_hours?: string
+          phone?: string
+          photos?: string[]
+          price?: string
+          published?: boolean
+          source?: string
+          updated_at?: string
+          website?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
