@@ -245,6 +245,8 @@ const en: Record<TranslationKey, string> = {
   "home.feature.assistant.desc": "Ask your questions and practise conversation.",
   "home.feature.lessons.title": "Lessons",
   "home.feature.lessons.desc": "Learn step by step, interactively.",
+  "home.feature.explore.title": "Explore Benin",
+  "home.feature.explore.desc": "Map, places, routes and AR navigation.",
   "home.feature.phrasebook.title": "Phrasebook",
   "home.feature.phrasebook.desc":
     "Everyday essential phrases in Benin, in French and English.",
