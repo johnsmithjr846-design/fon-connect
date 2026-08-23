@@ -42,6 +42,7 @@ export const Route = createFileRoute("/admin")({
 const TABS = [
   { id: "dashboard", label: "dashboard" },
   { id: "users", label: "utilisateurs" },
+  { id: "hearts", label: "cœurs" },
   { id: "subscriptions", label: "abonnements" },
   { id: "promotions", label: "promotions" },
   { id: "downloads", label: "téléchargements" },
