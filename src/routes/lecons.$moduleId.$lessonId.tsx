@@ -57,7 +57,7 @@ function LessonPage() {
   const lesson = getLesson(moduleId, lessonId)!;
   const { t, lang } = useI18n();
   const navigate = useNavigate();
-  const { user, stats, invalidate } = useLessonProgress();
+  const { user, stats, bonusHearts, invalidate } = useLessonProgress();
 
   const exercises = useMemo(() => buildExercises(moduleId, lesson), [moduleId, lesson]);
   const [step, setStep] = useState(0);
