@@ -17,6 +17,7 @@ import {
   UsersPanel,
 } from "@/components/admin/AdminPanels";
 import { PromotionsPanel, SubscriptionsPanel } from "@/components/admin/PromotionsPanel";
+import { HeartsPanel } from "@/components/admin/HeartsPanel";
 
 export const Route = createFileRoute("/admin")({
   head: () => {
