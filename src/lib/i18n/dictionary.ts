@@ -25,6 +25,7 @@ const fr = {
 
   // Home
   "home.eyebrow": "Bénin · Fon",
+  "home.h1Tagline": "Traduire et apprendre le fon du Bénin",
   "home.intro":
     "Supprimez la barrière de la langue : traduisez instantanément entre le fon, le français et l'anglais, et apprenez la langue de façon simple, interactive et immersive.",
   "home.ctaTranslator": "Ouvrir le traducteur",
@@ -233,6 +234,7 @@ const en: Record<TranslationKey, string> = {
   "lang.switchLabel": "Interface language",
 
   "home.eyebrow": "Benin · Fon",
+  "home.h1Tagline": "Translate and learn Fon from Benin",
   "home.intro":
     "Break the language barrier: translate instantly between Fon, French and English, and learn the language in a simple, interactive and immersive way.",
   "home.ctaTranslator": "Open the translator",
