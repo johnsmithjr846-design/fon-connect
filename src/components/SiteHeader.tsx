@@ -13,7 +13,7 @@ const NAV: {
   { to: "/", key: "nav.home" },
   { to: "/traducteur", key: "nav.translator" },
   { to: "/lecons", key: "nav.lessons" },
-  { to: "/explorer", key: "nav.explore" },
+  // Carte « Explorer » masquée temporairement (réintégration prévue).
   { to: "/phrasebook", key: "nav.phrasebook" },
   { to: "/assistant", key: "nav.assistant" },
   { to: "/tarifs", key: "nav.pricing" },
