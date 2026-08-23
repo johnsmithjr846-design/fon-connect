@@ -4,11 +4,19 @@ import { MAX_HEARTS } from "@/lib/lessons";
 type LessonHudProps = {
   progress: number;
   hearts: number;
+  /** Cœurs bonus attribués par un administrateur, consommés après les cœurs quotidiens. */
+  bonusHearts?: number;
   unlimited?: boolean;
   onQuit: () => void;
 };
 
-export function LessonHud({ progress, hearts, unlimited = false, onQuit }: LessonHudProps) {
+export function LessonHud({
+  progress,
+  hearts,
+  bonusHearts = 0,
+  unlimited = false,
+  onQuit,
+}: LessonHudProps) {
   return (
     <div className="sticky top-0 z-10 flex items-center gap-4 border-b border-border bg-background/95 px-4 py-3 backdrop-blur">
       <button
