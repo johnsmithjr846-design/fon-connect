@@ -42,7 +42,10 @@ export function LessonHud({
           <InfinityIcon className="size-4" />
         </span>
       ) : (
-        <div className="flex items-center gap-1" aria-label={`${hearts} cœurs`}>
+        <div
+          className="flex items-center gap-1"
+          aria-label={`${hearts} cœurs quotidiens${bonusHearts > 0 ? `, ${bonusHearts} cœurs bonus` : ""}`}
+        >
           {Array.from({ length: MAX_HEARTS }).map((_, i) => (
             <Heart
               key={i}
@@ -53,6 +56,11 @@ export function LessonHud({
               }
             />
           ))}
+          {bonusHearts > 0 && (
+            <span className="ml-1 inline-flex items-center gap-0.5 rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-semibold text-primary">
+              <Heart className="size-3 fill-primary text-primary" aria-hidden />+{bonusHearts}
+            </span>
+          )}
         </div>
       )}
     </div>
