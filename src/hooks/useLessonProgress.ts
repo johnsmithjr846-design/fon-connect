@@ -11,6 +11,7 @@ const EMPTY: ProgressSnapshot = {
   stats: DEFAULT_STATS,
   badges: [],
   chests: [],
+  bonusHearts: 0,
 };
 
 export function useLessonProgress() {
@@ -31,6 +32,7 @@ export function useLessonProgress() {
     authLoading: loading,
     progress: data,
     stats: data.stats,
+    bonusHearts: data.bonusHearts,
     badges: data.badges,
     chests: data.chests,
     level: levelForXp(data.stats.xp_total),

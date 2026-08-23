@@ -4,11 +4,19 @@ import { MAX_HEARTS } from "@/lib/lessons";
 type LessonHudProps = {
   progress: number;
   hearts: number;
+  /** Cœurs bonus attribués par un administrateur, consommés après les cœurs quotidiens. */
+  bonusHearts?: number;
   unlimited?: boolean;
   onQuit: () => void;
 };
 
-export function LessonHud({ progress, hearts, unlimited = false, onQuit }: LessonHudProps) {
+export function LessonHud({
+  progress,
+  hearts,
+  bonusHearts = 0,
+  unlimited = false,
+  onQuit,
+}: LessonHudProps) {
   return (
     <div className="sticky top-0 z-10 flex items-center gap-4 border-b border-border bg-background/95 px-4 py-3 backdrop-blur">
       <button
@@ -34,7 +42,10 @@ export function LessonHud({ progress, hearts, unlimited = false, onQuit }: Lesso
           <InfinityIcon className="size-4" />
         </span>
       ) : (
-        <div className="flex items-center gap-1" aria-label={`${hearts} cœurs`}>
+        <div
+          className="flex items-center gap-1"
+          aria-label={`${hearts} cœurs quotidiens${bonusHearts > 0 ? `, ${bonusHearts} cœurs bonus` : ""}`}
+        >
           {Array.from({ length: MAX_HEARTS }).map((_, i) => (
             <Heart
               key={i}
@@ -45,6 +56,11 @@ export function LessonHud({ progress, hearts, unlimited = false, onQuit }: Lesso
               }
             />
           ))}
+          {bonusHearts > 0 && (
+            <span className="ml-1 inline-flex items-center gap-0.5 rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-semibold text-primary">
+              <Heart className="size-3 fill-primary text-primary" aria-hidden />+{bonusHearts}
+            </span>
+          )}
         </div>
       )}
     </div>

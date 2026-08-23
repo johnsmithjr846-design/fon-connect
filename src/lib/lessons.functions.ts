@@ -19,7 +19,29 @@ export type ProgressSnapshot = {
   stats: UserStats;
   badges: string[];
   chests: string[];
+  /** Cœurs bonus attribués par un administrateur (hors 4 cœurs quotidiens). */
+  bonusHearts: number;
 };
+
+type ActiveGrant = { id: string; hearts_remaining: number };
+
+/** Attributions admin actives (démarrées, non expirées, non révoquées), les plus proches de l'expiration d'abord. */
+async function activeHeartGrants(
+  sb: { from: (t: string) => any },
+  userId: string,
+): Promise<ActiveGrant[]> {
+  const now = new Date().toISOString();
+  const { data } = await sb
+    .from("admin_heart_grants")
+    .select("id, hearts_remaining")
+    .eq("user_id", userId)
+    .is("revoked_at", null)
+    .gt("hearts_remaining", 0)
+    .lte("starts_at", now)
+    .gt("expires_at", now)
+    .order("expires_at", { ascending: true });
+  return (data ?? []) as ActiveGrant[];
+}
 
 export const getLessonProgress = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -43,12 +65,14 @@ export const getLessonProgress = createServerFn({ method: "GET" })
     if (quizzes.error) throw new Error(quizzes.error.message);
 
     const raw = (stats.data as UserStats | null) ?? DEFAULT_STATS;
+    const grants = await activeHeartGrants(supabase as never, userId);
     return {
       lessons: lessons.data ?? [],
       quizzes: quizzes.data ?? [],
       stats: resetHeartsIfNewDay(raw),
       badges: (badges.data ?? []).map((b) => b.badge_id),
       chests: (chests.data ?? []).map((c) => c.chest_id),
+      bonusHearts: grants.reduce((sum, g) => sum + g.hearts_remaining, 0),
     };
   });
 
@@ -171,32 +195,56 @@ export const completeLesson = createServerFn({ method: "POST" })
 
 export const loseHeart = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<{ hearts: number; unlimited: boolean }> => {
-    const { supabase, userId } = context;
-    const { computeEntitlements } = await import("@/lib/entitlements.server");
-    const entitlements = await computeEntitlements(supabase as never, userId);
-    if (entitlements.unlimitedHearts) return { hearts: MAX_HEARTS, unlimited: true };
+  .handler(
+    async ({
+      context,
+    }): Promise<{ hearts: number; bonusHearts: number; unlimited: boolean }> => {
+      const { supabase, userId } = context;
+      const { computeEntitlements } = await import("@/lib/entitlements.server");
+      const entitlements = await computeEntitlements(supabase as never, userId);
+      if (entitlements.unlimitedHearts)
+        return { hearts: MAX_HEARTS, bonusHearts: 0, unlimited: true };
 
-    const { data } = await supabase.from("user_stats").select("*").eq("user_id", userId).maybeSingle();
-    const prev = resetHeartsIfNewDay((data as UserStats | null) ?? DEFAULT_STATS);
-    const hearts = Math.max(0, prev.hearts - 1);
+      const { data } = await supabase
+        .from("user_stats")
+        .select("*")
+        .eq("user_id", userId)
+        .maybeSingle();
+      const prev = resetHeartsIfNewDay((data as UserStats | null) ?? DEFAULT_STATS);
+      const grants = await activeHeartGrants(supabase as never, userId);
+      let bonusHearts = grants.reduce((sum, g) => sum + g.hearts_remaining, 0);
+      let hearts = prev.hearts;
 
-    const { error } = await supabase.from("user_stats").upsert(
-      {
-        user_id: userId,
-        xp_total: prev.xp_total,
-        current_streak: prev.current_streak,
-        best_streak: prev.best_streak,
-        last_active_day: prev.last_active_day,
-        hearts,
-        hearts_day: prev.hearts_day,
-        hearts_updated_at: new Date().toISOString(),
-      },
-      { onConflict: "user_id" },
-    );
-    if (error) throw new Error(error.message);
-    return { hearts, unlimited: false };
-  });
+      if (hearts > 0) {
+        hearts -= 1;
+      } else if (grants.length > 0) {
+        // Les cœurs admin ne sont consommés qu'après les cœurs quotidiens.
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const target = grants[0]!;
+        await supabaseAdmin
+          .from("admin_heart_grants")
+          .update({ hearts_remaining: target.hearts_remaining - 1 })
+          .eq("id", target.id);
+        bonusHearts = Math.max(0, bonusHearts - 1);
+      }
+
+      const { error } = await supabase.from("user_stats").upsert(
+        {
+          user_id: userId,
+          xp_total: prev.xp_total,
+          current_streak: prev.current_streak,
+          best_streak: prev.best_streak,
+          last_active_day: prev.last_active_day,
+          hearts,
+          hearts_day: prev.hearts_day,
+          hearts_updated_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id" },
+      );
+      if (error) throw new Error(error.message);
+      return { hearts, bonusHearts, unlimited: false };
+    },
+  );
 
 const ChestSchema = z.object({ chestId: z.string().min(1).max(64) });
 

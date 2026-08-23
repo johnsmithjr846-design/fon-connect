@@ -44,7 +44,7 @@ const FEATURES: Feature[] = [
   },
   { titleKey: "home.feature.assistant.title", descKey: "home.feature.assistant.desc", to: "/assistant" },
   { titleKey: "home.feature.lessons.title", descKey: "home.feature.lessons.desc", to: "/lecons" },
-  { titleKey: "home.feature.explore.title", descKey: "home.feature.explore.desc", to: "/explorer" },
+  // Carte « Explorer » masquée temporairement (réintégration prévue).
   { titleKey: "home.feature.phrasebook.title", descKey: "home.feature.phrasebook.desc", to: "/phrasebook" },
 ];
 

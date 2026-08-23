@@ -57,7 +57,7 @@ function LessonPage() {
   const lesson = getLesson(moduleId, lessonId)!;
   const { t, lang } = useI18n();
   const navigate = useNavigate();
-  const { user, stats, invalidate } = useLessonProgress();
+  const { user, stats, bonusHearts, invalidate } = useLessonProgress();
 
   const exercises = useMemo(() => buildExercises(moduleId, lesson), [moduleId, lesson]);
   const [step, setStep] = useState(0);
@@ -101,6 +101,7 @@ function LessonPage() {
   const { entitlements } = useEntitlements();
   const unlimitedHearts = entitlements.unlimitedHearts;
   const hearts = user && !unlimitedHearts ? stats.hearts : MAX_HEARTS;
+  const bonus = user && !unlimitedHearts ? bonusHearts : 0;
   const isAi = lesson.kind === "ai";
 
   if (result) {
@@ -143,13 +144,14 @@ function LessonPage() {
   }
 
   const exercise = exercises[step]!;
-  const outOfHearts = Boolean(user) && !unlimitedHearts && hearts <= 0;
+  const outOfHearts = Boolean(user) && !unlimitedHearts && hearts + bonus <= 0;
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <LessonHud
         progress={step / exercises.length}
         hearts={hearts}
+        bonusHearts={bonus}
         unlimited={unlimitedHearts}
         onQuit={() => void navigate({ to: "/lecons/$moduleId", params: { moduleId } })}
       />

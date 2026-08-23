@@ -17,6 +17,7 @@ import {
   UsersPanel,
 } from "@/components/admin/AdminPanels";
 import { PromotionsPanel, SubscriptionsPanel } from "@/components/admin/PromotionsPanel";
+import { HeartsPanel } from "@/components/admin/HeartsPanel";
 
 export const Route = createFileRoute("/admin")({
   head: () => {
@@ -41,6 +42,7 @@ export const Route = createFileRoute("/admin")({
 const TABS = [
   { id: "dashboard", label: "dashboard" },
   { id: "users", label: "utilisateurs" },
+  { id: "hearts", label: "cœurs" },
   { id: "subscriptions", label: "abonnements" },
   { id: "promotions", label: "promotions" },
   { id: "downloads", label: "téléchargements" },
@@ -127,6 +129,7 @@ function AdminConsole() {
             </nav>
             {tab === "dashboard" && <DashboardPanel />}
             {tab === "users" && <UsersPanel />}
+            {tab === "hearts" && <HeartsPanel />}
             {tab === "subscriptions" && <SubscriptionsPanel />}
             {tab === "promotions" && <PromotionsPanel />}
             {tab === "downloads" && <DownloadsPanel />}

@@ -32,6 +32,51 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_heart_grants: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string | null
+          expires_at: string
+          hearts_remaining: number
+          id: string
+          kind: string
+          reason: string
+          revoked_at: string | null
+          starts_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by?: string | null
+          expires_at: string
+          hearts_remaining: number
+          id?: string
+          kind?: string
+          reason?: string
+          revoked_at?: string | null
+          starts_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string
+          hearts_remaining?: number
+          id?: string
+          kind?: string
+          reason?: string
+          revoked_at?: string | null
+          starts_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ads: {
         Row: {
           active: boolean
