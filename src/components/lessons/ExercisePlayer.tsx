@@ -171,11 +171,19 @@ export function ExercisePlayer({ exercise, onResult }: ExercisePlayerProps) {
           <p className="text-lg font-semibold text-foreground">{meaning}</p>
           <p className="mt-3 font-mono text-2xl tracking-[0.2em] text-primary">{exercise.masked}</p>
           <Input
+            ref={inputRef}
             className="mt-4"
             value={value}
             disabled={Boolean(verdict)}
             onChange={(e) => setValue(e.target.value)}
             placeholder={t("lessons.ex.placeholder")}
+          />
+          <SpecialCharKeys
+            chars={specialChars}
+            inputRef={inputRef}
+            value={value}
+            onChange={setValue}
+            disabled={Boolean(verdict)}
           />
         </div>
       )}
@@ -184,11 +192,19 @@ export function ExercisePlayer({ exercise, onResult }: ExercisePlayerProps) {
         <div className="mt-5">
           <p className="text-lg font-semibold text-foreground">{meaning}</p>
           <Input
+            ref={inputRef}
             className="mt-4"
             value={value}
             disabled={Boolean(verdict)}
             onChange={(e) => setValue(e.target.value)}
             placeholder={t("lessons.ex.placeholder")}
+          />
+          <SpecialCharKeys
+            chars={specialChars}
+            inputRef={inputRef}
+            value={value}
+            onChange={setValue}
+            disabled={Boolean(verdict)}
           />
         </div>
       )}
