@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SpeakButton } from "@/components/voice/SpeakButton";
@@ -6,6 +6,8 @@ import { MicButton } from "@/components/voice/MicButton";
 import { useSpeech } from "@/hooks/useSpeech";
 import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
 import { checkAnswer, similarity } from "@/lib/lessons/exercises";
+import { specialCharsFor } from "@/lib/lessons/special-chars";
+import { SpecialCharKeys } from "@/components/lessons/SpecialCharKeys";
 import type { Exercise } from "@/lib/lessons/types";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 
@@ -19,6 +21,7 @@ export function ExercisePlayer({ exercise, onResult }: ExercisePlayerProps) {
   const speech = useSpeech();
   const recorder = useVoiceRecorder({ language: "fon" });
   const [value, setValue] = useState("");
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const [tokens, setTokens] = useState<string[]>([]);
   const [verdict, setVerdict] = useState<null | { correct: boolean; expected: string }>(null);
 
@@ -38,6 +41,12 @@ export function ExercisePlayer({ exercise, onResult }: ExercisePlayerProps) {
       : lang === "en"
         ? exercise.item.en
         : exercise.item.fr;
+
+  const specialChars = useMemo(() => {
+    if (exercise.kind === "blank") return specialCharsFor(exercise.answer);
+    if (exercise.kind === "translate") return specialCharsFor(exercise.item.fon);
+    return [];
+  }, [exercise]);
 
   const promptId = `prompt-${exercise.id}`;
   const speakPrompt = speech.speak;
@@ -162,11 +171,19 @@ export function ExercisePlayer({ exercise, onResult }: ExercisePlayerProps) {
           <p className="text-lg font-semibold text-foreground">{meaning}</p>
           <p className="mt-3 font-mono text-2xl tracking-[0.2em] text-primary">{exercise.masked}</p>
           <Input
+            ref={inputRef}
             className="mt-4"
             value={value}
             disabled={Boolean(verdict)}
             onChange={(e) => setValue(e.target.value)}
             placeholder={t("lessons.ex.placeholder")}
+          />
+          <SpecialCharKeys
+            chars={specialChars}
+            inputRef={inputRef}
+            value={value}
+            onChange={setValue}
+            disabled={Boolean(verdict)}
           />
         </div>
       )}
@@ -175,11 +192,19 @@ export function ExercisePlayer({ exercise, onResult }: ExercisePlayerProps) {
         <div className="mt-5">
           <p className="text-lg font-semibold text-foreground">{meaning}</p>
           <Input
+            ref={inputRef}
             className="mt-4"
             value={value}
             disabled={Boolean(verdict)}
             onChange={(e) => setValue(e.target.value)}
             placeholder={t("lessons.ex.placeholder")}
+          />
+          <SpecialCharKeys
+            chars={specialChars}
+            inputRef={inputRef}
+            value={value}
+            onChange={setValue}
+            disabled={Boolean(verdict)}
           />
         </div>
       )}
