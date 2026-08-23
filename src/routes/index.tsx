@@ -100,7 +100,7 @@ function Index() {
           {t("home.eyebrow")}
         </p>
         <h1 className="mt-3 text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl">
-          Fon<span className="text-primary">Connect</span>
+          Fon<span className="text-primary">Connect</span> — {t("home.h1Tagline")}
         </h1>
         <p className="mt-4 text-base leading-relaxed text-muted-foreground">{t("home.intro")}</p>
 
