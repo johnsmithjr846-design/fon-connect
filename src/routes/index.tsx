@@ -12,13 +12,13 @@ export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "FonConnect — Traduire et apprendre le fon du Bénin" },
+      { title: "FonConnect" },
       {
         name: "description",
         content:
           "FonConnect supprime la barrière de la langue : traduction instantanée français ↔ fon, assistant IA, leçons et guide de conversation.",
       },
-      { property: "og:title", content: "FonConnect — Traduire et apprendre le fon du Bénin" },
+      { property: "og:title", content: "FonConnect" },
       {
         property: "og:description",
         content: "FonConnect supprime la barrière de la langue : traduction instantanée français ↔ fon, assistant IA, leçons et guide de conversation.",
