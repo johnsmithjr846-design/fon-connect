@@ -26,7 +26,34 @@ export const Route = createFileRoute("/")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/" }],
+    links: [{ rel: "canonical", href: "https://fonconnect.fr/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": "https://fonconnect.fr/#organization",
+              name: "FonConnect",
+              url: "https://fonconnect.fr/",
+              email: "fonconnect@outlook.fr",
+              description:
+                "FonConnect propose la traduction instantanée français ↔ fon, un assistant IA et des leçons pour apprendre le fon du Bénin.",
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://fonconnect.fr/#website",
+              name: "FonConnect",
+              url: "https://fonconnect.fr/",
+              inLanguage: "fr-FR",
+              publisher: { "@id": "https://fonconnect.fr/#organization" },
+            },
+          ],
+        }),
+      },
+    ],
   }),
 });
 
