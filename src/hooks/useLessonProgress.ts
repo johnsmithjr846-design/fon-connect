@@ -11,6 +11,7 @@ const EMPTY: ProgressSnapshot = {
   stats: DEFAULT_STATS,
   badges: [],
   chests: [],
+  bonusHearts: 0,
 };
 
 export function useLessonProgress() {
