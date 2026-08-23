@@ -195,17 +195,40 @@ export const completeLesson = createServerFn({ method: "POST" })
 
 export const loseHeart = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<{ hearts: number; unlimited: boolean }> => {
-    const { supabase, userId } = context;
-    const { computeEntitlements } = await import("@/lib/entitlements.server");
-    const entitlements = await computeEntitlements(supabase as never, userId);
-    if (entitlements.unlimitedHearts) return { hearts: MAX_HEARTS, unlimited: true };
+  .handler(
+    async ({
+      context,
+    }): Promise<{ hearts: number; bonusHearts: number; unlimited: boolean }> => {
+      const { supabase, userId } = context;
+      const { computeEntitlements } = await import("@/lib/entitlements.server");
+      const entitlements = await computeEntitlements(supabase as never, userId);
+      if (entitlements.unlimitedHearts)
+        return { hearts: MAX_HEARTS, bonusHearts: 0, unlimited: true };
 
-    const { data } = await supabase.from("user_stats").select("*").eq("user_id", userId).maybeSingle();
-    const prev = resetHeartsIfNewDay((data as UserStats | null) ?? DEFAULT_STATS);
-    const hearts = Math.max(0, prev.hearts - 1);
+      const { data } = await supabase
+        .from("user_stats")
+        .select("*")
+        .eq("user_id", userId)
+        .maybeSingle();
+      const prev = resetHeartsIfNewDay((data as UserStats | null) ?? DEFAULT_STATS);
+      const grants = await activeHeartGrants(supabase as never, userId);
+      let bonusHearts = grants.reduce((sum, g) => sum + g.hearts_remaining, 0);
+      let hearts = prev.hearts;
 
-    const { error } = await supabase.from("user_stats").upsert(
+      if (hearts > 0) {
+        hearts -= 1;
+      } else if (grants.length > 0) {
+        // Les cœurs admin ne sont consommés qu'après les cœurs quotidiens.
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const target = grants[0]!;
+        await supabaseAdmin
+          .from("admin_heart_grants")
+          .update({ hearts_remaining: target.hearts_remaining - 1 })
+          .eq("id", target.id);
+        bonusHearts = Math.max(0, bonusHearts - 1);
+      }
+
+      const { error } = await supabase.from("user_stats").upsert(
       {
         user_id: userId,
         xp_total: prev.xp_total,
