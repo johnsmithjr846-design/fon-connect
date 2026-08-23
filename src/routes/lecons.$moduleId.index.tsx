@@ -37,6 +37,29 @@ export const Route = createFileRoute("/lecons/$moduleId/")({
         { property: "og:type", content: "website" },
         { name: "twitter:card", content: "summary_large_image" },
       ],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Course",
+            name: loaderData.title,
+            description,
+            inLanguage: "fr-FR",
+            teaches: "Langue fon (Bénin)",
+            provider: {
+              "@type": "Organization",
+              name: "FonConnect",
+              url: "https://fonconnect.fr/",
+            },
+            hasCourseInstance: {
+              "@type": "CourseInstance",
+              courseMode: "online",
+              courseWorkload: `PT${Math.max(1, loaderData.count * 5)}M`,
+            },
+          }),
+        },
+      ],
     };
   },
   component: PathPage,
