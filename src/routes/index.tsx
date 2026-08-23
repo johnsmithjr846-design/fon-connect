@@ -26,7 +26,34 @@ export const Route = createFileRoute("/")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/" }],
+    links: [{ rel: "canonical", href: "https://fonconnect.fr/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": "https://fonconnect.fr/#organization",
+              name: "FonConnect",
+              url: "https://fonconnect.fr/",
+              email: "fonconnect@outlook.fr",
+              description:
+                "FonConnect propose la traduction instantanée français ↔ fon, un assistant IA et des leçons pour apprendre le fon du Bénin.",
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://fonconnect.fr/#website",
+              name: "FonConnect",
+              url: "https://fonconnect.fr/",
+              inLanguage: "fr-FR",
+              publisher: { "@id": "https://fonconnect.fr/#organization" },
+            },
+          ],
+        }),
+      },
+    ],
   }),
 });
 
@@ -73,7 +100,7 @@ function Index() {
           {t("home.eyebrow")}
         </p>
         <h1 className="mt-3 text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl">
-          Fon<span className="text-primary">Connect</span>
+          Fon<span className="text-primary">Connect</span> — {t("home.h1Tagline")}
         </h1>
         <p className="mt-4 text-base leading-relaxed text-muted-foreground">{t("home.intro")}</p>
 

@@ -26,7 +26,26 @@ export const Route = createFileRoute("/phrasebook")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/phrasebook" }],
+    links: [{ rel: "canonical", href: "https://fonconnect.fr/phrasebook" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: "Phrasebook fon — français et anglais",
+          url: "https://fonconnect.fr/phrasebook",
+          inLanguage: "fr-FR",
+          description:
+            "Guide de conversation fon avec traductions française et anglaise, classé par situation.",
+          hasPart: PHRASEBOOK.map((category) => ({
+            "@type": "ItemList",
+            name: category.title,
+            numberOfItems: category.entries.length,
+          })),
+        }),
+      },
+    ],
   }),
 });
 

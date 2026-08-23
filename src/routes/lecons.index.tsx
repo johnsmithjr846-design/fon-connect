@@ -27,7 +27,29 @@ export const Route = createFileRoute("/lecons/")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/lecons" }],
+    links: [{ rel: "canonical", href: "https://fonconnect.fr/lecons" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: "Leçons de fon — parcours progressifs",
+          url: "https://fonconnect.fr/lecons",
+          inLanguage: "fr-FR",
+          description:
+            "Parcours d'apprentissage du fon : leçons courtes, exercices, prononciation, XP et badges.",
+          hasPart: LEARNING_PATHS.map((path) => ({
+            "@type": "Course",
+            name: path.title,
+            url: `https://fonconnect.fr/lecons/${path.id}`,
+            description: `Parcours de fon « ${path.title} » : ${path.lessons.length} leçons.`,
+            inLanguage: "fr-FR",
+            provider: { "@type": "Organization", name: "FonConnect", url: "https://fonconnect.fr/" },
+          })),
+        }),
+      },
+    ],
   }),
 });
 
