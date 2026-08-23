@@ -144,13 +144,14 @@ function LessonPage() {
   }
 
   const exercise = exercises[step]!;
-  const outOfHearts = Boolean(user) && !unlimitedHearts && hearts <= 0;
+  const outOfHearts = Boolean(user) && !unlimitedHearts && hearts + bonus <= 0;
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <LessonHud
         progress={step / exercises.length}
         hearts={hearts}
+        bonusHearts={bonus}
         unlimited={unlimitedHearts}
         onQuit={() => void navigate({ to: "/lecons/$moduleId", params: { moduleId } })}
       />
