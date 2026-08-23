@@ -4,7 +4,7 @@ import { useLessonProgress } from "@/hooks/useLessonProgress";
 import { useEntitlements } from "@/hooks/useEntitlements";
 
 export function StatsBar() {
-  const { user, stats, level } = useLessonProgress();
+  const { user, stats, level, bonusHearts } = useLessonProgress();
   const { entitlements } = useEntitlements();
   const { t, lang } = useI18n();
   if (!user) return null;
