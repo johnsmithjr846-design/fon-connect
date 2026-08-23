@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SpeakButton } from "@/components/voice/SpeakButton";
@@ -6,6 +6,8 @@ import { MicButton } from "@/components/voice/MicButton";
 import { useSpeech } from "@/hooks/useSpeech";
 import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
 import { checkAnswer, similarity } from "@/lib/lessons/exercises";
+import { specialCharsFor } from "@/lib/lessons/special-chars";
+import { SpecialCharKeys } from "@/components/lessons/SpecialCharKeys";
 import type { Exercise } from "@/lib/lessons/types";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 
@@ -19,6 +21,7 @@ export function ExercisePlayer({ exercise, onResult }: ExercisePlayerProps) {
   const speech = useSpeech();
   const recorder = useVoiceRecorder({ language: "fon" });
   const [value, setValue] = useState("");
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const [tokens, setTokens] = useState<string[]>([]);
   const [verdict, setVerdict] = useState<null | { correct: boolean; expected: string }>(null);
 
