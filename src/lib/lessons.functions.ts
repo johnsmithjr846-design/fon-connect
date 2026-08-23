@@ -229,21 +229,22 @@ export const loseHeart = createServerFn({ method: "POST" })
       }
 
       const { error } = await supabase.from("user_stats").upsert(
-      {
-        user_id: userId,
-        xp_total: prev.xp_total,
-        current_streak: prev.current_streak,
-        best_streak: prev.best_streak,
-        last_active_day: prev.last_active_day,
-        hearts,
-        hearts_day: prev.hearts_day,
-        hearts_updated_at: new Date().toISOString(),
-      },
-      { onConflict: "user_id" },
-    );
-    if (error) throw new Error(error.message);
-    return { hearts, unlimited: false };
-  });
+        {
+          user_id: userId,
+          xp_total: prev.xp_total,
+          current_streak: prev.current_streak,
+          best_streak: prev.best_streak,
+          last_active_day: prev.last_active_day,
+          hearts,
+          hearts_day: prev.hearts_day,
+          hearts_updated_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id" },
+      );
+      if (error) throw new Error(error.message);
+      return { hearts, bonusHearts, unlimited: false };
+    },
+  );
 
 const ChestSchema = z.object({ chestId: z.string().min(1).max(64) });
 
