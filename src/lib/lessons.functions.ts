@@ -19,7 +19,29 @@ export type ProgressSnapshot = {
   stats: UserStats;
   badges: string[];
   chests: string[];
+  /** Cœurs bonus attribués par un administrateur (hors 4 cœurs quotidiens). */
+  bonusHearts: number;
 };
+
+type ActiveGrant = { id: string; hearts_remaining: number };
+
+/** Attributions admin actives (démarrées, non expirées, non révoquées), les plus proches de l'expiration d'abord. */
+async function activeHeartGrants(
+  sb: { from: (t: string) => any },
+  userId: string,
+): Promise<ActiveGrant[]> {
+  const now = new Date().toISOString();
+  const { data } = await sb
+    .from("admin_heart_grants")
+    .select("id, hearts_remaining")
+    .eq("user_id", userId)
+    .is("revoked_at", null)
+    .gt("hearts_remaining", 0)
+    .lte("starts_at", now)
+    .gt("expires_at", now)
+    .order("expires_at", { ascending: true });
+  return (data ?? []) as ActiveGrant[];
+}
 
 export const getLessonProgress = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
