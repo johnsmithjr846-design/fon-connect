@@ -42,6 +42,12 @@ export function ExercisePlayer({ exercise, onResult }: ExercisePlayerProps) {
         ? exercise.item.en
         : exercise.item.fr;
 
+  const specialChars = useMemo(() => {
+    if (exercise.kind === "blank") return specialCharsFor(exercise.answer);
+    if (exercise.kind === "translate") return specialCharsFor(exercise.item.fon);
+    return [];
+  }, [exercise]);
+
   const promptId = `prompt-${exercise.id}`;
   const speakPrompt = speech.speak;
   const stopSpeech = speech.stop;
