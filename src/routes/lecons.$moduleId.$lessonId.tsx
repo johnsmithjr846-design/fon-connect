@@ -101,6 +101,7 @@ function LessonPage() {
   const { entitlements } = useEntitlements();
   const unlimitedHearts = entitlements.unlimitedHearts;
   const hearts = user && !unlimitedHearts ? stats.hearts : MAX_HEARTS;
+  const bonus = user && !unlimitedHearts ? bonusHearts : 0;
   const isAi = lesson.kind === "ai";
 
   if (result) {
