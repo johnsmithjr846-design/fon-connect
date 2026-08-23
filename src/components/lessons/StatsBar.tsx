@@ -20,8 +20,21 @@ export function StatsBar() {
       </span>
       <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground">
         <Heart className="size-3.5" aria-hidden />
-        {entitlements.unlimitedHearts ? <InfinityIcon className="size-3.5" aria-hidden /> : stats.hearts}
+        {entitlements.unlimitedHearts ? (
+          <InfinityIcon className="size-3.5" aria-hidden />
+        ) : (
+          stats.hearts
+        )}
       </span>
+      {!entitlements.unlimitedHearts && bonusHearts > 0 && (
+        <span
+          className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary"
+          title={lang === "en" ? "Bonus hearts granted by the team" : "Cœurs bonus offerts par l'équipe"}
+        >
+          <Heart className="size-3.5" aria-hidden />+{bonusHearts}{" "}
+          {lang === "en" ? "bonus" : "bonus"}
+        </span>
+      )}
       <span className="rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
         {t("lessons.level", {
           level: level.level,
