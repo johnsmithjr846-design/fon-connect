@@ -65,12 +65,14 @@ export const getLessonProgress = createServerFn({ method: "GET" })
     if (quizzes.error) throw new Error(quizzes.error.message);
 
     const raw = (stats.data as UserStats | null) ?? DEFAULT_STATS;
+    const grants = await activeHeartGrants(supabase as never, userId);
     return {
       lessons: lessons.data ?? [],
       quizzes: quizzes.data ?? [],
       stats: resetHeartsIfNewDay(raw),
       badges: (badges.data ?? []).map((b) => b.badge_id),
       chests: (chests.data ?? []).map((c) => c.chest_id),
+      bonusHearts: grants.reduce((sum, g) => sum + g.hearts_remaining, 0),
     };
   });
 
