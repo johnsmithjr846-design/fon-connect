@@ -12,7 +12,8 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
-import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
+import { LanguageProvider } from "@/lib/iyn/LanguageProvider";
+import { useAnalytics } from "@/lib/analytics";
 
 function NotFoundComponent() {
   return (
@@ -119,8 +120,6 @@ function RootShell({ children }: { children: ReactNode }) {
     </html>
   );
 }
-
-import { useAnalytics } from "@/lib/analytics";
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
