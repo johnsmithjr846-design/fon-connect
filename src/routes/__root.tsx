@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
+import { useAnalytics } from "@/lib/analytics";
 
 function NotFoundComponent() {
   return (
@@ -123,6 +124,8 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
+
+  useAnalytics();
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
