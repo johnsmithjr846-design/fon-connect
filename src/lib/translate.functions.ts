@@ -2,6 +2,32 @@ import { createServerFn } from "@tanstack/react-start";
 import { generateText, NoObjectGeneratedError, Output } from "ai";
 import { z } from "zod";
 import { LANG_NATIVE, type Lang } from "@/lib/languages";
+import { PHRASEBOOK } from "@/lib/phrasebook-data";
+
+const normalize = (s: string) =>
+  s
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+function lookupPhrasebook(text: string, source: Lang, target: Lang): TranslationResult | null {
+  if (source !== "fon" && target !== "fon") return null;
+  const needle = normalize(text);
+  for (const category of PHRASEBOOK) {
+    for (const entry of category.entries) {
+      const sourceText = source === "fon" ? entry.fon : source === "fr" ? entry.fr : entry.en;
+      if (normalize(sourceText) === needle) {
+        return {
+          translation: target === "fon" ? entry.fon : target === "fr" ? entry.fr : entry.en,
+          phonetic: target === "fon" ? (entry.phonetic ?? "") : "",
+          notes: [],
+        };
+      }
+    }
+  }
+  return null;
+}
 
 export type { Lang };
 
@@ -26,6 +52,9 @@ const OutputSchema = z.object({
 export const translateText = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => InputSchema.parse(input))
   .handler(async ({ data }): Promise<TranslationResult> => {
+    const cached = lookupPhrasebook(data.text, data.source, data.target);
+    if (cached) return cached;
+
     const key = process.env["LOVABLE_API_KEY"];
     if (!key) throw new Error("Le service de traduction n'est pas configuré.");
 
