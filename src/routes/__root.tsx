@@ -120,9 +120,13 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+import { useAnalytics } from "@/lib/analytics";
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
+
+  useAnalytics();
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
