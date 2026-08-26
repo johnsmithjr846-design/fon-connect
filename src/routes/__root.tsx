@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { initSentry, captureClientError } from "../lib/sentry-client";
 import { supabase } from "@/integrations/supabase/client";
 import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
 import { useAnalytics } from "@/lib/analytics";
@@ -126,6 +127,20 @@ function RootComponent() {
   const router = useRouter();
 
   useAnalytics();
+
+  useEffect(() => {
+    initSentry();
+    const onError = (event: ErrorEvent) =>
+      captureClientError(event.error ?? event.message, { source: "window.onerror" });
+    const onRejection = (event: PromiseRejectionEvent) =>
+      captureClientError(event.reason, { source: "unhandledrejection" });
+    window.addEventListener("error", onError);
+    window.addEventListener("unhandledrejection", onRejection);
+    return () => {
+      window.removeEventListener("error", onError);
+      window.removeEventListener("unhandledrejection", onRejection);
+    };
+  }, []);
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {

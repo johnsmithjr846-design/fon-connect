@@ -49,6 +49,8 @@ function isErrorLike(value: unknown): value is Error {
   return value instanceof Error;
 }
 
+import { captureServerException } from "./sentry-server";
+
 // Wrap console.error so errors logged by any layer — including h3's internal
 // unhandled-error logging, which this file cannot hook directly — are both
 // recorded for consumeLastCapturedError and expanded before serialization.
@@ -57,6 +59,7 @@ console.error = (...args: unknown[]) => {
   const expanded = args.map((arg) => {
     if (!isErrorLike(arg)) return arg;
     record(arg);
+    captureServerException(arg);
     return describeError(arg);
   });
   originalConsoleError(...expanded);
