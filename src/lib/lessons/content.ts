@@ -190,7 +190,7 @@ export const LEARNING_PATHS: LearningPath[] = [
         title: "Les nombres 1–10",
         minutes: 7,
         kind: "vocab",
-        vocab: [{"fon": "Ɖokpo", "phonetic": "dok-PO", "fr": "Un", "en": "One"}, {"fon": "Wè", "phonetic": "we", "fr": "Deux", "en": "Two"}, {"fon": "Atɔn", "phonetic": "a-TON", "fr": "Trois", "en": "Three"}, {"fon": "Enɛ", "phonetic": "e-NE", "fr": "Quatre", "en": "Four"}, {"fon": "Atɔ́n", "phonetic": "a-TON (haut)", "fr": "Cinq", "en": "Five"}, {"fon": "Aɖɛ", "phonetic": "a-DE", "fr": "Six", "en": "Six"}, {"fon": "Adú", "phonetic": "a-DU", "fr": "Sept", "en": "Seven"}, {"fon": "Enɛ́n", "phonetic": "e-NEN", "fr": "Huit", "en": "Eight"}, {"fon": "Asɔn", "phonetic": "a-SON", "fr": "Neuf", "en": "Nine"}, {"fon": "Wǒ", "phonetic": "wo", "fr": "Dix", "en": "Ten"}],
+        vocab: [{"fon": "Ðokpó", "phonetic": "do-kpo", "fr": "Un", "en": "One"}, {"fon": "Wè", "phonetic": "wè", "fr": "Deux", "en": "Two"}, {"fon": "Atɔn", "phonetic": "a-ton", "fr": "Trois", "en": "Three"}, {"fon": "Ɛnɛ", "phonetic": "è-nè", "fr": "Quatre", "en": "Four"}, {"fon": "Atɔɔn", "phonetic": "a-to-on", "fr": "Cinq", "en": "Five"}, {"fon": "Ayizɛ́n", "phonetic": "a-yi-zèn", "fr": "Six", "en": "Six"}, {"fon": "Tɛnwe", "phonetic": "tèn-wé", "fr": "Sept", "en": "Seven"}, {"fon": "Tantɔn", "phonetic": "tan-ton", "fr": "Huit", "en": "Eight"}, {"fon": "Tɛnnɛ", "phonetic": "tèn-nè", "fr": "Neuf", "en": "Nine"}, {"fon": "Wǒ", "phonetic": "wo", "fr": "Dix", "en": "Ten"}],
         culture: "Le système numérique fon est décimal. Au-delà de 10, on combine : *Wǒ wè* = 20, *Wǒ ɔkɔtɔn* = 1000. Dans les marchés traditionnels, le marchandage se fait souvent en comptant sur les doigts avec des gestes spécifiques.",
       },
       {
