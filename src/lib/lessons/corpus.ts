@@ -438,7 +438,7 @@ export const TRILINGUAL_CORPUS: CorpusEntry[] = [
     "en": "Strategy"
   },
   {
-    "fon": "Ɖokpo",
+    "fon": "Ðokpó",
     "fr": "Un",
     "en": "One"
   },
@@ -453,32 +453,32 @@ export const TRILINGUAL_CORPUS: CorpusEntry[] = [
     "en": "Three"
   },
   {
-    "fon": "Enɛ",
+    "fon": "Ɛnɛ",
     "fr": "Quatre",
     "en": "Four"
   },
   {
-    "fon": "Atɔ́n",
+    "fon": "Atɔɔn",
     "fr": "Cinq",
     "en": "Five"
   },
   {
-    "fon": "Aɖɛ",
+    "fon": "Ayizɛ́n",
     "fr": "Six",
     "en": "Six"
   },
   {
-    "fon": "Adú",
+    "fon": "Tɛnwe",
     "fr": "Sept",
     "en": "Seven"
   },
   {
-    "fon": "Enɛ́n",
+    "fon": "Tantɔn",
     "fr": "Huit",
     "en": "Eight"
   },
   {
-    "fon": "Asɔn",
+    "fon": "Tɛnnɛ",
     "fr": "Neuf",
     "en": "Nine"
   },
