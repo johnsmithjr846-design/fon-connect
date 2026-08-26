@@ -80,7 +80,7 @@ const createHandler = () => createAuthEmailHandler({
 export const Route = createFileRoute("/lovable/email/auth/webhook")({
   server: {
     handlers: {
-      POST: ({ request }) => handler(request),
+      POST: ({ request }) => createHandler()(request),
     },
   },
 })
