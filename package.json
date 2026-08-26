@@ -14,6 +14,10 @@
   "dependencies": {
     "@ai-sdk/openai-compatible": "^3.0.20",
     "@ai-sdk/react": "^4.0.51",
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/cli": "^8.5.0",
+    "@capacitor/core": "^8.5.0",
+    "@capacitor/ios": "^8.5.0",
     "@hookform/resolvers": "^5.2.2",
     "@lovable.dev/cloud-auth-js": "^1.1.2",
     "@lovable.dev/email-js": "0.1.0",

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">FonConnect</string>
+    <string name="title_activity_main">FonConnect</string>
+    <string name="package_name">fr.fonconnect.app</string>
+    <string name="custom_url_scheme">fr.fonconnect.app</string>
+</resources>
