@@ -49,7 +49,7 @@ ${turns || "(aucune)"}`;
 
         const gateway = createLovableAiGatewayProvider(key, getLovableAiGatewayRunId(request));
         const result = streamText({
-          model: gateway("google/gemini-3.6-flash"),
+          model: gateway(DEFAULT_LLM_MODEL),
           system,
           messages: await convertToModelMessages(body.messages as UIMessage[]),
         });
