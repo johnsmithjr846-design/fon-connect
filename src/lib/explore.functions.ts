@@ -107,13 +107,12 @@ export const askExplorer = createServerFn({ method: "POST" })
       if (!key) return { answer: "", places: [], error: "Assistant indisponible." };
 
       const { generateText, Output } = await import("ai");
-      const { createLovableAiGatewayProvider } = await import("@/lib/ai-gateway.server");
+      const { createLovableAiGatewayProvider, DEFAULT_LLM_MODEL } = await import(
+        "@/lib/ai-gateway.server"
+      );
       const { searchPlacesByText } = await import("@/lib/explore.server");
 
       try {
-        const { createLovableAiGatewayProvider, DEFAULT_LLM_MODEL } = await import(
-          "@/lib/ai-gateway.server"
-        );
         const gateway = createLovableAiGatewayProvider(key);
         const { output } = await generateText({
           model: gateway(DEFAULT_LLM_MODEL),
