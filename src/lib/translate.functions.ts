@@ -58,11 +58,11 @@ export const translateText = createServerFn({ method: "POST" })
     const key = process.env["LOVABLE_API_KEY"];
     if (!key) throw new Error("Le service de traduction n'est pas configuré.");
 
-    const { createLovableAiGatewayProvider, FON_SYSTEM_CONTEXT } = await import(
+    const { createLovableAiGatewayProvider, DEFAULT_LLM_MODEL, FON_SYSTEM_CONTEXT } = await import(
       "./ai-gateway.server"
     );
     const gateway = createLovableAiGatewayProvider(key);
-    const model = gateway("google/gemini-3.6-flash");
+    const model = gateway(DEFAULT_LLM_MODEL);
 
     const from = LANG_NATIVE[data.source];
     const to = LANG_NATIVE[data.target];

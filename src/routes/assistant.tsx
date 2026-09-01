@@ -190,7 +190,9 @@ function AssistantPage() {
 
           {error && (
             <p className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-              La discussion a échoué. Vérifiez votre connexion et réessayez.
+              {error.message?.includes("402") || error.message?.includes("credits")
+                ? "Crédits IA épuisés. Rechargez votre espace Lovable pour continuer."
+                : error.message || "La discussion a échoué. Vérifiez votre connexion et réessayez."}
             </p>
           )}
           {(recorder.error || speech.error) && (

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import {
   createLovableAiGatewayProvider,
+  DEFAULT_LLM_MODEL,
   FON_SYSTEM_CONTEXT,
   getLovableAiGatewayRunId,
 } from "@/lib/ai-gateway.server";
@@ -26,6 +27,25 @@ export const Route = createFileRoute("/api/lesson-chat")({
         const key = process.env["LOVABLE_API_KEY"];
         if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
 
+        const creditCheck = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${key}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: DEFAULT_LLM_MODEL,
+            messages: [{ role: "user", content: "." }],
+            max_tokens: 1,
+          }),
+        });
+        if (creditCheck.status === 402) {
+          return new Response(
+            "Crédits IA épuisés. Rechargez votre espace Lovable pour continuer.",
+            { status: 402 },
+          );
+        }
+
         const vocab = lesson.vocab
           .map((v) => `- ${v.fon} = ${v.fr} / ${v.en}`)
           .join("\n");
@@ -48,7 +68,7 @@ ${turns || "(aucune)"}`;
 
         const gateway = createLovableAiGatewayProvider(key, getLovableAiGatewayRunId(request));
         const result = streamText({
-          model: gateway("google/gemini-3.6-flash"),
+          model: gateway(DEFAULT_LLM_MODEL),
           system,
           messages: await convertToModelMessages(body.messages as UIMessage[]),
         });

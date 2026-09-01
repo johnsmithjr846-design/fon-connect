@@ -107,13 +107,15 @@ export const askExplorer = createServerFn({ method: "POST" })
       if (!key) return { answer: "", places: [], error: "Assistant indisponible." };
 
       const { generateText, Output } = await import("ai");
-      const { createLovableAiGatewayProvider } = await import("@/lib/ai-gateway.server");
+      const { createLovableAiGatewayProvider, DEFAULT_LLM_MODEL } = await import(
+        "@/lib/ai-gateway.server"
+      );
       const { searchPlacesByText } = await import("@/lib/explore.server");
 
       try {
         const gateway = createLovableAiGatewayProvider(key);
         const { output } = await generateText({
-          model: gateway("google/gemini-3.6-flash"),
+          model: gateway(DEFAULT_LLM_MODEL),
           system:
             "Tu es le guide touristique de FonConnect au Bénin. À partir de la demande, produis un court conseil (2-3 phrases) et 1 à 4 requêtes de recherche cartographique précises (nom de lieu ou type + ville) à exécuter au Bénin. N'invente jamais d'adresse, d'horaire ni de prix : les fiches viendront de la carte. " +
             (data.lang === "en" ? "Réponds en anglais." : "Réponds en français."),

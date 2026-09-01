@@ -2,7 +2,11 @@ import { defineTool, ToolError } from "@lovable.dev/mcp-js";
 import { generateText, NoObjectGeneratedError, Output } from "ai";
 import { z } from "zod";
 import { LANG_NATIVE } from "@/lib/languages";
-import { createLovableAiGatewayProvider, FON_SYSTEM_CONTEXT } from "@/lib/ai-gateway.server";
+import {
+  createLovableAiGatewayProvider,
+  DEFAULT_LLM_MODEL,
+  FON_SYSTEM_CONTEXT,
+} from "@/lib/ai-gateway.server";
 
 const OutputSchema = z.object({
   translation: z.string(),
@@ -42,7 +46,7 @@ Texte à traduire :
 
     try {
       const { output } = await generateText({
-        model: gateway("google/gemini-3.6-flash"),
+        model: gateway(DEFAULT_LLM_MODEL),
         output: Output.object({ schema: OutputSchema }),
         prompt,
       });

@@ -1,5 +1,7 @@
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
+export const DEFAULT_LLM_MODEL = "google/gemini-3.6-flash";
+
 const LOVABLE_AIG_RUN_ID_HEADER = "X-Lovable-AIG-Run-ID";
 
 export function createLovableAiGatewayRunIdFetch(initialRunId?: string) {
@@ -111,3 +113,65 @@ Règles linguistiques :
 - Privilégie les formulations réellement utilisées au quotidien au Bénin (marché, taxi-moto « zémidjan », santé, hôtel, urgence) plutôt qu'une traduction mot à mot.
 - Si une expression n'a pas d'équivalent direct, propose la tournure la plus proche et explique-le.
 - Ne prétends jamais être Google Traduction : tu es l'IA FonConnect.`;
+
+export function mapStreamErrorMessage(
+  response: Response,
+  errorMessage: string,
+): Response {
+  const body = response.body;
+  if (!body) return response;
+
+  const decoder = new TextDecoder();
+  const encoder = new TextEncoder();
+  let buffer = "";
+  let done = false;
+
+  const stream = new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      const reader = body.getReader();
+      try {
+        while (true) {
+          const { value, done: readerDone } = await reader.read();
+          if (readerDone) {
+            if (buffer) controller.enqueue(encoder.encode(buffer));
+            controller.close();
+            break;
+          }
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() ?? "";
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (trimmed.startsWith("data:")) {
+              const payload = trimmed.slice(5).trim();
+              if (payload) {
+                try {
+                  const parsed = JSON.parse(payload);
+                  if (parsed.type === "error") {
+                    controller.enqueue(
+                      encoder.encode(
+                        `data: ${JSON.stringify({ ...parsed, errorText: errorMessage })}\n\n`,
+                      ),
+                    );
+                    continue;
+                  }
+                } catch {
+                  // keep original line
+                }
+              }
+            }
+            controller.enqueue(encoder.encode(line + "\n"));
+          }
+        }
+      } finally {
+        reader.releaseLock();
+      }
+    },
+  });
+
+  return new Response(stream, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: response.headers,
+  });
+}
