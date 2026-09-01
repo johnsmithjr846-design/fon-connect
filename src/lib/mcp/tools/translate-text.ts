@@ -46,7 +46,7 @@ Texte à traduire :
 
     try {
       const { output } = await generateText({
-        model: gateway("google/gemini-3.6-flash"),
+        model: gateway(DEFAULT_LLM_MODEL),
         output: Output.object({ schema: OutputSchema }),
         prompt,
       });
