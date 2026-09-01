@@ -38,17 +38,8 @@ export const Route = createFileRoute("/api/chat")({
           messages: await convertToModelMessages(messages as UIMessage[]),
         });
 
-        return result.toDataStreamResponse({
-          getErrorMessage: (error) => {
-            const text = error instanceof Error ? error.message : String(error);
-            if (text.includes("402") || text.includes("Not enough credits")) {
-              return "Crédits IA épuisés. Rechargez votre espace Lovable pour continuer.";
-            }
-            if (text.includes("429")) {
-              return "Trop de demandes en peu de temps. Réessayez dans un instant.";
-            }
-            return "La discussion a échoué. Vérifiez votre connexion et réessayez.";
-          },
+        return result.toUIMessageStreamResponse({
+          originalMessages: messages as UIMessage[],
         });
       },
     },
