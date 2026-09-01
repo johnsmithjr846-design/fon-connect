@@ -1,5 +1,7 @@
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
+export const DEFAULT_LLM_MODEL = "google/gemini-3.6-flash";
+
 const LOVABLE_AIG_RUN_ID_HEADER = "X-Lovable-AIG-Run-ID";
 
 export function createLovableAiGatewayRunIdFetch(initialRunId?: string) {
