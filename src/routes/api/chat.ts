@@ -33,13 +33,22 @@ export const Route = createFileRoute("/api/chat")({
 
         const gateway = createLovableAiGatewayProvider(key, getLovableAiGatewayRunId(request));
         const result = streamText({
-          model: gateway("google/gemini-3.6-flash"),
+          model: gateway(DEFAULT_LLM_MODEL),
           system: ASSISTANT_PROMPT,
           messages: await convertToModelMessages(messages as UIMessage[]),
         });
 
-        return result.toUIMessageStreamResponse({
-          originalMessages: messages as UIMessage[],
+        return result.toDataStreamResponse({
+          getErrorMessage: (error) => {
+            const text = error instanceof Error ? error.message : String(error);
+            if (text.includes("402") || text.includes("Not enough credits")) {
+              return "Crédits IA épuisés. Rechargez votre espace Lovable pour continuer.";
+            }
+            if (text.includes("429")) {
+              return "Trop de demandes en peu de temps. Réessayez dans un instant.";
+            }
+            return "La discussion a échoué. Vérifiez votre connexion et réessayez.";
+          },
         });
       },
     },
