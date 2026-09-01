@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import {
   createLovableAiGatewayProvider,
+  DEFAULT_LLM_MODEL,
   FON_SYSTEM_CONTEXT,
   getLovableAiGatewayRunId,
 } from "@/lib/ai-gateway.server";
