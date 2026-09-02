@@ -103,13 +103,20 @@ Texte à traduire :
         const raw = (error.text ?? "").trim();
         if (raw) return { translation: raw, phonetic: "", notes: [] };
       }
+      const status =
+        typeof (error as { statusCode?: number })?.statusCode === "number"
+          ? (error as { statusCode?: number }).statusCode
+          : undefined;
       const message = error instanceof Error ? error.message : String(error);
-      if (message.includes("429")) {
+      const haystack = `${status ?? ""} ${message}`;
+      if (haystack.includes("429") || /rate limit/i.test(haystack)) {
         throw new Error("Trop de demandes en peu de temps. Réessayez dans un instant.");
       }
-      if (message.includes("402")) {
-        throw new Error("Crédits IA épuisés. Rechargez votre espace Lovable pour continuer.");
+      if (haystack.includes("402") || /credit/i.test(haystack) || /payment_required/i.test(haystack)) {
+        throw new Error(
+          "Crédits IA épuisés. Rechargez votre espace Lovable pour réactiver la traduction IA.",
+        );
       }
-      throw new Error("La traduction a échoué. Réessayez.");
+      throw new Error(`La traduction a échoué : ${message}`);
     }
   });
