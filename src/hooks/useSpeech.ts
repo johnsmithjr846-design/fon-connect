@@ -18,12 +18,19 @@ function chunkText(text: string, maxWords = 250): string[] {
   return chunks.filter(Boolean);
 }
 
+const BROWSER_VOICE_LANG: Record<SpeakLang, string> = {
+  fr: "fr-FR",
+  en: "en-US",
+  fon: "fr-FR",
+};
+
 export function useSpeech() {
   const [speakingId, setSpeakingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const ctxRef = useRef<AudioContext | null>(null);
   const sourcesRef = useRef<AudioBufferSourceNode[]>([]);
+
 
   const stop = useCallback(() => {
     abortRef.current?.abort();
