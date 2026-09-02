@@ -18,12 +18,19 @@ function chunkText(text: string, maxWords = 250): string[] {
   return chunks.filter(Boolean);
 }
 
+const BROWSER_VOICE_LANG: Record<SpeakLang, string> = {
+  fr: "fr-FR",
+  en: "en-US",
+  fon: "fr-FR",
+};
+
 export function useSpeech() {
   const [speakingId, setSpeakingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const ctxRef = useRef<AudioContext | null>(null);
   const sourcesRef = useRef<AudioBufferSourceNode[]>([]);
+
 
   const stop = useCallback(() => {
     abortRef.current?.abort();
@@ -38,8 +45,12 @@ export function useSpeech() {
     sourcesRef.current = [];
     void ctxRef.current?.close().catch(() => {});
     ctxRef.current = null;
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
     setSpeakingId(null);
   }, []);
+
 
   const speak = useCallback(
     async (id: string, text: string, lang: SpeakLang = "fr") => {
@@ -128,9 +139,26 @@ export function useSpeech() {
         );
       } catch (err) {
         if (controller.signal.aborted) return;
+        void ctxRef.current?.close().catch(() => {});
+        ctxRef.current = null;
+        if (typeof window !== "undefined" && "speechSynthesis" in window) {
+          try {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(value);
+            utterance.lang = BROWSER_VOICE_LANG[lang];
+            utterance.rate = lang === "fon" ? 0.9 : 1;
+            utterance.onend = () => setSpeakingId((c) => (c === id ? null : c));
+            utterance.onerror = () => setSpeakingId((c) => (c === id ? null : c));
+            window.speechSynthesis.speak(utterance);
+            return;
+          } catch {
+            /* fallback unavailable */
+          }
+        }
         setError(err instanceof Error ? err.message : "La lecture audio a échoué.");
         setSpeakingId(null);
       }
+
     },
     [stop],
   );
