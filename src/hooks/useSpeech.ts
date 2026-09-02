@@ -45,8 +45,12 @@ export function useSpeech() {
     sourcesRef.current = [];
     void ctxRef.current?.close().catch(() => {});
     ctxRef.current = null;
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
     setSpeakingId(null);
   }, []);
+
 
   const speak = useCallback(
     async (id: string, text: string, lang: SpeakLang = "fr") => {
