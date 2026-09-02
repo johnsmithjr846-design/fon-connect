@@ -139,9 +139,26 @@ export function useSpeech() {
         );
       } catch (err) {
         if (controller.signal.aborted) return;
+        void ctxRef.current?.close().catch(() => {});
+        ctxRef.current = null;
+        if (typeof window !== "undefined" && "speechSynthesis" in window) {
+          try {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(value);
+            utterance.lang = BROWSER_VOICE_LANG[lang];
+            utterance.rate = lang === "fon" ? 0.9 : 1;
+            utterance.onend = () => setSpeakingId((c) => (c === id ? null : c));
+            utterance.onerror = () => setSpeakingId((c) => (c === id ? null : c));
+            window.speechSynthesis.speak(utterance);
+            return;
+          } catch {
+            /* fallback unavailable */
+          }
+        }
         setError(err instanceof Error ? err.message : "La lecture audio a échoué.");
         setSpeakingId(null);
       }
+
     },
     [stop],
   );
