@@ -6,7 +6,7 @@ import { ArrowLeftRight, Copy, Check, Loader2 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { MicButton } from "@/components/voice/MicButton";
 import { SpeakButton } from "@/components/voice/SpeakButton";
-import { useSpeech } from "@/hooks/useSpeech";
+import { isNaturalVoiceEnabled, setNaturalVoiceEnabled, useSpeech } from "@/hooks/useSpeech";
 import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -37,6 +37,14 @@ export const Route = createFileRoute("/traducteur")({
 });
 
 const MAX = 1500;
+
+const PROVIDER_LABEL: Record<string, string> = {
+  local: "Corpus FonConnect (hors ligne)",
+  google: "Google Traduction",
+  openai: "IA OpenAI",
+  gemini: "IA Gemini",
+  lovable: "IA FonConnect",
+};
 
 function LangSelect({
   value,
@@ -70,6 +78,7 @@ function TraducteurPage() {
   const [target, setTarget] = useState<Lang>("fon");
   const [text, setText] = useState("");
   const [copied, setCopied] = useState(false);
+  const [naturalVoice, setNaturalVoice] = useState(() => isNaturalVoiceEnabled());
 
   const translate = useServerFn(translateText);
   const mutation = useMutation({
@@ -251,6 +260,12 @@ function TraducteurPage() {
               </p>
             )}
 
+            {mutation.data.provider && PROVIDER_LABEL[mutation.data.provider] && (
+              <p className="mt-3 text-xs text-muted-foreground">
+                Source : {PROVIDER_LABEL[mutation.data.provider]}
+              </p>
+            )}
+
             {mutation.data.notes.length > 0 && (
               <ul className="mt-4 space-y-1.5 border-t border-border pt-4 text-sm text-muted-foreground">
                 {mutation.data.notes.map((note) => (
@@ -260,6 +275,18 @@ function TraducteurPage() {
             )}
           </section>
         )}
+        <label className="mt-10 flex cursor-pointer items-center gap-2 text-xs text-muted-foreground">
+          <input
+            type="checkbox"
+            checked={naturalVoice}
+            onChange={(e) => {
+              setNaturalVoice(e.target.checked);
+              setNaturalVoiceEnabled(e.target.checked);
+            }}
+            className="size-3.5 accent-primary"
+          />
+          Voix naturelle (qualité supérieure, utilise le service vocal du site)
+        </label>
       </main>
     </div>
   );

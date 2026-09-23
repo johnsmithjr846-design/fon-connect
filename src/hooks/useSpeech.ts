@@ -2,6 +2,26 @@ import { useCallback, useRef, useState } from "react";
 
 type SpeakLang = "fr" | "en" | "fon";
 
+const NATURAL_VOICE_KEY = "fonconnect_natural_voice";
+
+export function isNaturalVoiceEnabled(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return window.localStorage.getItem(NATURAL_VOICE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function setNaturalVoiceEnabled(enabled: boolean) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(NATURAL_VOICE_KEY, enabled ? "1" : "0");
+  } catch {
+    /* storage unavailable */
+  }
+}
+
 function chunkText(text: string, maxWords = 250): string[] {
   const sentences = text.match(/[^.!?\n]+[.!?\n]*\s*/g) ?? [text];
   const chunks: string[] = [];
@@ -31,7 +51,6 @@ export function useSpeech() {
   const ctxRef = useRef<AudioContext | null>(null);
   const sourcesRef = useRef<AudioBufferSourceNode[]>([]);
 
-
   const stop = useCallback(() => {
     abortRef.current?.abort();
     abortRef.current = null;
@@ -51,16 +70,23 @@ export function useSpeech() {
     setSpeakingId(null);
   }, []);
 
+  const speakWithBrowserVoice = useCallback((id: string, value: string, lang: SpeakLang) => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+      setError("La lecture audio n'est pas disponible sur cet appareil.");
+      setSpeakingId(null);
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(value);
+    utterance.lang = BROWSER_VOICE_LANG[lang];
+    utterance.rate = lang === "fon" ? 0.85 : 1;
+    utterance.onend = () => setSpeakingId((c) => (c === id ? null : c));
+    utterance.onerror = () => setSpeakingId((c) => (c === id ? null : c));
+    window.speechSynthesis.speak(utterance);
+  }, []);
 
-  const speak = useCallback(
-    async (id: string, text: string, lang: SpeakLang = "fr") => {
-      stop();
-      const value = text.trim();
-      if (!value) return;
-
-      setError(null);
-      setSpeakingId(id);
-
+  const speakWithNaturalVoice = useCallback(
+    async (id: string, value: string, lang: SpeakLang) => {
       const controller = new AbortController();
       abortRef.current = controller;
       const ctx = new AudioContext({ sampleRate: 24000 });
@@ -141,26 +167,29 @@ export function useSpeech() {
         if (controller.signal.aborted) return;
         void ctxRef.current?.close().catch(() => {});
         ctxRef.current = null;
-        if (typeof window !== "undefined" && "speechSynthesis" in window) {
-          try {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(value);
-            utterance.lang = BROWSER_VOICE_LANG[lang];
-            utterance.rate = lang === "fon" ? 0.9 : 1;
-            utterance.onend = () => setSpeakingId((c) => (c === id ? null : c));
-            utterance.onerror = () => setSpeakingId((c) => (c === id ? null : c));
-            window.speechSynthesis.speak(utterance);
-            return;
-          } catch {
-            /* fallback unavailable */
-          }
-        }
-        setError(err instanceof Error ? err.message : "La lecture audio a échoué.");
-        setSpeakingId(null);
+        // Repli automatique sur la voix gratuite du navigateur
+        speakWithBrowserVoice(id, value, lang);
       }
-
     },
-    [stop],
+    [speakWithBrowserVoice],
+  );
+
+  const speak = useCallback(
+    async (id: string, text: string, lang: SpeakLang = "fr") => {
+      stop();
+      const value = text.trim();
+      if (!value) return;
+
+      setError(null);
+      setSpeakingId(id);
+
+      if (isNaturalVoiceEnabled()) {
+        await speakWithNaturalVoice(id, value, lang);
+      } else {
+        speakWithBrowserVoice(id, value, lang);
+      }
+    },
+    [stop, speakWithNaturalVoice, speakWithBrowserVoice],
   );
 
   return { speak, stop, speakingId, error, setError };
