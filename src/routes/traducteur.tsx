@@ -6,7 +6,7 @@ import { ArrowLeftRight, Copy, Check, Loader2 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { MicButton } from "@/components/voice/MicButton";
 import { SpeakButton } from "@/components/voice/SpeakButton";
-import { useSpeech } from "@/hooks/useSpeech";
+import { isNaturalVoiceEnabled, setNaturalVoiceEnabled, useSpeech } from "@/hooks/useSpeech";
 import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -37,6 +37,14 @@ export const Route = createFileRoute("/traducteur")({
 });
 
 const MAX = 1500;
+
+const PROVIDER_LABEL: Record<string, string> = {
+  local: "Corpus FonConnect (hors ligne)",
+  google: "Google Traduction",
+  openai: "IA OpenAI",
+  gemini: "IA Gemini",
+  lovable: "IA FonConnect",
+};
 
 function LangSelect({
   value,
