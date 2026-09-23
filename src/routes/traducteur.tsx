@@ -275,6 +275,18 @@ function TraducteurPage() {
             )}
           </section>
         )}
+        <label className="mt-10 flex cursor-pointer items-center gap-2 text-xs text-muted-foreground">
+          <input
+            type="checkbox"
+            checked={naturalVoice}
+            onChange={(e) => {
+              setNaturalVoice(e.target.checked);
+              setNaturalVoiceEnabled(e.target.checked);
+            }}
+            className="size-3.5 accent-primary"
+          />
+          Voix naturelle (qualité supérieure, utilise le service vocal du site)
+        </label>
       </main>
     </div>
   );
