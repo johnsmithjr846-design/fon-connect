@@ -254,6 +254,33 @@ export type Database = {
         }
         Relationships: []
       }
+      lesson_unlocks: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          lesson_id: string | null
+          path_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          lesson_id?: string | null
+          path_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          lesson_id?: string | null
+          path_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           body: string
@@ -725,6 +752,27 @@ export type Database = {
           earned_at?: string
           id?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_bans: {
+        Row: {
+          banned_by: string | null
+          created_at: string
+          reason: string
+          user_id: string
+        }
+        Insert: {
+          banned_by?: string | null
+          created_at?: string
+          reason?: string
+          user_id: string
+        }
+        Update: {
+          banned_by?: string | null
+          created_at?: string
+          reason?: string
           user_id?: string
         }
         Relationships: []
