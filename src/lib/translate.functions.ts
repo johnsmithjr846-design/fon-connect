@@ -9,7 +9,7 @@ const normalize = (s: string) =>
     .trim()
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
+    .replace(/[̀-ͯ]/g, "");
 
 function lookupPhrasebook(text: string, source: Lang, target: Lang): TranslationResult | null {
   if (source !== "fon" && target !== "fon") return null;
@@ -22,6 +22,7 @@ function lookupPhrasebook(text: string, source: Lang, target: Lang): Translation
           translation: target === "fon" ? entry.fon : target === "fr" ? entry.fr : entry.en,
           phonetic: target === "fon" ? (entry.phonetic ?? "") : "",
           notes: [],
+          provider: "local",
         };
       }
     }
@@ -31,10 +32,13 @@ function lookupPhrasebook(text: string, source: Lang, target: Lang): Translation
 
 export type { Lang };
 
+export type TranslationProviderId = "local" | "google" | "openai" | "gemini" | "lovable";
+
 export type TranslationResult = {
   translation: string;
   phonetic: string;
   notes: string[];
+  provider?: TranslationProviderId;
 };
 
 const InputSchema = z.object({
@@ -52,21 +56,44 @@ const OutputSchema = z.object({
 export const translateText = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => InputSchema.parse(input))
   .handler(async ({ data }): Promise<TranslationResult> => {
+    // 1. Corpus local (gratuit, instantané)
     const cached = lookupPhrasebook(data.text, data.source, data.target);
     if (cached) return cached;
-
-    const key = process.env["LOVABLE_API_KEY"];
-    if (!key) throw new Error("Le service de traduction n'est pas configuré.");
-
-    const { createLovableAiGatewayProvider, DEFAULT_LLM_MODEL, FON_SYSTEM_CONTEXT } = await import(
-      "./ai-gateway.server"
-    );
-    const gateway = createLovableAiGatewayProvider(key);
-    const model = gateway(DEFAULT_LLM_MODEL);
 
     const from = LANG_NATIVE[data.source];
     const to = LANG_NATIVE[data.target];
     const targetIsFon = data.target === "fon";
+
+    const { translateWithGoogle, translateWithOwnLlm } = await import(
+      "./translation/providers.server"
+    );
+
+    // 2. Google Traduction (français ↔ anglais uniquement, clé propre)
+    try {
+      const google = await translateWithGoogle(data.text, data.source, data.target);
+      if (google) return google;
+    } catch (error) {
+      console.error("Google provider error:", error);
+    }
+
+    // 3. Clé IA propre (OpenAI ou Gemini), notamment pour le fon
+    const { FON_SYSTEM_CONTEXT } = await import("./ai-gateway.server");
+    try {
+      const own = await translateWithOwnLlm(FON_SYSTEM_CONTEXT, data.text, from, to, targetIsFon);
+      if (own) return own;
+    } catch (error) {
+      console.error("Own LLM provider error:", error);
+    }
+
+    // 4. Secours final : Lovable AI Gateway (consomme des crédits)
+    const key = process.env["LOVABLE_API_KEY"];
+    if (!key) throw new Error("Le service de traduction n'est pas configuré.");
+
+    const { createLovableAiGatewayProvider, DEFAULT_LLM_MODEL } = await import(
+      "./ai-gateway.server"
+    );
+    const gateway = createLovableAiGatewayProvider(key);
+    const model = gateway(DEFAULT_LLM_MODEL);
 
     const prompt = `${FON_SYSTEM_CONTEXT}
 
@@ -97,11 +124,12 @@ Texte à traduire :
         translation: output.translation.trim(),
         phonetic: output.phonetic.trim(),
         notes: output.notes.filter(Boolean).slice(0, 3),
+        provider: "lovable",
       };
     } catch (error) {
       if (NoObjectGeneratedError.isInstance(error)) {
         const raw = (error.text ?? "").trim();
-        if (raw) return { translation: raw, phonetic: "", notes: [] };
+        if (raw) return { translation: raw, phonetic: "", notes: [], provider: "lovable" };
       }
       const status =
         typeof (error as { statusCode?: number })?.statusCode === "number"
@@ -114,7 +142,7 @@ Texte à traduire :
       }
       if (haystack.includes("402") || /credit/i.test(haystack) || /payment_required/i.test(haystack)) {
         throw new Error(
-          "Crédits IA épuisés. Rechargez votre espace Lovable pour réactiver la traduction IA.",
+          "Traduction IA momentanément indisponible. Les phrases du guide de conversation restent traduites instantanément.",
         );
       }
       throw new Error(`La traduction a échoué : ${message}`);
