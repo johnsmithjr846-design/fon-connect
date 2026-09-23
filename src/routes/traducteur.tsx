@@ -78,6 +78,7 @@ function TraducteurPage() {
   const [target, setTarget] = useState<Lang>("fon");
   const [text, setText] = useState("");
   const [copied, setCopied] = useState(false);
+  const [naturalVoice, setNaturalVoice] = useState(() => isNaturalVoiceEnabled());
 
   const translate = useServerFn(translateText);
   const mutation = useMutation({
@@ -256,6 +257,12 @@ function TraducteurPage() {
               <p className="mt-3 text-xs text-muted-foreground">
                 Lecture audio approximative : aucune voix de synthèse n'existe encore pour le fon.
                 Des enregistrements de locuteurs natifs arriveront prochainement.
+              </p>
+            )}
+
+            {mutation.data.provider && PROVIDER_LABEL[mutation.data.provider] && (
+              <p className="mt-3 text-xs text-muted-foreground">
+                Source : {PROVIDER_LABEL[mutation.data.provider]}
               </p>
             )}
 
