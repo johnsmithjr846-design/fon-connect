@@ -81,6 +81,7 @@ function LessonsIndex() {
             const previous = LEARNING_PATHS[i - 1];
             const unlocked =
               i === 0 ||
+              isPathAdminUnlocked(path.id) ||
               (previous
                 ? pathDoneCount(previous.id) >= Math.ceil(previous.lessons.length * 0.8)
                 : true);

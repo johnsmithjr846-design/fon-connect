@@ -100,7 +100,10 @@ function PathPage() {
           {path.lessons.map((lesson, i) => {
             const done = isLessonDone(path.id, lesson.id);
             const previous = path.lessons[i - 1];
-            const unlocked = i === 0 || (previous ? isLessonDone(path.id, previous.id) : true);
+            const unlocked =
+              i === 0 ||
+              isLessonAdminUnlocked(path.id, lesson.id) ||
+              (previous ? isLessonDone(path.id, previous.id) : true);
             const offset = ["ml-0", "ml-10", "ml-20", "ml-10"][i % 4];
             const showChest = (i + 1) % CHEST_EVERY === 0;
             const id = chestId(path.id, i + 1);

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Bar,
@@ -25,6 +25,8 @@ import {
   setAdminCode,
   setAdminRoleByEmail,
 } from "@/lib/admin.functions";
+import { listBannedUserIds } from "@/lib/admin-users.functions";
+import { UserManager } from "@/components/admin/UserManager";
 
 const CHART_COLORS = ["#22c55e", "#06b6d4", "#eab308", "#f97316", "#a855f7"];
 
@@ -206,6 +208,9 @@ export function DashboardPanel() {
 
 export function UsersPanel() {
   const [search, setSearch] = useState("");
+  const [openId, setOpenId] = useState<string | null>(null);
+  const bans = useQuery({ queryKey: ["admin", "bans"], queryFn: () => listBannedUserIds() });
+  const banned = new Set(bans.data ?? []);
   const users = useQuery({
     queryKey: ["admin", "users"],
     queryFn: async () => {
@@ -270,11 +275,13 @@ export function UsersPanel() {
               <th className="py-2">Dernière connexion</th>
               <th className="py-2 text-right">XP</th>
               <th className="py-2 text-right">Série</th>
+              <th className="py-2 text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((u) => (
-              <tr key={u.user_id} className="border-t border-border">
+              <Fragment key={u.user_id}>
+              <tr className="border-t border-border">
                 <td className="py-2 pr-3">{u.email}</td>
                 <td className="py-2 pr-3">{u.pseudo ?? "—"}</td>
                 <td className="py-2 pr-3 uppercase">{u.preferred_language}</td>
@@ -284,7 +291,31 @@ export function UsersPanel() {
                 </td>
                 <td className="py-2 text-right text-primary">{u.xp_total}</td>
                 <td className="py-2 text-right">{u.current_streak}</td>
+                <td className="py-2 text-right">
+                  {banned.has(u.user_id) && (
+                    <span className="mr-2 text-xs text-destructive">banni</span>
+                  )}
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setOpenId(openId === u.user_id ? null : u.user_id)}
+                  >
+                    {openId === u.user_id ? "Fermer" : "Gérer"}
+                  </Button>
+                </td>
               </tr>
+              {openId === u.user_id && (
+                <tr>
+                  <td colSpan={8} className="pb-4">
+                    <UserManager
+                      userId={u.user_id}
+                      label={u.pseudo ?? u.email ?? u.user_id}
+                      onChanged={() => void bans.refetch()}
+                    />
+                  </td>
+                </tr>
+              )}
+              </Fragment>
             ))}
           </tbody>
         </table>
