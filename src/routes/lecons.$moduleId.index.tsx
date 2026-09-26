@@ -69,7 +69,8 @@ function PathPage() {
   const { moduleId } = Route.useParams();
   const path = getPath(moduleId)!;
   const { t, lang } = useI18n();
-  const { user, isLessonDone, isChestOpen, invalidate, bestQuiz } = useLessonProgress();
+  const { user, isLessonDone, isChestOpen, invalidate, bestQuiz, isLessonAdminUnlocked } =
+    useLessonProgress();
 
   const open = useServerFn(openChest);
   const chestMutation = useMutation({

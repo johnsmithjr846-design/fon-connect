@@ -54,7 +54,7 @@ export const Route = createFileRoute("/lecons/")({
 });
 
 function LessonsIndex() {
-  const { pathDoneCount } = useLessonProgress();
+  const { pathDoneCount, isPathAdminUnlocked } = useLessonProgress();
   const { t, lang } = useI18n();
 
   return (
