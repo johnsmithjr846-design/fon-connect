@@ -54,20 +54,21 @@ export function NotificationsBell() {
           setOpen((v) => !v);
           if (!open) void markAllRead();
         }}
-        className="relative text-muted-foreground transition-colors hover:text-primary"
+        className={`relative flex size-9 items-center justify-center rounded-full border transition-colors ${unread > 0 ? "border-primary bg-primary/15 text-primary" : "border-border bg-card text-foreground hover:border-primary hover:text-primary"}`}
       >
-        <Bell className="size-4" aria-hidden />
+        <Bell className={`size-5 ${unread > 0 ? "animate-pulse" : ""}`} aria-hidden />
         {unread > 0 && (
-          <span className="absolute -right-1.5 -top-1.5 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
+          <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1 text-xs font-bold ring-2 ring-background text-destructive-foreground">
             {unread > 9 ? "9+" : unread}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 z-30 mt-2 w-72 rounded-lg border border-border bg-card p-2 shadow-lg">
+        <div className="absolute right-0 z-30 mt-2 w-80 max-w-[90vw] rounded-xl border-2 border-primary/40 bg-popover p-2 text-popover-foreground shadow-2xl">
+          <p className="px-2 pb-2 pt-1 text-sm font-bold text-foreground">Notifications</p>
           {rows.length === 0 ? (
-            <p className="p-2 text-xs text-muted-foreground">Aucune notification.</p>
+            <p className="p-2 text-sm text-muted-foreground">Aucune notification.</p>
           ) : (
             <ul className="max-h-80 space-y-1 overflow-y-auto">
               {rows.map((n) => (
@@ -75,10 +76,11 @@ export function NotificationsBell() {
                   <Link
                     to={n.link === "/tarifs" ? "/tarifs" : "/"}
                     onClick={() => setOpen(false)}
-                    className="block rounded-md p-2 text-left transition-colors hover:bg-secondary"
+                    className="block rounded-lg border border-border bg-card p-3 text-left transition-colors hover:border-primary hover:bg-secondary"
                   >
                     <p className="text-sm font-semibold text-foreground">{n.title}</p>
-                    <p className="text-xs text-muted-foreground">{n.body}</p>
+                    <p className="mt-0.5 text-sm text-foreground/80">{n.body}</p>
+                    <p className="mt-1 text-[11px] text-muted-foreground">{new Date(n.created_at).toLocaleString("fr-FR")}</p>
                   </Link>
                 </li>
               ))}

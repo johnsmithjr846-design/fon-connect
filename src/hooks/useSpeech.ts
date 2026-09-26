@@ -183,11 +183,8 @@ export function useSpeech() {
       setError(null);
       setSpeakingId(id);
 
-      if (isNaturalVoiceEnabled()) {
-        await speakWithNaturalVoice(id, value, lang);
-      } else {
-        speakWithBrowserVoice(id, value, lang);
-      }
+      // Voix naturelle en premier recours, voix du navigateur en secours.
+      await speakWithNaturalVoice(id, value, lang);
     },
     [stop, speakWithNaturalVoice, speakWithBrowserVoice],
   );

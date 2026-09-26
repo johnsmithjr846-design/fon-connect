@@ -12,6 +12,7 @@ const EMPTY: ProgressSnapshot = {
   badges: [],
   chests: [],
   bonusHearts: 0,
+  unlocks: [],
 };
 
 export function useLessonProgress() {
@@ -43,6 +44,12 @@ export function useLessonProgress() {
       ),
     pathDoneCount: (pathId: string) =>
       data.lessons.filter((l) => (l.path_id ?? l.module_id) === pathId).length,
+    isPathAdminUnlocked: (pathId: string) =>
+      (data.unlocks ?? []).some((u) => u.path_id === pathId),
+    isLessonAdminUnlocked: (pathId: string, lessonId: string) =>
+      (data.unlocks ?? []).some(
+        (u) => u.path_id === pathId && (u.lesson_id === null || u.lesson_id === lessonId),
+      ),
     hasBadge: (badgeId: string) => data.badges.includes(badgeId),
     isChestOpen: (chestId: string) => data.chests.includes(chestId),
     bestQuiz: (moduleId: string) =>

@@ -21,6 +21,8 @@ export type ProgressSnapshot = {
   chests: string[];
   /** Cœurs bonus attribués par un administrateur (hors 4 cœurs quotidiens). */
   bonusHearts: number;
+  /** Leçons / parcours débloqués par un administrateur (lesson_id null = parcours entier). */
+  unlocks: { path_id: string; lesson_id: string | null }[];
 };
 
 type ActiveGrant = { id: string; hearts_remaining: number };
@@ -47,7 +49,7 @@ export const getLessonProgress = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<ProgressSnapshot> => {
     const { supabase, userId } = context;
-    const [lessons, quizzes, stats, badges, chests] = await Promise.all([
+    const [lessons, quizzes, stats, badges, chests, unlocks] = await Promise.all([
       supabase
         .from("lesson_progress")
         .select("path_id, module_id, lesson_id, xp_earned")
@@ -60,6 +62,7 @@ export const getLessonProgress = createServerFn({ method: "GET" })
       supabase.from("user_stats").select("*").eq("user_id", userId).maybeSingle(),
       supabase.from("user_badges").select("badge_id").eq("user_id", userId),
       supabase.from("chest_rewards").select("chest_id").eq("user_id", userId),
+      supabase.from("lesson_unlocks").select("path_id, lesson_id").eq("user_id", userId),
     ]);
     if (lessons.error) throw new Error(lessons.error.message);
     if (quizzes.error) throw new Error(quizzes.error.message);
@@ -73,6 +76,7 @@ export const getLessonProgress = createServerFn({ method: "GET" })
       badges: (badges.data ?? []).map((b) => b.badge_id),
       chests: (chests.data ?? []).map((c) => c.chest_id),
       bonusHearts: grants.reduce((sum, g) => sum + g.hearts_remaining, 0),
+      unlocks: unlocks.data ?? [],
     };
   });
 

@@ -54,7 +54,7 @@ export const Route = createFileRoute("/lecons/")({
 });
 
 function LessonsIndex() {
-  const { pathDoneCount } = useLessonProgress();
+  const { pathDoneCount, isPathAdminUnlocked } = useLessonProgress();
   const { t, lang } = useI18n();
 
   return (
@@ -81,6 +81,7 @@ function LessonsIndex() {
             const previous = LEARNING_PATHS[i - 1];
             const unlocked =
               i === 0 ||
+              isPathAdminUnlocked(path.id) ||
               (previous
                 ? pathDoneCount(previous.id) >= Math.ceil(previous.lessons.length * 0.8)
                 : true);

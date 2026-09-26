@@ -6,7 +6,7 @@ import { ArrowLeftRight, Copy, Check, Loader2 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { MicButton } from "@/components/voice/MicButton";
 import { SpeakButton } from "@/components/voice/SpeakButton";
-import { isNaturalVoiceEnabled, setNaturalVoiceEnabled, useSpeech } from "@/hooks/useSpeech";
+import { useSpeech } from "@/hooks/useSpeech";
 import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -78,7 +78,6 @@ function TraducteurPage() {
   const [target, setTarget] = useState<Lang>("fon");
   const [text, setText] = useState("");
   const [copied, setCopied] = useState(false);
-  const [naturalVoice, setNaturalVoice] = useState(() => isNaturalVoiceEnabled());
 
   const translate = useServerFn(translateText);
   const mutation = useMutation({
@@ -275,18 +274,6 @@ function TraducteurPage() {
             )}
           </section>
         )}
-        <label className="mt-10 flex cursor-pointer items-center gap-2 text-xs text-muted-foreground">
-          <input
-            type="checkbox"
-            checked={naturalVoice}
-            onChange={(e) => {
-              setNaturalVoice(e.target.checked);
-              setNaturalVoiceEnabled(e.target.checked);
-            }}
-            className="size-3.5 accent-primary"
-          />
-          Voix naturelle (qualité supérieure, utilise le service vocal du site)
-        </label>
       </main>
     </div>
   );
