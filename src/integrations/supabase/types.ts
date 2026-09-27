@@ -630,6 +630,48 @@ export type Database = {
         }
         Relationships: []
       }
+      reports: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          message: string
+          page: string
+          problem: string
+          reported_pseudo: string | null
+          reported_user_id: string | null
+          reporter_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          message?: string
+          page?: string
+          problem: string
+          reported_pseudo?: string | null
+          reported_user_id?: string | null
+          reporter_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          message?: string
+          page?: string
+          problem?: string
+          reported_pseudo?: string | null
+          reported_user_id?: string | null
+          reporter_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       site_settings: {
         Row: {
           created_at: string
