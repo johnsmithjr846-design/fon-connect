@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
+import { MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthUser } from "@/hooks/useAuthUser";
 import { NotificationsBell } from "@/components/NotificationsBell";
@@ -75,7 +76,7 @@ export function SiteHeader() {
                   {lang === "en" ? "Friends" : "Amis"}
                 </Link>
               </li>
-              <li>
+              <li className="hidden sm:block">
                 <Link
                   to="/messages"
                   search={{}}
@@ -84,7 +85,7 @@ export function SiteHeader() {
                   Messages
                 </Link>
               </li>
-              <li>
+              <li className="hidden sm:block">
                 <NotificationsBell />
               </li>
               <li>
@@ -117,6 +118,20 @@ export function SiteHeader() {
           </li>
         </ul>
       </nav>
+      {!loading && user && (
+        <div className="flex items-center justify-center gap-4 border-t border-border py-2 sm:hidden">
+          <Link
+            to="/messages"
+            search={{}}
+            aria-label="Messages"
+            className="flex items-center gap-2 rounded-full border-2 border-primary bg-primary/10 px-4 py-2 text-sm font-semibold text-primary [&.active]:bg-primary [&.active]:text-primary-foreground"
+          >
+            <MessageCircle className="h-5 w-5" />
+            Messages
+          </Link>
+          <NotificationsBell />
+        </div>
+      )}
     </header>
   );
 }
