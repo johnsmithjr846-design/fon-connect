@@ -15,6 +15,7 @@ import { initSentry, captureClientError } from "../lib/sentry-client";
 import { supabase } from "@/integrations/supabase/client";
 import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
 import { useAnalytics } from "@/lib/analytics";
+import { ReportButton } from "@/components/ReportButton";
 
 function NotFoundComponent() {
   return (
@@ -156,6 +157,7 @@ function RootComponent() {
       <LanguageProvider>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
+        <ReportButton />
       </LanguageProvider>
     </QueryClientProvider>
   );
