@@ -119,14 +119,14 @@ export function SiteHeader() {
         </ul>
       </nav>
       {!loading && user && (
-        <div className="flex items-center justify-center gap-4 border-t border-border py-2 sm:hidden">
+        <div className="flex items-center justify-center gap-3 border-t border-border py-1 sm:hidden">
           <Link
             to="/messages"
             search={{}}
             aria-label="Messages"
-            className="flex items-center gap-2 rounded-full border-2 border-primary bg-primary/10 px-4 py-2 text-sm font-semibold text-primary [&.active]:bg-primary [&.active]:text-primary-foreground"
+            className="flex items-center gap-1.5 rounded-full border border-primary bg-primary/10 px-3 py-1 text-xs font-semibold text-primary [&.active]:bg-primary [&.active]:text-primary-foreground"
           >
-            <MessageCircle className="h-5 w-5" />
+            <MessageCircle className="h-4 w-4" />
             Messages
           </Link>
           <NotificationsBell />
