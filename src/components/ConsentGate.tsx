@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 
 const KEY = "fonconnect_consent";
 
@@ -29,7 +29,9 @@ export function ConsentGate() {
     return () => clearTimeout(t);
   }, []);
 
-  if (step === "hidden") return null;
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const legal = ["/conditions-utilisation", "/politique-confidentialite", "/cookies", "/mentions-legales"].includes(pathname);
+  if (step === "hidden" || legal) return null;
 
   const finish = (a: boolean, d: boolean) => {
     save({ accepted: true, analytics: a, ads: d, date: new Date().toISOString() });
