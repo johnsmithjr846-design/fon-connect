@@ -39,7 +39,17 @@ function injectGtag(measurementId: string) {
 export function useAnalytics() {
   useEffect(() => {
     if (!MEASUREMENT_ID) return;
-    injectGtag(MEASUREMENT_ID);
+    const tryInject = () => {
+      try {
+        const c = JSON.parse(localStorage.getItem("fonconnect_consent") || "null");
+        if (c?.analytics) injectGtag(MEASUREMENT_ID);
+      } catch {
+        /* ignore */
+      }
+    };
+    tryInject();
+    window.addEventListener("fonconnect-consent", tryInject);
+    return () => window.removeEventListener("fonconnect-consent", tryInject);
   }, []);
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
