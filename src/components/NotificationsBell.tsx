@@ -65,7 +65,7 @@ export function NotificationsBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 z-30 mt-2 w-80 max-w-[90vw] rounded-xl border-2 border-primary/40 bg-popover p-2 text-popover-foreground shadow-2xl">
+        <div className="fixed left-1/2 top-32 z-30 w-80 max-w-[90vw] -translate-x-1/2 rounded-xl border-2 border-primary/40 bg-popover p-2 text-popover-foreground shadow-2xl sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-2 sm:translate-x-0">
           <p className="px-2 pb-2 pt-1 text-sm font-bold text-foreground">Notifications</p>
           {rows.length === 0 ? (
             <p className="p-2 text-sm text-muted-foreground">Aucune notification.</p>
