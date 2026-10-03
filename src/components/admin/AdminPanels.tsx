@@ -648,7 +648,6 @@ export function AdsPanel() {
   const [draft, setDraft] = useState({
     title: "",
     body: "",
-    image_url: "",
     link_url: "",
     placement: "home",
     active: true,
@@ -681,7 +680,6 @@ export function AdsPanel() {
       setDraft({
         title: "",
         body: "",
-        image_url: "",
         link_url: "",
         placement: "home",
         active: true,
