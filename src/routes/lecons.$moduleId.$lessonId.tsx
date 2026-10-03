@@ -123,6 +123,16 @@ function LessonPage() {
     }
   }
 
+  const heartsGone = Boolean(user) && !unlimitedHearts && stats.hearts + bonusHearts <= 0;
+  useEffect(() => {
+    if (!heartsGone || heartsAdDone || activeAd) return;
+    const ad = (lessonAds ?? []).find((a) => a.show_on_hearts_empty && canShow(a));
+    if (!ad) return;
+    setHeartsAdDone(true);
+    showAd(ad, ad.reward_heart);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [heartsGone, heartsAdDone, activeAd, lessonAds]);
+
   function finish(finalMistakes: number, total: number) {
     if (user) completion.mutate({ mistakes: finalMistakes, total });
     else setResult({ xpEarned: 0, bonusPercent: 0, streak: 0, xpTotal: 0, newBadges: [] });
@@ -196,15 +206,6 @@ function LessonPage() {
 
   const exercise = exercises[step]!;
   const outOfHearts = Boolean(user) && !unlimitedHearts && hearts + bonus <= 0;
-  if (outOfHearts && !heartsAdDone && !activeAd) {
-    const ad = (lessonAds ?? []).find((a) => a.show_on_hearts_empty && canShow(a));
-    if (ad) {
-      queueMicrotask(() => {
-        setHeartsAdDone(true);
-        showAd(ad, ad.reward_heart);
-      });
-    }
-  }
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
