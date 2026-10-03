@@ -86,7 +86,14 @@ export type Database = {
           id: string
           image_url: string
           link_url: string
+          max_per_lesson: number
+          media_path: string | null
+          media_type: string
           placement: string
+          question_interval: number
+          reward_heart: boolean
+          show_after_questions: boolean
+          show_on_hearts_empty: boolean
           starts_at: string | null
           title: string
           updated_at: string
@@ -99,7 +106,14 @@ export type Database = {
           id?: string
           image_url?: string
           link_url?: string
+          max_per_lesson?: number
+          media_path?: string | null
+          media_type?: string
           placement?: string
+          question_interval?: number
+          reward_heart?: boolean
+          show_after_questions?: boolean
+          show_on_hearts_empty?: boolean
           starts_at?: string | null
           title?: string
           updated_at?: string
@@ -112,7 +126,14 @@ export type Database = {
           id?: string
           image_url?: string
           link_url?: string
+          max_per_lesson?: number
+          media_path?: string | null
+          media_type?: string
           placement?: string
+          question_interval?: number
+          reward_heart?: boolean
+          show_after_questions?: boolean
+          show_on_hearts_empty?: boolean
           starts_at?: string | null
           title?: string
           updated_at?: string

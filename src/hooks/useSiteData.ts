@@ -60,7 +60,30 @@ export type Ad = {
   image_url: string;
   link_url: string;
   placement: string;
+  media_type: string;
+  media_path: string | null;
+  show_after_questions: boolean;
+  question_interval: number;
+  show_on_hearts_empty: boolean;
+  max_per_lesson: number;
+  reward_heart: boolean;
 };
+
+const AD_COLUMNS =
+  "id, title, body, image_url, link_url, placement, media_type, media_path, show_after_questions, question_interval, show_on_hearts_empty, max_per_lesson, reward_heart";
+
+/** Remplace image_url par une adresse signée quand le média est stocké dans le site. */
+export async function resolveAdMedia<T extends { media_path: string | null; image_url: string }>(
+  rows: T[],
+): Promise<T[]> {
+  const paths = rows.map((r) => r.media_path).filter((p): p is string => Boolean(p));
+  if (paths.length === 0) return rows;
+  const { data } = await supabase.storage.from("ad-media").createSignedUrls(paths, 60 * 60 * 24);
+  const map = new Map((data ?? []).map((d) => [d.path, d.signedUrl]));
+  return rows.map((r) =>
+    r.media_path && map.get(r.media_path) ? { ...r, image_url: map.get(r.media_path)! } : r,
+  );
+}
 
 export function useAds(placement: "home" | "lessons" | "translator") {
   return useQuery({
@@ -68,10 +91,28 @@ export function useAds(placement: "home" | "lessons" | "translator") {
     queryFn: async (): Promise<Ad[]> => {
       const { data, error } = await supabase
         .from("ads")
-        .select("id, title, body, image_url, link_url, placement")
+        .select(AD_COLUMNS)
         .in("placement", [placement, "all"]);
       if (error) throw error;
-      return (data ?? []) as Ad[];
+      return resolveAdMedia((data ?? []) as Ad[]);
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+/** Annonces actives configurées pour s'afficher pendant les leçons. */
+export function useLessonAds(enabled: boolean) {
+  return useQuery({
+    queryKey: ["ads", "lesson-interstitial"],
+    enabled,
+    queryFn: async (): Promise<Ad[]> => {
+      const { data, error } = await supabase
+        .from("ads")
+        .select(AD_COLUMNS)
+        .eq("active", true)
+        .or("show_after_questions.eq.true,show_on_hearts_empty.eq.true");
+      if (error) throw error;
+      return resolveAdMedia((data ?? []) as Ad[]);
     },
     staleTime: 5 * 60 * 1000,
   });

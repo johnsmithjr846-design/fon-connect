@@ -10,7 +10,9 @@ export function AdSlot({ placement }: { placement: "home" | "lessons" | "transla
       {ads.map((ad) => {
         const content = (
           <div className="flex items-center gap-4 rounded-xl border border-border bg-card p-4">
-            {ad.image_url && (
+            {ad.image_url && ad.media_type === "video" ? (
+              <video src={ad.image_url} muted playsInline autoPlay loop className="size-16 shrink-0 rounded-lg object-cover" />
+            ) : ad.image_url && (
               <img
                 src={ad.image_url}
                 alt={ad.title}
