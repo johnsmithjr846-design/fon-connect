@@ -27,6 +27,7 @@ import {
 } from "@/lib/admin.functions";
 import { listBannedUserIds } from "@/lib/admin-users.functions";
 import { UserManager } from "@/components/admin/UserManager";
+import { AdMediaField, AdLessonFields, DEFAULT_AD_SETTINGS, type AdLessonSettings } from "@/components/admin/AdFields";
 
 const CHART_COLORS = ["#22c55e", "#06b6d4", "#eab308", "#f97316", "#a855f7"];
 
@@ -639,7 +640,7 @@ type AdRow = {
   link_url: string;
   placement: string;
   active: boolean;
-};
+} & AdLessonSettings;
 
 export function AdsPanel() {
   const qc = useQueryClient();
@@ -651,6 +652,7 @@ export function AdsPanel() {
     link_url: "",
     placement: "home",
     active: true,
+    ...DEFAULT_AD_SETTINGS,
   });
 
   const ads = useQuery({
@@ -658,7 +660,7 @@ export function AdsPanel() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("ads")
-        .select("id, title, body, image_url, link_url, placement, active")
+        .select("id, title, body, image_url, link_url, placement, active, media_type, media_path, show_after_questions, question_interval, show_on_hearts_empty, max_per_lesson, reward_heart")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return (data ?? []) as AdRow[];
@@ -683,6 +685,7 @@ export function AdsPanel() {
         link_url: "",
         placement: "home",
         active: true,
+        ...DEFAULT_AD_SETTINGS,
       });
       setStatus("Encart créé.");
       await refresh();
@@ -709,13 +712,7 @@ export function AdsPanel() {
               onChange={(e) => setDraft({ ...draft, body: e.target.value })}
             />
           </div>
-          <div className="grid gap-1.5">
-            <Label>Image (URL)</Label>
-            <Input
-              value={draft.image_url}
-              onChange={(e) => setDraft({ ...draft, image_url: e.target.value })}
-            />
-          </div>
+          <AdMediaField value={draft} onChange={setDraft} />
           <div className="grid gap-1.5">
             <Label>Lien</Label>
             <Input
@@ -736,6 +733,7 @@ export function AdsPanel() {
               <option value="all">Partout</option>
             </select>
           </div>
+          <AdLessonFields value={draft} onChange={setDraft} idPrefix="new" />
           <div className="flex items-center gap-3">
             <Switch
               id="ad-active"
@@ -787,6 +785,13 @@ function AdEditor({ ad, onChanged }: { ad: AdRow; onChanged: () => Promise<void>
         link_url: form.link_url,
         placement: form.placement,
         active: form.active,
+        media_type: form.media_type,
+        media_path: form.media_path,
+        show_after_questions: form.show_after_questions,
+        question_interval: form.question_interval,
+        show_on_hearts_empty: form.show_on_hearts_empty,
+        max_per_lesson: form.max_per_lesson,
+        reward_heart: form.reward_heart,
       })
       .eq("id", ad.id);
     setBusy(false);
@@ -845,13 +850,7 @@ function AdEditor({ ad, onChanged }: { ad: AdRow; onChanged: () => Promise<void>
               onChange={(e) => setForm({ ...form, body: e.target.value })}
             />
           </div>
-          <div className="grid gap-1.5">
-            <Label>Image (URL)</Label>
-            <Input
-              value={form.image_url ?? ""}
-              onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-            />
-          </div>
+          <AdMediaField value={form} onChange={setForm} />
           <div className="grid gap-1.5">
             <Label>Lien</Label>
             <Input
@@ -872,6 +871,7 @@ function AdEditor({ ad, onChanged }: { ad: AdRow; onChanged: () => Promise<void>
               <option value="all">Partout</option>
             </select>
           </div>
+          <AdLessonFields value={form} onChange={setForm} idPrefix={ad.id} />
           <div className="flex items-center gap-3">
             <Switch
               checked={form.active}
