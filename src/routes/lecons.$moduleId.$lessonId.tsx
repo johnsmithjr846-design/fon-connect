@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Send } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SignInBanner } from "@/components/lessons/SignInBanner";
@@ -19,6 +19,17 @@ import { buildExercises } from "@/lib/lessons/exercises";
 import { completeLesson, loseHeart, type CompleteResult } from "@/lib/lessons.functions";
 import { useLessonProgress } from "@/hooks/useLessonProgress";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
+import { useLessonAds, type Ad } from "@/hooks/useSiteData";
+import { LessonAdDialog } from "@/components/lessons/LessonAdDialog";
+import { rewardAdHeart } from "@/lib/ads.functions";
+
+function adsConsented(): boolean {
+  try {
+    return Boolean(JSON.parse(localStorage.getItem("fonconnect_consent") || "null")?.ads);
+  } catch {
+    return false;
+  }
+}
 
 export const Route = createFileRoute("/lecons/$moduleId/$lessonId")({
   loader: ({ params }) => {
@@ -80,6 +91,38 @@ function LessonPage() {
     onSuccess: () => invalidate(),
   });
 
+  const { entitlements } = useEntitlements();
+  const unlimitedHearts = entitlements.unlimitedHearts;
+  const [consentAds, setConsentAds] = useState(false);
+  useEffect(() => setConsentAds(adsConsented()), []);
+  const freeUser = Boolean(user) && entitlements.plans.length === 0 && !unlimitedHearts;
+  const { data: lessonAds } = useLessonAds(freeUser && consentAds);
+  const [adShown, setAdShown] = useState<Record<string, number>>({});
+  const [activeAd, setActiveAd] = useState<{ ad: Ad; reward: boolean } | null>(null);
+  const [heartsAdDone, setHeartsAdDone] = useState(false);
+  const reward = useServerFn(rewardAdHeart);
+
+  function canShow(ad: Ad) {
+    return (adShown[ad.id] ?? 0) < Math.max(0, ad.max_per_lesson);
+  }
+  function showAd(ad: Ad, isReward: boolean) {
+    setAdShown((m) => ({ ...m, [ad.id]: (m[ad.id] ?? 0) + 1 }));
+    setActiveAd({ ad, reward: isReward });
+  }
+  async function closeAd() {
+    const current = activeAd;
+    setActiveAd(null);
+    if (current?.reward) {
+      try {
+        await reward({ data: { adId: current.ad.id } });
+        setHeartsAdDone(false);
+      } catch {
+        /* écran normal de fin des cœurs */
+      }
+      await invalidate();
+    }
+  }
+
   function finish(finalMistakes: number, total: number) {
     if (user) completion.mutate({ mistakes: finalMistakes, total });
     else setResult({ xpEarned: 0, bonusPercent: 0, streak: 0, xpTotal: 0, newBadges: [] });
@@ -96,10 +139,16 @@ function LessonPage() {
       return;
     }
     setStep(step + 1);
+    const answered = step + 1;
+    const ad = (lessonAds ?? []).find(
+      (a) =>
+        a.show_after_questions &&
+        a.question_interval > 0 &&
+        answered % a.question_interval === 0 &&
+        canShow(a),
+    );
+    if (ad) showAd(ad, false);
   }
-
-  const { entitlements } = useEntitlements();
-  const unlimitedHearts = entitlements.unlimitedHearts;
   const hearts = user && !unlimitedHearts ? stats.hearts : MAX_HEARTS;
   const bonus = user && !unlimitedHearts ? bonusHearts : 0;
   const isAi = lesson.kind === "ai";
@@ -113,6 +162,8 @@ function LessonPage() {
           setResult(null);
           setStep(0);
           setMistakes(0);
+          setAdShown({});
+          setHeartsAdDone(false);
         }}
       />
     );
@@ -145,9 +196,21 @@ function LessonPage() {
 
   const exercise = exercises[step]!;
   const outOfHearts = Boolean(user) && !unlimitedHearts && hearts + bonus <= 0;
+  if (outOfHearts && !heartsAdDone && !activeAd) {
+    const ad = (lessonAds ?? []).find((a) => a.show_on_hearts_empty && canShow(a));
+    if (ad) {
+      queueMicrotask(() => {
+        setHeartsAdDone(true);
+        showAd(ad, ad.reward_heart);
+      });
+    }
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
+      {activeAd && (
+        <LessonAdDialog ad={activeAd.ad} reward={activeAd.reward} onClose={() => void closeAd()} />
+      )}
       <LessonHud
         progress={step / exercises.length}
         hearts={hearts}
