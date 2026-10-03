@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
+import logoAsset from "@/assets/fonconnect-logo.png.asset.json";
 
 const KEY = "fonconnect_consent";
 
@@ -41,9 +42,12 @@ export function ConsentGate() {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/60 p-4 backdrop-blur-md">
       {step === "logo" && (
-        <p className="animate-pulse text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-          Fon<span className="text-primary">Connect</span>
-        </p>
+        <div className="flex flex-col items-center gap-4">
+          <p className="animate-pulse text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+            Fon<span className="text-primary">Connect</span>
+          </p>
+          <img src={logoAsset.url} alt="Logo FonConnect" className="w-56 max-w-[70vw] sm:w-72" />
+        </div>
       )}
 
       {step === "consent" && (
