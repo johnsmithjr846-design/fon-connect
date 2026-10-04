@@ -92,6 +92,7 @@ export function useAds(placement: "home" | "lessons" | "translator") {
       const { data, error } = await supabase
         .from("ads")
         .select(AD_COLUMNS)
+        .eq("active", true)
         .in("placement", [placement, "all"]);
       if (error) throw error;
       return resolveAdMedia((data ?? []) as Ad[]);
