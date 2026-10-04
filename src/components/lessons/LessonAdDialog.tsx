@@ -24,6 +24,7 @@ export function LessonAdDialog({
       <video
         src={ad.image_url}
         autoPlay
+        muted
         playsInline
         controls
         className="max-h-[50vh] w-full rounded-lg bg-muted object-contain"
