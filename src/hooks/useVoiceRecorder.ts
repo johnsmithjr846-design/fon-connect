@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export type RecorderStatus = "idle" | "recording" | "transcribing";
 
@@ -48,8 +49,9 @@ function encodeWav(chunks: Float32Array[], sampleRate: number, targetRate = 1600
   return new Blob([buffer], { type: "audio/wav" });
 }
 
-export function useVoiceRecorder(options?: { language?: string }) {
+export function useVoiceRecorder(options?: { language?: string; purpose?: "translation" }) {
   const language = options?.language;
+  const purpose = options?.purpose;
   const [status, setStatus] = useState<RecorderStatus>("idle");
   const [error, setError] = useState<string | null>(null);
 
@@ -134,7 +136,14 @@ export function useVoiceRecorder(options?: { language?: string }) {
       const form = new FormData();
       form.append("audio", blob, "recording.wav");
       if (language) form.append("language", language);
-      const res = await fetch("/api/transcribe", { method: "POST", body: form });
+      if (purpose) form.append("purpose", purpose);
+      const { data: sess } = await supabase.auth.getSession();
+      const token = sess.session?.access_token;
+      const res = await fetch("/api/transcribe", {
+        method: "POST",
+        body: form,
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
       const data = (await res.json().catch(() => ({}))) as { text?: string; error?: string };
       if (!res.ok) {
         setError(data.error ?? "La transcription a échoué. Réessayez.");
@@ -151,7 +160,7 @@ export function useVoiceRecorder(options?: { language?: string }) {
     } finally {
       setStatus("idle");
     }
-  }, [cleanup, language, status]);
+  }, [cleanup, language, purpose, status]);
 
   return { status, error, setError, start, stopAndTranscribe, cancel };
 }
