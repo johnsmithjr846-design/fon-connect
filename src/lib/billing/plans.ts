@@ -58,8 +58,12 @@ export type Plan = {
 
 export const CURRENCY_SYMBOL = "€";
 
-/** Limite de traduction vocale de l'offre gratuite : 30 minutes par jour. */
-export const FREE_VOICE_SECONDS_PER_DAY = 30 * 60;
+/** Limite de traduction vocale de l'offre gratuite : 20 minutes par jour. */
+export const FREE_VOICE_SECONDS_PER_DAY = 20 * 60;
+/** Questions à l'assistant IA par jour pour l'offre gratuite. */
+export const FREE_AI_QUESTIONS_PER_DAY = 3;
+/** Essais autorisés sans compte (1 traduction, 1 question IA). */
+export const GUEST_TRIALS = 1;
 
 /** TVA française applicable aux services numériques. */
 export const VAT_RATE = 0.2;
