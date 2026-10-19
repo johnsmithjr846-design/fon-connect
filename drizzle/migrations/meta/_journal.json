@@ -29,6 +29,13 @@
       "when": 1792428732017,
       "tag": "0003_usage_quotas_and_history",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792429037025,
+      "tag": "0004_tighten_site_settings_and_ad_media",
+      "breakpoints": true
     }
   ]
 }
