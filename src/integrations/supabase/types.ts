@@ -140,6 +140,65 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_chat_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_chat_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "ai_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_conversations: {
+        Row: {
+          created_at: string
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       app_releases: {
         Row: {
           created_at: string
@@ -765,8 +824,42 @@ export type Database = {
         }
         Relationships: []
       }
+      translation_history: {
+        Row: {
+          created_at: string
+          id: string
+          phonetic: string
+          source_lang: string
+          source_text: string
+          target_lang: string
+          translation: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          phonetic?: string
+          source_lang: string
+          source_text: string
+          target_lang: string
+          translation: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          phonetic?: string
+          source_lang?: string
+          source_text?: string
+          target_lang?: string
+          translation?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       usage_daily: {
         Row: {
+          ai_questions: number
           created_at: string
           day: string
           id: string
@@ -775,6 +868,7 @@ export type Database = {
           voice_seconds: number
         }
         Insert: {
+          ai_questions?: number
           created_at?: string
           day?: string
           id?: string
@@ -783,6 +877,7 @@ export type Database = {
           voice_seconds?: number
         }
         Update: {
+          ai_questions?: number
           created_at?: string
           day?: string
           id?: string
