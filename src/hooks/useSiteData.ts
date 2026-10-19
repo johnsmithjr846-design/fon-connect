@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { trackPageView } from "@/lib/analytics.functions";
+import { signAdMedia } from "@/lib/ad-media.functions";
 
 export type SiteSettings = Record<string, string>;
 
@@ -78,8 +79,8 @@ export async function resolveAdMedia<T extends { media_path: string | null; imag
 ): Promise<T[]> {
   const paths = rows.map((r) => r.media_path).filter((p): p is string => Boolean(p));
   if (paths.length === 0) return rows;
-  const { data } = await supabase.storage.from("ad-media").createSignedUrls(paths, 60 * 60 * 24);
-  const map = new Map((data ?? []).map((d) => [d.path, d.signedUrl]));
+  const signed = await signAdMedia({ data: { paths } }).catch(() => ({}) as Record<string, string>);
+  const map = new Map(Object.entries(signed));
   return rows.map((r) =>
     r.media_path && map.get(r.media_path) ? { ...r, image_url: map.get(r.media_path)! } : r,
   );
