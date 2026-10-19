@@ -58,8 +58,12 @@ export type Plan = {
 
 export const CURRENCY_SYMBOL = "€";
 
-/** Limite de traduction vocale de l'offre gratuite : 30 minutes par jour. */
-export const FREE_VOICE_SECONDS_PER_DAY = 30 * 60;
+/** Limite de traduction vocale de l'offre gratuite : 20 minutes par jour. */
+export const FREE_VOICE_SECONDS_PER_DAY = 20 * 60;
+/** Questions à l'assistant IA par jour pour l'offre gratuite. */
+export const FREE_AI_QUESTIONS_PER_DAY = 3;
+/** Essais autorisés sans compte (1 traduction, 1 question IA). */
+export const GUEST_TRIALS = 1;
 
 /** TVA française applicable aux services numériques. */
 export const VAT_RATE = 0.2;
@@ -91,14 +95,18 @@ export const PLANS: Plan[] = [
     features: [
       "Vos dix premiers mots dès la première session de 3 minutes",
       "4 cœurs par jour : l'erreur reste possible, la reprise est immédiate à minuit",
-      "30 min de traduction vocale par jour pour vos échanges courts",
+      "Traduction écrite incluse, et 20 min de traduction vocale par jour",
+      "3 questions par jour à l'assistant IA Ayi",
+      "Sans compte : 1 traduction et 1 question IA pour essayer",
       "Le phrasebook de survie : saluer, remercier, demander son chemin",
       "Votre série de jours démarre dès la première leçon terminée",
     ],
     featuresEn: [
       "Your first ten words in a single 3-minute session",
       "4 hearts a day: mistakes are allowed, everything resets at midnight",
-      "30 min of voice translation a day for short exchanges",
+      "Text translation included, plus 20 min of voice translation a day",
+      "3 questions a day to the Ayi AI assistant",
+      "Without an account: 1 translation and 1 AI question to try",
       "The survival phrasebook: greet, thank, ask for directions",
       "Your day streak starts with your very first finished lesson",
     ],
@@ -131,7 +139,7 @@ export const PLANS: Plan[] = [
       "Les 81 leçons des 8 parcours ouvertes immédiatement",
       "Vocabulaire, compréhension, phrases à remettre en ordre, textes à trous : la mémoire est sollicitée sous plusieurs angles, c'est ce qui la fixe",
       "Correction de votre prononciation au micro, sans peur de vous tromper devant quelqu'un",
-      "Mini-conversations avec l'IA : vous parlez dès la première semaine",
+      "Questions illimitées à l'assistant IA et mini-conversations dès la première semaine",
       "XP, badges et série de jours : chaque session laisse une trace visible",
       "Les nouveaux contenus arrivent inclus, sans supplément",
     ],
@@ -140,7 +148,7 @@ export const PLANS: Plan[] = [
       "All 81 lessons across the 8 paths unlocked right away",
       "Vocabulary, comprehension, word ordering, fill-in-the-blanks: memory is challenged from several angles, which is what makes it hold",
       "Microphone pronunciation feedback, with no fear of getting it wrong in front of someone",
-      "AI mini-conversations: you speak from the very first week",
+      "Unlimited AI assistant questions and mini-conversations from week one",
       "XP, badges and day streak: every session leaves a visible mark",
       "New content is included as it ships, at no extra cost",
     ],
@@ -158,8 +166,8 @@ export const PLANS: Plan[] = [
       "What you learn in a lesson, you reuse the same day in a real translated conversation. That back-and-forth between study and real use is the fastest way to move from “I understand” to “I speak”.",
     anchor: "14,99 € les deux offres, contre 12,98 € pour Leçons Pro seul + un pass 7 jours.",
     anchorEn: "€14.99 for both, versus €12.98 for Lessons Pro alone plus one 7-day pass.",
-    loss: "Séparément, la traduction s'arrête au bout de 30 min par jour, souvent en plein milieu d'un échange.",
-    lossEn: "Separately, translation stops after 30 min a day — usually in the middle of a conversation.",
+    loss: "Séparément, la traduction s'arrête au bout de 20 min par jour, souvent en plein milieu d'un échange.",
+    lossEn: "Separately, translation stops after 20 min a day — usually in the middle of a conversation.",
     bestFor: "Pour la diaspora et les professionnels en contact régulier avec le Bénin.",
     bestForEn: "For the diaspora and professionals in regular contact with Benin.",
     priceCents: 1499,
@@ -175,7 +183,7 @@ export const PLANS: Plan[] = [
       "Conversation en temps réel : chacun parle sa langue, personne n'attend",
       "Les traductions se lisent à voix haute — vous entendez le ton juste avant de le reproduire",
       "Traduction par caméra (si disponible) pour les panneaux et les menus",
-      "Assistant IA disponible à toute heure, y compris avec le décalage horaire",
+      "Assistant IA illimité à toute heure, y compris avec le décalage horaire",
     ],
     featuresEn: [
       "Everything in Lessons Pro, unlimited hearts included",
@@ -183,7 +191,7 @@ export const PLANS: Plan[] = [
       "Real-time conversation: everyone speaks their own language, nobody waits",
       "Translations are read aloud — you hear the right tone before repeating it",
       "Camera translation (where available) for signs and menus",
-      "AI assistant available at any hour, time difference included",
+      "Unlimited AI assistant at any hour, time difference included",
     ],
   },
   {
@@ -199,8 +207,8 @@ export const PLANS: Plan[] = [
       "For one decisive day — landing in Cotonou, Dantokpa market, a family visit — you understand and are understood, with no counter running out at the worst moment.",
     anchor: "4,99 € : moins qu'un taxi raté faute de s'être fait comprendre.",
     anchorEn: "€4.99: less than one taxi ride lost to a misunderstanding.",
-    loss: "Sans pass, la traduction vocale s'arrête après 30 min — souvent avant midi.",
-    lossEn: "Without the pass, voice translation stops after 30 min — usually before noon.",
+    loss: "Sans pass, la traduction vocale s'arrête après 20 min — souvent avant midi.",
+    lossEn: "Without the pass, voice translation stops after 20 min — usually before noon.",
     bestFor: "Pour une escale, un rendez-vous ou une journée précise.",
     bestForEn: "For a stopover, an appointment or one specific day.",
     priceCents: 499,
@@ -214,14 +222,14 @@ export const PLANS: Plan[] = [
       "24 heures pleines, décomptées à partir de votre activation, pas de l'achat",
       "Traduction texte, vocale et conversation à deux, sans limite pendant la journée",
       "Lecture audio et reconnaissance vocale : vous parlez, l'application répond en fon",
-      "Assistant IA de traduction, caméra si disponible",
+      "Assistant IA illimité, caméra si disponible",
       "Achat ponctuel : rien ne se reconduit, rien à résilier",
     ],
     featuresEn: [
       "A full 24 hours, counted from your activation, not from the purchase",
       "Text, voice and two-way conversation translation, unlimited for the day",
       "Audio playback and speech recognition: you speak, the app answers in Fon",
-      "AI translation assistant, camera where available",
+      "Unlimited AI assistant, camera where available",
       "One-off purchase: nothing renews, nothing to cancel",
     ],
   },
@@ -253,14 +261,14 @@ export const PLANS: Plan[] = [
       "7 jours pleins à partir de votre activation",
       "Traduction texte, vocale, conversation et caméra si disponible, sans compteur",
       "1,43 € par jour au lieu de 4,99 € avec des pass journaliers",
-      "Assistant IA de traduction disponible jour et nuit",
+      "Assistant IA illimité, jour et nuit",
       "Achat ponctuel : rien ne se reconduit, rien à résilier",
     ],
     featuresEn: [
       "A full 7 days from your activation",
       "Text, voice, conversation and camera translation where available, with no counter",
       "€1.43 a day instead of €4.99 with daily passes",
-      "AI translation assistant available day and night",
+      "Unlimited AI assistant, day and night",
       "One-off purchase: nothing renews, nothing to cancel",
     ],
   },
@@ -292,14 +300,14 @@ export const PLANS: Plan[] = [
       "Douze mois de traduction Premium, sans compteur ni relance",
       "Traduction texte, vocale et conversation en temps réel",
       "Reconnaissance et synthèse vocales : vous entendez la prononciation juste",
-      "Traduction caméra si disponible et assistant IA",
+      "Traduction caméra si disponible et assistant IA illimité",
       "Vous décidez maintenant si l'offre se reconduit ou s'arrête au bout d'un an",
     ],
     featuresEn: [
       "Twelve months of Premium translation, no counter and no reminders",
       "Text, voice and real-time conversation translation",
       "Speech recognition and synthesis: hear the right pronunciation",
-      "Camera translation where available, plus the AI assistant",
+      "Camera translation where available, plus unlimited AI assistant",
       "You decide right now whether it renews or simply ends after a year",
     ],
   },
@@ -330,7 +338,7 @@ export const PLANS: Plan[] = [
     features: [
       "Tout Leçons Pro et tout Pro Traduction réunis",
       "Cœurs illimités et les 81 leçons ouvertes",
-      "Prononciation corrigée, exercices vocaux et conversations avec l'IA",
+      "Prononciation corrigée, exercices vocaux et questions IA illimitées",
       "Traduction texte, vocale, temps réel et caméra si disponible",
       "XP, badges, séries et statistiques : votre progression reste visible",
       "Toutes les fonctions Premium à venir, incluses sans supplément",
@@ -338,7 +346,7 @@ export const PLANS: Plan[] = [
     featuresEn: [
       "Everything in Lessons Pro and Pro Translation combined",
       "Unlimited hearts and all 81 lessons unlocked",
-      "Pronunciation feedback, voice exercises and AI conversations",
+      "Pronunciation feedback, voice exercises and unlimited AI questions",
       "Text, voice, real-time and camera translation where available",
       "XP, badges, streaks and statistics: your progress stays visible",
       "Every upcoming Premium feature, included at no extra cost",

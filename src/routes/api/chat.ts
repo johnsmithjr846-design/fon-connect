@@ -6,6 +6,7 @@ import {
   FON_SYSTEM_CONTEXT,
   getLovableAiGatewayRunId,
 } from "@/lib/ai-gateway.server";
+import { consumeUsage, getRequestUserId } from "@/lib/usage.server";
 
 type ChatRequestBody = { messages?: unknown };
 
@@ -24,6 +25,21 @@ export const Route = createFileRoute("/api/chat")({
         const { messages } = (await request.json()) as ChatRequestBody;
         if (!Array.isArray(messages)) {
           return new Response("Messages are required", { status: 400 });
+        }
+
+        const userId = await getRequestUserId(request);
+        if (!userId) {
+          const asked = (messages as { role?: string }[]).filter((m) => m.role === "user").length;
+          if (asked > 1) {
+            return new Response("Connectez-vous pour poursuivre la discussion avec Ayi.", {
+              status: 401,
+            });
+          }
+        } else if (!(await consumeUsage(userId, "ai", 1))) {
+          return new Response(
+            "Vous avez utilisé vos 3 questions gratuites du jour. Passez à une offre payante pour des questions illimitées.",
+            { status: 429 },
+          );
         }
 
         const key = process.env["LOVABLE_API_KEY"];

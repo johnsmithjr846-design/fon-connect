@@ -1,8 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { ArrowLeftRight, Copy, Check, Loader2 } from "lucide-react";
+import { ArrowLeftRight, Copy, Check, Loader2, History, Trash2 } from "lucide-react";
+import { useAuthUser } from "@/hooks/useAuthUser";
+import { supabase } from "@/integrations/supabase/client";
+import { fetchUsageStatus } from "@/lib/usage.functions";
 import { SiteHeader } from "@/components/SiteHeader";
 import { MicButton } from "@/components/voice/MicButton";
 import { SpeakButton } from "@/components/voice/SpeakButton";
@@ -37,6 +40,7 @@ export const Route = createFileRoute("/traducteur")({
 });
 
 const MAX = 1500;
+const GUEST_KEY = "fonconnect_guest_translation";
 
 const PROVIDER_LABEL: Record<string, string> = {
   local: "Corpus FonConnect (hors ligne)",
@@ -79,15 +83,72 @@ function TraducteurPage() {
   const [text, setText] = useState("");
   const [copied, setCopied] = useState(false);
 
+  const { user } = useAuthUser();
+  const queryClient = useQueryClient();
+  const [needLogin, setNeedLogin] = useState(false);
+  const usageFn = useServerFn(fetchUsageStatus);
+  const usage = useQuery({
+    queryKey: ["usage", user?.id],
+    queryFn: () => usageFn(),
+    enabled: Boolean(user),
+  });
+  const history = useQuery({
+    queryKey: ["translation-history", user?.id],
+    enabled: Boolean(user),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("translation_history")
+        .select("id, source_lang, target_lang, source_text, translation, phonetic, created_at")
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const translate = useServerFn(translateText);
   const mutation = useMutation({
     mutationFn: (input: { text: string; source: Lang; target: Lang }) => {
       const local = translateFromLocalCorpus(input.text, input.source, input.target);
       return local ? Promise.resolve(local) : translate({ data: input });
     },
+    onSuccess: async (data, input) => {
+      if (!user) {
+        window.localStorage.setItem(GUEST_KEY, "1");
+        return;
+      }
+      await supabase.from("translation_history").insert({
+        user_id: user.id,
+        source_lang: input.source,
+        target_lang: input.target,
+        source_text: input.text,
+        translation: data.translation,
+        phonetic: data.phonetic ?? "",
+      });
+      void queryClient.invalidateQueries({ queryKey: ["translation-history", user.id] });
+      void queryClient.invalidateQueries({ queryKey: ["usage", user.id] });
+    },
   });
 
-  const recorder = useVoiceRecorder({ language: source === "fon" ? undefined : source });
+  const guestBlocked = () => {
+    if (user) return false;
+    if (window.localStorage.getItem(GUEST_KEY) === "1") {
+      setNeedLogin(true);
+      return true;
+    }
+    return false;
+  };
+
+  const clearHistory = async () => {
+    if (!user) return;
+    await supabase.from("translation_history").delete().eq("user_id", user.id);
+    void queryClient.invalidateQueries({ queryKey: ["translation-history", user.id] });
+  };
+
+  const recorder = useVoiceRecorder({
+    language: source === "fon" ? undefined : source,
+    purpose: "translation",
+  });
   const speech = useSpeech();
 
   const targetIsFon = target === "fon";
@@ -97,6 +158,7 @@ function TraducteurPage() {
     if (!transcript) return;
     const value = transcript.slice(0, MAX);
     setText(value);
+    if (guestBlocked()) return;
     mutation.mutate({ text: value, source, target });
   };
 
@@ -174,7 +236,7 @@ function TraducteurPage() {
           onSubmit={(e) => {
             e.preventDefault();
             const value = text.trim();
-            if (!value) return;
+            if (!value || guestBlocked()) return;
             mutation.mutate({ text: value.slice(0, MAX), source, target });
           }}
         >
@@ -207,6 +269,33 @@ function TraducteurPage() {
             </Button>
           </div>
         </form>
+
+        {user && usage.data && (
+          <p className="mt-3 text-xs text-muted-foreground">
+            Traduction écrite illimitée · Traduction vocale :{" "}
+            {usage.data.voiceUnlimited
+              ? "illimitée"
+              : `${Math.max(0, Math.ceil((usage.data.voiceLimit - usage.data.voiceUsed) / 60))} min restantes aujourd'hui`}
+            {!usage.data.voiceUnlimited && (
+              <>
+                {" · "}
+                <Link to="/tarifs" className="font-medium text-primary underline">
+                  Passer à l'illimité
+                </Link>
+              </>
+            )}
+          </p>
+        )}
+
+        {needLogin && !user && (
+          <div className="mt-4 rounded-lg border border-primary/40 bg-primary/10 px-4 py-3 text-sm text-foreground">
+            Vous avez utilisé votre traduction d'essai.{" "}
+            <Link to="/auth" className="font-semibold text-primary underline">
+              Connectez-vous pour poursuivre
+            </Link>{" "}
+            gratuitement.
+          </div>
+        )}
 
         {(recorder.error || speech.error) && (
           <p className="mt-4 rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
@@ -272,6 +361,42 @@ function TraducteurPage() {
                 ))}
               </ul>
             )}
+          </section>
+        )}
+
+        {user && (history.data?.length ?? 0) > 0 && (
+          <section className="mt-10">
+            <div className="flex items-center justify-between">
+              <h2 className="flex items-center gap-2 text-lg font-semibold text-foreground">
+                <History className="size-5" /> Historique de traduction
+              </h2>
+              <Button type="button" variant="ghost" size="sm" onClick={() => void clearHistory()}>
+                <Trash2 className="mr-1.5 size-4" /> Tout effacer
+              </Button>
+            </div>
+            <ul className="mt-3 space-y-2">
+              {history.data!.map((h) => (
+                <li key={h.id}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSource(h.source_lang as Lang);
+                      setTarget(h.target_lang as Lang);
+                      setText(h.source_text);
+                      mutation.reset();
+                    }}
+                    className="w-full rounded-lg border border-border bg-card px-4 py-3 text-left transition-colors hover:border-primary"
+                  >
+                    <p className="text-xs text-muted-foreground">
+                      {LANG_LABEL[h.source_lang as Lang]} → {LANG_LABEL[h.target_lang as Lang]} ·{" "}
+                      {new Date(h.created_at).toLocaleString("fr-FR")}
+                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground">{h.source_text}</p>
+                    <p className="text-sm font-medium text-card-foreground">{h.translation}</p>
+                  </button>
+                </li>
+              ))}
+            </ul>
           </section>
         )}
       </main>

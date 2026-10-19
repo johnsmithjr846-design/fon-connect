@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { consumeUsage, getRequestUserId } from "@/lib/usage.server";
 
 export const Route = createFileRoute("/api/transcribe")({
   server: {
@@ -25,6 +26,23 @@ export const Route = createFileRoute("/api/transcribe")({
         }
         if (file.size > 20 * 1024 * 1024) {
           return Response.json({ error: "Enregistrement trop long." }, { status: 413 });
+        }
+
+        if (form.get("purpose") === "translation") {
+          const userId = await getRequestUserId(request);
+          if (userId) {
+            // WAV 16 kHz mono 16 bits : 32 000 octets par seconde.
+            const seconds = Math.max(1, (file.size - 44) / 32000);
+            if (!(await consumeUsage(userId, "voice", seconds))) {
+              return Response.json(
+                {
+                  error:
+                    "Vos 20 minutes de traduction vocale du jour sont épuisées. La traduction écrite reste disponible, ou passez à une offre Traduction pour un usage illimité.",
+                },
+                { status: 429 },
+              );
+            }
+          }
         }
 
         const language = form.get("language");

@@ -1,8 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAuthUser } from "@/hooks/useAuthUser";
+import { supabase } from "@/integrations/supabase/client";
+import { fetchUsageStatus } from "@/lib/usage.functions";
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
+import { DefaultChatTransport, type UIMessage } from "ai";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Loader2, Send } from "lucide-react";
+import { History, Loader2, Plus, Send, Trash2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { SiteHeader } from "@/components/SiteHeader";
 import { MicButton } from "@/components/voice/MicButton";
@@ -42,14 +47,52 @@ const SUGGESTIONS = [
 ];
 
 const HANDS_FREE_KEY = "fonconnect:hands-free";
+const GUEST_KEY = "fonconnect_guest_ai";
 
 function messageText(message: { parts: { type: string; text?: string }[] }) {
   return message.parts.map((part) => (part.type === "text" ? (part.text ?? "") : "")).join("");
 }
 
 function AssistantPage() {
-  const transport = useMemo(() => new DefaultChatTransport({ api: "/api/chat" }), []);
-  const { messages, sendMessage, status, error } = useChat({ transport });
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: "/api/chat",
+        headers: async (): Promise<Record<string, string>> => {
+          const { data } = await supabase.auth.getSession();
+          const token = data.session?.access_token;
+          return token ? { Authorization: `Bearer ${token}` } : {};
+        },
+      }),
+    [],
+  );
+  const { messages, sendMessage, setMessages, status, error } = useChat({ transport });
+  const { user } = useAuthUser();
+  const queryClient = useQueryClient();
+  const [needLogin, setNeedLogin] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [convId, setConvId] = useState<string | null>(null);
+  const convRef = useRef<string | null>(null);
+  const savedRef = useRef<Set<string>>(new Set());
+  const usageFn = useServerFn(fetchUsageStatus);
+  const usage = useQuery({
+    queryKey: ["usage", user?.id],
+    queryFn: () => usageFn(),
+    enabled: Boolean(user),
+  });
+  const conversations = useQuery({
+    queryKey: ["ai-conversations", user?.id],
+    enabled: Boolean(user),
+    queryFn: async () => {
+      const { data, error: e } = await supabase
+        .from("ai_conversations")
+        .select("id, title, updated_at")
+        .order("updated_at", { ascending: false })
+        .limit(50);
+      if (e) throw e;
+      return data;
+    },
+  });
   const [input, setInput] = useState("");
   const [handsFree, setHandsFree] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -78,11 +121,93 @@ function AssistantPage() {
     void speech.speak(last.id, text, "fr");
   }, [handsFree, messages, speech, status]);
 
+  // Sauvegarde les réponses terminées d'Ayi dans la discussion active.
+  useEffect(() => {
+    if (status !== "ready" || !user || !convRef.current) return;
+    const last = messages[messages.length - 1];
+    if (!last || last.role !== "assistant" || savedRef.current.has(last.id)) return;
+    const content = messageText(last);
+    if (!content.trim()) return;
+    savedRef.current.add(last.id);
+    void supabase
+      .from("ai_chat_messages")
+      .insert({ conversation_id: convRef.current, user_id: user.id, role: "assistant", content })
+      .then(({ error: e }) => e && console.error("save assistant message failed", e));
+  }, [messages, status, user]);
+
+  const persistUserMessage = async (text: string) => {
+    if (!user) return;
+    let id = convRef.current;
+    if (!id) {
+      const { data, error: e } = await supabase
+        .from("ai_conversations")
+        .insert({ user_id: user.id, title: text.slice(0, 60) })
+        .select("id")
+        .single();
+      if (e || !data) return console.error("create conversation failed", e);
+      id = data.id;
+      convRef.current = id;
+      setConvId(id);
+    } else {
+      await supabase
+        .from("ai_conversations")
+        .update({ updated_at: new Date().toISOString() })
+        .eq("id", id);
+    }
+    const { error: e } = await supabase
+      .from("ai_chat_messages")
+      .insert({ conversation_id: id, user_id: user.id, role: "user", content: text });
+    if (e) console.error("save user message failed", e);
+    void queryClient.invalidateQueries({ queryKey: ["ai-conversations", user.id] });
+  };
+
   const submit = (value: string) => {
     const text = value.trim();
     if (!text || isLoading) return;
+    if (!user) {
+      if (window.localStorage.getItem(GUEST_KEY) === "1") {
+        setNeedLogin(true);
+        return;
+      }
+      window.localStorage.setItem(GUEST_KEY, "1");
+    }
     setInput("");
-    void sendMessage({ text });
+    void persistUserMessage(text);
+    void sendMessage({ text }).finally(() => {
+      if (user) void queryClient.invalidateQueries({ queryKey: ["usage", user.id] });
+    });
+  };
+
+  const newConversation = () => {
+    convRef.current = null;
+    setConvId(null);
+    setMessages([]);
+    setShowHistory(false);
+  };
+
+  const openConversation = async (id: string) => {
+    const { data, error: e } = await supabase
+      .from("ai_chat_messages")
+      .select("id, role, content")
+      .eq("conversation_id", id)
+      .order("created_at", { ascending: true });
+    if (e) return console.error(e);
+    const restored: UIMessage[] = (data ?? []).map((m) => ({
+      id: m.id,
+      role: m.role === "user" ? "user" : "assistant",
+      parts: [{ type: "text", text: m.content }],
+    }));
+    restored.forEach((m) => savedRef.current.add(m.id));
+    convRef.current = id;
+    setConvId(id);
+    setMessages(restored);
+    setShowHistory(false);
+  };
+
+  const deleteConversation = async (id: string) => {
+    await supabase.from("ai_conversations").delete().eq("id", id);
+    if (convRef.current === id) newConversation();
+    void queryClient.invalidateQueries({ queryKey: ["ai-conversations", user?.id] });
   };
 
   const onMicStop = async () => {
@@ -126,6 +251,71 @@ function AssistantPage() {
             Lecture automatique des réponses d'Ayi.
           </span>
         </div>
+
+        {user && (
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <Button type="button" variant="outline" size="sm" onClick={newConversation}>
+              <Plus className="mr-1.5 size-4" /> Nouvelle discussion
+            </Button>
+            <Button
+              type="button"
+              variant={showHistory ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowHistory((v) => !v)}
+            >
+              <History className="mr-1.5 size-4" /> Historique
+            </Button>
+            {usage.data && (
+              <span className="text-xs text-muted-foreground">
+                {usage.data.aiUnlimited ? (
+                  "Questions illimitées"
+                ) : (
+                  <>
+                    {Math.max(0, usage.data.aiLimit - usage.data.aiUsed)} / {usage.data.aiLimit}{" "}
+                    questions restantes aujourd'hui ·{" "}
+                    <Link to="/tarifs" className="font-medium text-primary underline">
+                      Passer à l'illimité
+                    </Link>
+                  </>
+                )}
+              </span>
+            )}
+          </div>
+        )}
+
+        {showHistory && user && (
+          <div className="mt-3 rounded-xl border border-border bg-card p-3">
+            {(conversations.data?.length ?? 0) === 0 ? (
+              <p className="text-sm text-muted-foreground">Aucune discussion enregistrée.</p>
+            ) : (
+              <ul className="space-y-1">
+                {conversations.data!.map((c) => (
+                  <li key={c.id} className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => void openConversation(c.id)}
+                      className={`flex-1 truncate rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-secondary ${c.id === convId ? "bg-secondary font-medium text-foreground" : "text-card-foreground"}`}
+                    >
+                      {c.title}
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        {new Date(c.updated_at).toLocaleDateString("fr-FR")}
+                      </span>
+                    </button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Supprimer la discussion"
+                      onClick={() => void deleteConversation(c.id)}
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
 
 
         <div className="mt-6 flex-1 space-y-4">
@@ -194,6 +384,15 @@ function AssistantPage() {
                 ? "Crédits IA épuisés. Rechargez votre espace Lovable pour continuer."
                 : error.message || "La discussion a échoué. Vérifiez votre connexion et réessayez."}
             </p>
+          )}
+          {needLogin && !user && (
+            <div className="rounded-lg border border-primary/40 bg-primary/10 px-4 py-3 text-sm text-foreground">
+              Vous avez utilisé votre question d'essai.{" "}
+              <Link to="/auth" className="font-semibold text-primary underline">
+                Connectez-vous pour poursuivre
+              </Link>{" "}
+              et profiter de 3 questions gratuites par jour.
+            </div>
           )}
           {(recorder.error || speech.error) && (
             <p className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
