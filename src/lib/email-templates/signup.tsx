@@ -9,6 +9,7 @@ import {
   Html,
   Link,
   Preview,
+  Section,
   Text,
 } from '@react-email/components'
 
@@ -20,39 +21,49 @@ interface SignupEmailProps {
 }
 
 export const SignupEmail = ({
-  siteName,
   siteUrl,
   recipient,
   confirmationUrl,
 }: SignupEmailProps) => (
-  <Html lang="en" dir="ltr">
+  <Html lang="fr" dir="ltr">
     <Head />
-    <Preview>Confirm your email for {siteName}</Preview>
+    <Preview>Kú àbɔ̀ ! Bienvenue sur FonConnect — confirmez votre adresse email</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Heading style={h1}>Confirm your email</Heading>
-        <Text style={text}>
-          Thanks for signing up for{' '}
-          <Link href={siteUrl} style={link}>
-            <strong>{siteName}</strong>
-          </Link>
-          !
+        <Section style={flag}>
+          <span style={{ ...stripe, backgroundColor: '#008751' }} />
+          <span style={{ ...stripe, backgroundColor: '#FCD116' }} />
+          <span style={{ ...stripe, backgroundColor: '#E8112D' }} />
+        </Section>
+        <Text style={brand}>
+          <Link href={siteUrl} style={brandLink}>FonConnect</Link>
         </Text>
+        <Text style={slogan}>Parlez le Bénin, naturellement</Text>
+
+        <Heading style={h1}>Kú àbɔ̀ ! Bienvenue dans l'aventure FonConnect</Heading>
         <Text style={text}>
-          Please confirm your email address (
-          <Link href={`mailto:${recipient}`} style={link}>
-            {recipient}
-          </Link>
-          ) by clicking the button below:
+          Merci d'avoir rejoint FonConnect ! Que vous soyez là pour apprendre le fon pas à pas,
+          traduire vos échanges au quotidien ou découvrir la culture béninoise, vous êtes au bon endroit.
+        </Text>
+
+        <Text style={subtitle}>Ce qui vous attend :</Text>
+        <Text style={item}>🗣️ <strong>Traducteur instantané</strong> — textes et enregistrements vocaux en fon et en français.</Text>
+        <Text style={item}>📚 <strong>Leçons interactives</strong> — vocabulaire, grammaire et quiz ludiques à votre rythme.</Text>
+        <Text style={item}>🤖 <strong>Assistant Ayi</strong> — votre tuteur d'apprentissage toujours disponible.</Text>
+        <Text style={item}>📖 <strong>Phrasebook</strong> — les expressions indispensables au Bénin.</Text>
+
+        <Text style={text}>
+          Pour activer votre compte ({recipient}), confirmez votre adresse email :
         </Text>
         <Button style={button} href={confirmationUrl}>
-          Verify Email
+          Confirmer mon adresse email
         </Button>
+
         <Text style={footer}>
-          If you didn't create an account, you can safely ignore this email.
+          Si vous n'avez pas créé de compte, vous pouvez ignorer cet email.
         </Text>
         <Text style={contact}>
-          Questions ? Contact us at{' '}
+          Une question ? Écrivez-nous à{' '}
           <Link href="mailto:fonconnect@outlook.fr" style={link}>
             fonconnect@outlook.fr
           </Link>
@@ -65,27 +76,25 @@ export const SignupEmail = ({
 export default SignupEmail
 
 const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px' }
-const h1 = {
-  fontSize: '22px',
-  fontWeight: 'bold' as const,
-  color: '#000000',
-  margin: '0 0 20px',
-}
-const text = {
-  fontSize: '14px',
-  color: '#55575d',
-  lineHeight: '1.5',
-  margin: '0 0 25px',
-}
+const container = { padding: '20px 25px', maxWidth: '560px' }
+const flag = { margin: '0 0 16px' }
+const stripe = { display: 'inline-block', width: '33%', height: '6px' }
+const brand = { fontSize: '26px', fontWeight: 'bold' as const, color: '#008751', margin: '0' }
+const brandLink = { color: '#008751', textDecoration: 'none' }
+const slogan = { fontSize: '12px', color: '#c2410c', letterSpacing: '1px', textTransform: 'uppercase' as const, margin: '2px 0 24px' }
+const h1 = { fontSize: '22px', fontWeight: 'bold' as const, color: '#1f2937', margin: '0 0 16px' }
+const text = { fontSize: '14px', color: '#4b5563', lineHeight: '1.6', margin: '0 0 20px' }
+const subtitle = { fontSize: '15px', fontWeight: 'bold' as const, color: '#1f2937', margin: '0 0 8px' }
+const item = { fontSize: '14px', color: '#4b5563', lineHeight: '1.5', margin: '0 0 8px' }
 const link = { color: 'inherit', textDecoration: 'underline' }
 const button = {
-  backgroundColor: '#000000',
+  backgroundColor: '#008751',
   color: '#ffffff',
-  fontSize: '14px',
+  fontSize: '15px',
+  fontWeight: 'bold' as const,
   borderRadius: '8px',
-  padding: '12px 20px',
+  padding: '14px 22px',
   textDecoration: 'none',
 }
 const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
-const contact = { fontSize: '12px', color: '#999999', margin: '15px 0 0' }
+const contact = { fontSize: '12px', color: '#999999', margin: '10px 0 0' }
