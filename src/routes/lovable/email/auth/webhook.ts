@@ -9,7 +9,7 @@ import { EmailChangeEmail } from '@/lib/email-templates/email-change'
 import { ReauthenticationEmail } from '@/lib/email-templates/reauthentication'
 
 // Configuration
-const SITE_NAME = "fon-connect"
+const SITE_NAME = "FonConnect"
 const SENDER_DOMAIN = "notify.fonconnect.fr"
 const ROOT_DOMAIN = "fonconnect.fr"
 const FROM_DOMAIN = "notify.fonconnect.fr"
@@ -24,7 +24,7 @@ const createHandler = () => createAuthEmailHandler({
   sendUrl: process.env['LOVABLE_SEND_URL'],
   emails: {
     signup: {
-      subject: 'Confirm your email',
+      subject: 'Kú àbɔ̀ ! Bienvenue sur FonConnect — Confirmez votre adresse email',
       render: (data) =>
         React.createElement(SignupEmail, {
           siteName: SITE_NAME,
