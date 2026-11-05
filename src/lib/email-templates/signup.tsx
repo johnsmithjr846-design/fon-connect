@@ -59,6 +59,11 @@ export const SignupEmail = ({
           Confirmer mon adresse email
         </Button>
 
+        <Text style={hint}>
+          Vous ne voyez pas cet email ? <strong>Vérifiez votre dossier de courriers indésirables (spams)</strong>,
+          puis glissez-le dans votre boîte de réception ou ajoutez-nous à vos contacts pour recevoir la suite.
+        </Text>
+
         <Text style={footer}>
           Si vous n'avez pas créé de compte, vous pouvez ignorer cet email.
         </Text>
@@ -95,6 +100,15 @@ const button = {
   borderRadius: '8px',
   padding: '14px 22px',
   textDecoration: 'none',
+}
+const hint = {
+  fontSize: '13px',
+  color: '#4b5563',
+  lineHeight: '1.5',
+  margin: '22px 0 0',
+  padding: '12px 14px',
+  backgroundColor: '#f3f4f6',
+  borderRadius: '8px',
 }
 const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
 const contact = { fontSize: '12px', color: '#999999', margin: '10px 0 0' }
