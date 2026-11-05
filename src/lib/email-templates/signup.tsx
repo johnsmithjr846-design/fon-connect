@@ -59,6 +59,11 @@ export const SignupEmail = ({
           Confirmer mon adresse email
         </Button>
 
+        <Text style={hint}>
+          Vous ne voyez pas cet email ? <strong>Vérifiez votre dossier de courriers indésirables (spams)</strong>,
+          puis glissez-le dans votre boîte de réception ou ajoutez-nous à vos contacts pour recevoir la suite.
+        </Text>
+
         <Text style={footer}>
           Si vous n'avez pas créé de compte, vous pouvez ignorer cet email.
         </Text>
