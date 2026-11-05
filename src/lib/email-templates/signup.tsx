@@ -101,5 +101,14 @@ const button = {
   padding: '14px 22px',
   textDecoration: 'none',
 }
+const hint = {
+  fontSize: '13px',
+  color: '#4b5563',
+  lineHeight: '1.5',
+  margin: '22px 0 0',
+  padding: '12px 14px',
+  backgroundColor: '#f3f4f6',
+  borderRadius: '8px',
+}
 const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
 const contact = { fontSize: '12px', color: '#999999', margin: '10px 0 0' }
